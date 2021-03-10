@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="ro.fii.licenta.api.service.UserService"/>
+    <fullyQualifiedTypeName name="ro.fii.licenta.api.service.impl.UserServiceImpl"/>
+    <fullyQualifiedTypeName name="org.springframework.context.annotation.Bean"/>
+</qualifiedTypeNameHistroy>

@@ -1,0 +1,8 @@
+package ro.fii.licenta.api;
+
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class BusinessConfig {
+
+}
