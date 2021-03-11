@@ -1,10 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+<div style="  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;">
+  <div class="card-user col-lg-4">
+    <div>
+      <p class=card-title>Login</p>
+      <div class=" author">
+        <div class=" block block-one animate"></div>
+        <div class=" block block-two animate"></div>
+        <div class=" block block-three animate"></div>
+        <div class=" block block-four animate"></div>
+        <a href="javascript:void(0)"></a>
+        <div class="col d-flex justify-content-center">
+          <div class=" col-lg-4 pl-lg-8">
+            <div class="form-group">
+              <label [for]="'email'"> Email address </label>
+              <input
+                class=" form-control"
+                placeholder="address@email.com"
+                type="email"
+              />
+              <label [for]="'password'">Password</label>
+              <input
+                class="form-control"
+                placeholder="***********"
+                type="password"
+              />
+              <br>
+              <div class="col d-flex justify-content-center">
+                <button class=" btn btn-fill btn-danger" type="submit">Log in</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

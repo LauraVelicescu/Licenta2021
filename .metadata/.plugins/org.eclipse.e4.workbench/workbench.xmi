@@ -10,7 +10,6 @@
     <persistedState key="workingSets" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;workingSets/>"/>
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1615232822894"/>
     <tags>topLevel</tags>
-    <tags>shellMinimized</tags>
     <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_DNkaAoBHEeuTPbBXtTm2Cw" selectedElement="_DNlBEIBHEeuTPbBXtTm2Cw" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_DNlBEIBHEeuTPbBXtTm2Cw" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_DTVq0oBHEeuTPbBXtTm2Cw">
@@ -78,7 +77,6 @@
                 <children xsi:type="basic:PartStack" xmi:id="_DTWR4oBHEeuTPbBXtTm2Cw" elementId="left" containerData="6600" selectedElement="_DTWR44BHEeuTPbBXtTm2Cw">
                   <tags>org.eclipse.e4.primaryNavigationStack</tags>
                   <tags>active</tags>
-                  <tags>noFocus</tags>
                   <children xsi:type="advanced:Placeholder" xmi:id="_DTWR44BHEeuTPbBXtTm2Cw" elementId="org.eclipse.jdt.ui.PackageExplorer" ref="_DTNvAIBHEeuTPbBXtTm2Cw" closeable="true">
                     <tags>View</tags>
                     <tags>categoryTag:Java</tags>
@@ -276,7 +274,7 @@
           <tags>org.eclipse.jdt.ui.CompilationUnitEditor</tags>
         </children>
         <children xsi:type="basic:Part" xmi:id="_eYdWoIBKEeuTPbBXtTm2Cw" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="BusinessConfig.java" iconURI="platform:/plugin/org.eclipse.jdt.ui/icons/full/obj16/jcu_obj.png" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot; name=&quot;BusinessConfig.java&quot; partName=&quot;BusinessConfig.java&quot; title=&quot;BusinessConfig.java&quot; tooltip=&quot;source/src/main/java/ro/fii/licenta/api/BusinessConfig.java&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/source/src/main/java/ro/fii/licenta/api/BusinessConfig.java&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;328&quot; selectionTopPixel=&quot;0&quot;/>&#xA;&lt;/editor>"/>
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xA;&lt;editor id=&quot;org.eclipse.jdt.ui.CompilationUnitEditor&quot; name=&quot;BusinessConfig.java&quot; partName=&quot;BusinessConfig.java&quot; title=&quot;BusinessConfig.java&quot; tooltip=&quot;source/src/main/java/ro/fii/licenta/api/BusinessConfig.java&quot;>&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/source/src/main/java/ro/fii/licenta/api/BusinessConfig.java&quot;/>&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;0&quot; selectionTopPixel=&quot;0&quot;/>&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>removeOnHide</tags>
           <tags>org.eclipse.jdt.ui.CompilationUnitEditor</tags>
@@ -454,7 +452,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOfnEIBHEeuTPbBXtTm2Cw" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_DOj4gIBHEeuTPbBXtTm2Cw" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" enabled="false" command="_C-dnHoBHEeuTPbBXtTm2Cw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_AcOZoIGNEeuugaH-07MELQ" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_C-dnHoBHEeuTPbBXtTm2Cw"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOgOIIBHEeuTPbBXtTm2Cw" elementId="group.edit" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -485,7 +483,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOgOJ4BHEeuTPbBXtTm2Cw" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_DOkfkIBHEeuTPbBXtTm2Cw" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" enabled="false" type="Check" command="_C-dAFYBHEeuTPbBXtTm2Cw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_AcQO04GNEeuugaH-07MELQ" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_C-dAFYBHEeuTPbBXtTm2Cw"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOg1MIBHEeuTPbBXtTm2Cw" elementId="group.editor" toBeRendered="false">
         <tags>toolbarSeparator</tags>
