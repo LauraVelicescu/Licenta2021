@@ -1,9 +1,13 @@
 package ro.fii.licenta.api.dao;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -16,34 +20,38 @@ import ro.fii.licenta.framework.PersistableEntity;
 public class User extends PersistableEntity {
 
     private static final long serialVersionUID = 1L;
-    private String username;
+  
+    private Long id;
+    
+    private String emailAddress;
 
     private String password;
+    
+    private String firstName;
+
+    private String lastName;
+    
+    private Date birthDay;
 
     private boolean blocked;
 
     private int failAttemtps;
 
-    private String firstName;
-
-    private String lastName;
-
-    private String emailAddress;
-
     private PersonType personType;
 
-    @ManyToMany
-    @JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
-    private Set<Group> groups;
+    @Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long getId() {
+		return id;
+	}
 
-    @Column(name = "username")
-    public String getUsername() {
-        return username;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	private Set<Group> groups;
+
 
     @Column(name = "password")
     public String getPassword() {
@@ -98,6 +106,15 @@ public class User extends PersistableEntity {
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
+    
+    @Column(name = "birthday")
+    public Date getBirthDay() {
+		return birthDay;
+	}
+    
+    public void setBirthDay(Date birthDay) {
+		this.birthDay = birthDay;
+	}
 
     @Column(name = "person_type")
     public PersonType getPersonType() {
@@ -108,6 +125,8 @@ public class User extends PersistableEntity {
         this.personType = personType;
     }
 
+    @ManyToMany
+    @JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Set<Group> getGroups() {
         return groups;
     }
@@ -115,5 +134,9 @@ public class User extends PersistableEntity {
     public void setGroups(Set<Group> groups) {
         this.groups = groups;
     }
+
+	
+
+	
 }
 

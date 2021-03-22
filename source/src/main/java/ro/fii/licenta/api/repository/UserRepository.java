@@ -6,6 +6,5 @@ import ro.fii.licenta.framework.PersistableEntityRepository;
 
 public interface UserRepository extends PersistableEntityRepository<User, Long> {
 
-    User findByUsername(String username);
-
+	User findByEmailAddress(String emailAddress);
 }

@@ -58,7 +58,7 @@ export const ROUTES: RouteInfo[] = [
     class: ""
   },
   {
-    path: "/login",
+    path: "/authentication",
     title: "Login",
     rtlTitle: "ار تي ال",
     icon: "icon-world",

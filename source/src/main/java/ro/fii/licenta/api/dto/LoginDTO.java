@@ -2,18 +2,20 @@ package ro.fii.licenta.api.dto;
 
 public class LoginDTO {
 
-    private String username;
+    private String emailAddress;
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
+    
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public String getPassword() {
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getPassword() {
         return password;
     }
 

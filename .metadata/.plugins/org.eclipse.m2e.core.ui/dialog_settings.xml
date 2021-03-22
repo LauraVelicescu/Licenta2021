@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="/home/jerry/Documents/Licenta2021/source"/>
 			<item value="/home/laura/Documents/Licenta/source"/>
 		</list>
 		<list key="projectNameTemplate">

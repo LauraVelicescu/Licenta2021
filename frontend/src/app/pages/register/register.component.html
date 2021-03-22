@@ -1,0 +1,94 @@
+<div style="  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;">
+  <div class="card-user col-lg-4">
+    <div>
+      <p class=card-title>Registration</p>
+      <div class=" author">
+        <div class=" block block-one animate"></div>
+        <div class=" block block-two animate"></div>
+        <div class=" block block-three animate"></div>
+        <div class=" block block-four animate"></div>
+        <a href="javascript:void(0)"></a>
+        <div class="col d-flex justify-content-center">
+          <div class=" col-lg-6 pl-lg-8">
+            <div class="form-group">
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <label [for]="'firstName'"> First name </label>
+                <input
+                  class=" form-control"
+                  placeholder="first name"
+                  formControlName="firstName"
+                  type="text"
+                />
+                <div
+                  *ngIf="registerForm.controls.firstName.errors?.required && (registerForm.controls.firstName.dirty ||registerForm.controls.firstName.touched)">
+                  First name is required.
+                </div>
+                <label [for]="'lastName'"> Last name </label>
+                <input
+                  class=" form-control"
+                  placeholder="last name"
+                  formControlName="lastName"
+                  type="text"
+                />
+                <div
+                  *ngIf="registerForm.controls.lastName.errors?.required && (registerForm.controls.lastName.dirty ||registerForm.controls.lastName.touched)">
+                  Last name is required.
+                </div>
+                <label [for]="'email'"> Email address </label>
+                <input
+                  class=" form-control"
+                  placeholder="address@email.com"
+                  formControlName="emailAddress"
+                  type="email"
+                />
+                <div
+                  *ngIf="registerForm.controls.emailAddress.errors?.required && (registerForm.controls.emailAddress.dirty ||registerForm.controls.emailAddress.touched)">
+                  E-mail address is required.
+                </div>
+                <div *ngIf="registerForm.controls.emailAddress.errors?.email ">The e-mail address does not have the
+                  correct format.
+                </div>
+                <label [for]="'password'">Password</label>
+                <input
+                  class="form-control"
+                  placeholder="***********"
+                  formControlName="password"
+                  type="password"
+                />
+                <div
+                  *ngIf="registerForm.controls.password.errors?.required && (registerForm.controls.password.dirty ||registerForm.controls.password.touched)">
+                  Password is required.
+                </div>
+                <div *ngIf="registerForm.controls.password.errors?.pattern ">The password must contain minimum eight
+                  characters, at least one uppercase letter, one lowercase letter, one number and one special character.
+                </div>
+
+                <label [for]="'cpassword'">Re-type password</label>
+                <input
+                  class="form-control"
+                  placeholder="***********"
+                  formControlName="cpassword"
+                  type="password"
+                />
+                <div
+                  *ngIf="registerForm.controls.cpassword.errors?.passwordMatch && (registerForm.controls.cpassword.dirty ||registerForm.controls.cpassword.touched)">
+                  Passwords do not match.
+                </div>
+                <br>
+                <div class="col d-flex justify-content-center">
+                  <button class=" btn btn-fill btn-danger" type="submit">Register</button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

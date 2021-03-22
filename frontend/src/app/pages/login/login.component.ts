@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {User} from '../../user';
-import {LoginService} from '../../services/login/login.service';
+import {AuthenticationService} from '../../services/authentication/authentication.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UserDTO} from '../../components/dto/UserDTO';
 
 @Component({
   selector: 'app-login',
@@ -10,35 +11,33 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  loginForm: FormGroup;
 
-  showThis = true;
-
-  constructor(private loginService: LoginService, private router: Router, private formBuilder: FormBuilder) {
-    console.log('constr')
+  constructor(private loginService: AuthenticationService, private router: Router, private formBuilder: FormBuilder) {
   }
 
-  loginForm: FormGroup;
-  isSubmitted = false;
-
   ngOnInit() {
-    console.log('ngoniit')
     this.loginForm = this.formBuilder.group({
-      email: ['', Validators.required, Validators.email],
-      password: ['', Validators.required, Validators.pattern('(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$')]
+      emailAddress: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
   }
 
-  get formControls() {
-    return this.loginForm.controls;
-  }
 
-  login() {
-    console.log(this.loginForm.value);
-    this.isSubmitted = true;
+  onSubmit() {
     if (this.loginForm.invalid) {
+      console.log('invalid');
       return;
+    } else {
+      console.log(this.loginForm.controls.emailAddress.value);
+      let user: UserDTO = new UserDTO();
+      user.emailAddress = this.loginForm.controls.emailAddress.value;
+      user.password = this.loginForm.controls.password.value;
+      this.loginService.login(user).subscribe((result) => {
+        console.log(result);
+      }, error => {
+        console.log(error);
+      })
     }
-    this.loginService.login(this.loginForm.value);
-    this.router.navigateByUrl('/adm');
   }
 }

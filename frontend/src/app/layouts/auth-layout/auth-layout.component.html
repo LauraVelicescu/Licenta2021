@@ -1,1 +1,31 @@
 <router-outlet></router-outlet>
+
+<div style="  display: flex;
+/*flex-direction: column;*/
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;">
+  <div class="card-user col-lg-4">
+    <div class=" author">
+      <div class=" block block-one animate"></div>
+      <div class=" block block-two animate"></div>
+      <div class=" block block-three animate"></div>
+      <div class=" block block-four animate"></div>
+      <div class="col d-flex justify-content-center">
+        <h1 routerLink="/auth/login" routerLinkActive="active">Login</h1>
+      </div>
+    </div>
+  </div>
+  <div class="card-user col-lg-4">
+    <div class=" author">
+      <div class=" block block-one animate"></div>
+      <div class=" block block-two animate"></div>
+      <div class=" block block-three animate"></div>
+      <div class=" block block-four animate"></div>
+      <div class="col d-flex justify-content-center">
+        <h1 routerLink="/auth/register" routerLinkActive="active">Register</h1>
+      </div>
+    </div>
+  </div>
+</div>

@@ -21,12 +21,11 @@ import { ComponentsModule } from "./components/components.module";
     HttpClientModule,
     ComponentsModule,
     NgbModule,
-    RouterModule,
-    AppRoutingModule,
-    ToastrModule.forRoot()
+    AppRoutingModule
   ],
   declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],
   providers: [],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

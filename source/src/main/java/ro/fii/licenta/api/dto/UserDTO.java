@@ -1,53 +1,91 @@
 package ro.fii.licenta.api.dto;
 
+import java.util.Date;
+
 import ro.fii.licenta.framework.PersistableEntity;
 
 public class UserDTO extends PersistableEntity {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected Long id;
+	protected Long id;
 
-    protected String username;
+	protected String emailAddress;
 
-    protected String password;
+	protected String password;
 
-    protected boolean blocked;
+	protected String firstName;
+	
+	protected String lastName;
+	
+	protected Date birthDay;
 
-    protected int failAttemtps;
+	protected boolean blocked;
 
+	protected int failAttemtps;
 
-    public String getUsername() {
-        return username;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public boolean isBlocked() {
-        return blocked;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public int getFailAttemtps() {
-        return failAttemtps;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setFailAttemtps(int failAttemtps) {
-        this.failAttemtps = failAttemtps;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public Date getBirthDay() {
+		return birthDay;
+	}
+
+	public void setBirthDay(Date birthDay) {
+		this.birthDay = birthDay;
+	}
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+
+	public int getFailAttemtps() {
+		return failAttemtps;
+	}
+
+	public void setFailAttemtps(int failAttemtps) {
+		this.failAttemtps = failAttemtps;
+	}
 
 }
-

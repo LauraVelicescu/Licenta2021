@@ -7,22 +7,22 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {HttpClientModule} from '@angular/common/http';
 
 import {LoginComponent} from '../../pages/login/login.component';
+import {RegisterComponent} from '../../pages/register/register.component';
+import {AppModule} from '../../app.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule.forChild(AuthLayoutRoutes),
-    FormsModule,
-    HttpClientModule,
-    NgbModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        CommonModule,
+        RouterModule.forChild(AuthLayoutRoutes),
+        FormsModule,
+        HttpClientModule,
+        NgbModule,
+        ReactiveFormsModule
+    ],
   declarations: [
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ]
 })
 export class AuthLayoutModule {
-  constructor() {
-    console.log('1');
-  }
 }

@@ -1,6 +1,0 @@
-package ro.fii.licenta.api;
-
-@Configuration
-public class BusinessConfig {
-
-}

@@ -1,4 +1,4 @@
-GitRepositoriesView.GitDirectories=/home/laura/Documents/Licenta/source/.git\:
-GitRepositoriesView.GitDirectories.relative=source/.git\:
+GitRepositoriesView.GitDirectories=/home/jerry/Documents/Licenta2021/source/.git\:/home/jerry/Documents/Licenta2021/.git\:
+GitRepositoriesView.GitDirectories.relative=source/.git\:.git\:
 core_autoIgnoreDerivedResources=false
 eclipse.preferences.version=1

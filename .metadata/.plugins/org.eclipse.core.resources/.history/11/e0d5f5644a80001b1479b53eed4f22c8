@@ -1,5 +1,0 @@
-package ro.fii.licenta.api.service.impl;
-
-public class UserServiceImpl {
-
-}
