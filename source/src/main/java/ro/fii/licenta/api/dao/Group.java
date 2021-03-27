@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
-@Table(name = "group")
+@Table(name = "grup")
 public class Group extends NameDescriptionEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -39,7 +39,7 @@ public class Group extends NameDescriptionEntity {
 		this.id = id;
 	}
 
-	@Column(name = "group")
+	@Column(name = "group_name")
 	public String getGroup() {
 		return group;
 	}

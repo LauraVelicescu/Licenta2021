@@ -1,13 +1,18 @@
 package ro.fii.licenta.api.controller;
 
+import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.cfg.Environment;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +26,7 @@ import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.PersonType;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.LoginDTO;
+import ro.fii.licenta.api.dto.PasswordDTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.exception.InvalidPasswordException;
 import ro.fii.licenta.api.exception.UserAlreadyExistAuthenticationException;
@@ -38,6 +44,9 @@ public class AuthenticationController {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private JavaMailSender mailSender;
 
 	@Autowired
 	private UserService userService;
@@ -50,6 +59,7 @@ public class AuthenticationController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
 
 	@PostMapping("/login")
     public String login(HttpServletRequest request, @RequestBody UserDTO userDto) throws NotFoundException, InvalidPasswordException {
@@ -110,7 +120,7 @@ public class AuthenticationController {
 	@PostMapping("/user/resetPassword")
 	// gets email and creates token
 	// TODO send e-mail with token
-	public ResponseEntity<UserDTO> resetPassword(HttpServletRequest request, 
+	public UserDTO resetPassword(HttpServletRequest request, 
 	  @RequestParam("email") String userEmail) throws UserNotFoundException {
 	    User user = userService.findUserByEmail(userEmail);
 	    if (user == null) {
@@ -118,18 +128,44 @@ public class AuthenticationController {
 	    }
 	    String token = UUID.randomUUID().toString();
 	    userService.createPasswordResetTokenForUser(user, token);
-//	    mailSender.send(constructResetTokenEmail(getAppUrl(request), 
-//	      request.getLocale(), token, user));
+	    mailSender.send(constructResetTokenEmail(getAppUrl(request), 
+	      request.getLocale(), token, user));
 
-		return null;
+		return this.modelMapper.map(user, UserDTO.class);
 	}
 	
+	private String getAppUrl(HttpServletRequest request) {
+        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
+
 	@PostMapping("/user/changePassword")
-	public ResponseEntity<UserDTO> changePassword(HttpServletRequest request, 
+	public String changePassword(HttpServletRequest request, 
 			  @RequestParam("token") String token){
 		String result = securityService.validatePasswordResetToken(token);
-				return null;
-		
+		if (result != null) {
+			return "redirect:/login";
+		}
+		else {
+			//TODO send token when redirecting as part of Password DTO body
+			return "redirect:/changePassword";
+		}
+	}
+	
+	@PostMapping("/user/savePassword")
+	public void savePassword(HttpServletRequest request, @RequestBody PasswordDTO passwordDto) throws Exception {
+
+	    String result = securityService.validatePasswordResetToken(passwordDto.getToken());
+
+	    if(result != null) {
+	        throw new Exception("Password reset unsuccesful.");
+	    }
+
+	    User user = userService.getUserByPasswordResetToken(passwordDto.getToken());
+	    if(user != null) {
+	        userService.changeUserPassword(user, passwordEncoder.encode(passwordDto.getNewPassword()));
+	    } else {
+	        throw new UserNotFoundException("This user does not exist.");
+	    }
 	}
 
 	@GetMapping("/logout")
@@ -138,4 +174,21 @@ public class AuthenticationController {
 		request.getSession().removeAttribute("user");
 		return "";
 	}
+	
+	private SimpleMailMessage constructResetTokenEmail(
+			  String contextPath, Locale locale, String token, User user) {
+			    String url = contextPath + "/user/changePassword?token=" + token;
+			    String message = "Reset password link:"; 
+			    return constructEmail("Reset Password", message + " \r\n" + url, user);
+			}
+	
+	private SimpleMailMessage constructEmail(String subject, String body, 
+			  User user) {
+			    SimpleMailMessage email = new SimpleMailMessage();
+			    email.setSubject(subject);
+			    email.setText(body);
+			    email.setTo(user.getEmailAddress());
+			    email.setFrom("admin@ongmanager.com");
+			    return email;
+			}
 }

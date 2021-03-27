@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<typeInfoHistroy>
-    <typeInfo handle="=source/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;ro.fii.licenta.api.dto{UserDTO.java[UserDTO" modifiers="1" timestamp="1615726234313"/>
-    <typeInfo handle="=source/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;ro.fii.licenta.api.repository{UserRepository.java[UserRepository" modifiers="513" timestamp="1615726916091"/>
-    <typeInfo handle="=source/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;ro.fii.licenta.api.service{SecurityService.java[SecurityService" modifiers="513" timestamp="1616435934831"/>
-</typeInfoHistroy>
+<typeInfoHistroy/>

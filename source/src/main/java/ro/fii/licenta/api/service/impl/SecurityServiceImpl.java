@@ -2,12 +2,15 @@ package ro.fii.licenta.api.service.impl;
 
 import java.util.Calendar;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import ro.fii.licenta.api.dao.PasswordResetToken;
 import ro.fii.licenta.api.repository.PasswordTokenRepository;
 import ro.fii.licenta.api.service.SecurityService;
 
 public class SecurityServiceImpl implements SecurityService {
 	
+	@Autowired
 	private PasswordTokenRepository passwordTokenRepository;
 
 	@Override
@@ -19,11 +22,13 @@ public class SecurityServiceImpl implements SecurityService {
 	            : null;
 	}
 
-	private boolean isTokenFound(PasswordResetToken passToken) {
+	@Override
+	public boolean isTokenFound(PasswordResetToken passToken) {
 		return passToken != null;
 	}
 	
-	private boolean isTokenExpired(PasswordResetToken passToken) {
+	@Override
+	public boolean isTokenExpired(PasswordResetToken passToken) {
 	    final Calendar cal = Calendar.getInstance();
 	    return passToken.getExpiryDate().before(cal.getTime());
 	}
