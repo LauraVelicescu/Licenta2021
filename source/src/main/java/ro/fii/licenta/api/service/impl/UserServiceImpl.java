@@ -1,5 +1,8 @@
 package ro.fii.licenta.api.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import ro.fii.licenta.api.dao.PasswordResetToken;
 import ro.fii.licenta.api.dao.User;
@@ -22,14 +25,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void createPasswordResetTokenForUser(User user, String token) {
-		PasswordResetToken myToken = new PasswordResetToken(token, user);
+		// TODO de verificat daca exista token
+		PasswordResetToken myToken = new PasswordResetToken();
+		myToken.setUser(user);
+		myToken.setToken(token);
+		Calendar date = Calendar.getInstance();
+		long t = date.getTimeInMillis();
+		Date afterAddingThirtyMins=new Date(t + (30 * 60000));
+		myToken.setExpiryDate(afterAddingThirtyMins);
 	    passwordTokenRepository.save(myToken);
 		
 	}
 
 	@Override
 	public User getUserByPasswordResetToken(String token) {
-		return passwordTokenRepository.getUserByToken(token);
+		return passwordTokenRepository.findByToken(token).getUser();
 	}
 
 	@Override

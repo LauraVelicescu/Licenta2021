@@ -40,46 +40,4 @@
 		<item value="org.sonatype.m2e.egit.feature:0.15.1.201806191431"/>
 		<item value="org.sonatype.m2e.mavenarchiver.feature:0.17.5.202002191804"/>
 	</list>
-	<section name="org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog">
-		<item key="ShowStatusLine" value="true"/>
-		<item key="History" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0A;&lt;History&gt;&#x0A;&lt;historyRootNode&gt;&#x0A;&lt;infoNode path=&quot;/source/src/main/resources/application.properties&quot; type=&quot;1&quot;/&gt;&#x0A;&lt;infoNode path=&quot;/source/pom.xml&quot; type=&quot;1&quot;/&gt;&#x0A;&lt;infoNode path=&quot;/source/src/main/java/ro/fii/licenta/api/config/SecurityConfig.java&quot; type=&quot;1&quot;/&gt;&#x0A;&lt;/historyRootNode&gt;&#x0A;&lt;/History&gt;"/>
-		<item key="ShowDerived" value="false"/>
-		<item key="FilterByLocation" value="false"/>
-		<item key="WorkingSet" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0A;&lt;workingSet workingSetName=&quot;&quot;/&gt;"/>
-		<section name="DialogBoundsSettings">
-			<item key="DIALOG_HEIGHT" value="500"/>
-			<item key="DIALOG_WIDTH" value="600"/>
-			<item key="DIALOG_X_ORIGIN" value="631"/>
-			<item key="DIALOG_Y_ORIGIN" value="189"/>
-			<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
-		</section>
-	</section>
-	<section name="CleanDialogSettings">
-		<item key="TOGGLE_SELECTED" value="false"/>
-		<item key="DIALOG_WIDTH" value="569"/>
-		<item key="DIALOG_HEIGHT" value="389"/>
-		<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
-	</section>
-	<section name="org.eclipse.text.quicksearch.internal.ui.QuickSearchDialog.DIALOG_SETTINGS">
-		<item key="LAST_QUERY" value="AuthenticationManager"/>
-		<item key="PATH_FILTER" value=""/>
-		<item key="CASE_SENSITIVE" value="true"/>
-		<item key="KEEP_OPEN" value="false"/>
-		<list key="COLUMN_WIDTHS">
-			<item value="40"/>
-			<item value="738"/>
-			<item value="650"/>
-		</list>
-		<list key="SASH_WEIGHTS">
-			<item value="714"/>
-			<item value="285"/>
-		</list>
-		<section name="DialogBoundsSettings">
-			<item key="DIALOG_HEIGHT" value="811"/>
-			<item key="DIALOG_WIDTH" value="1460"/>
-			<item key="DIALOG_X_ORIGIN" value="259"/>
-			<item key="DIALOG_Y_ORIGIN" value="140"/>
-			<item key="DIALOG_FONT_NAME" value="1|Ubuntu|11.0|0|GTK|1|"/>
-		</section>
-	</section>
 </section>

@@ -36,10 +36,10 @@ import ro.fii.licenta.api.service.SecurityService;
 import ro.fii.licenta.api.service.UserService;
 
 @RestController
-@RequestMapping(path = "/authentication")
+@RequestMapping(path = "/authenticate")
 public class AuthenticationController {
 
-	@Resource(name = "authenticationManager")
+	@Resource(name = "authenticationManagerBean")
 	private AuthenticationManager authManager;
 
 	@Autowired
@@ -60,7 +60,6 @@ public class AuthenticationController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-
 	@PostMapping("/login")
     public String login(HttpServletRequest request, @RequestBody UserDTO userDto) throws NotFoundException, InvalidPasswordException {
     	// TODO sa se verifice parola care vine plain text sa coincida cu ea criptata (vezi tu cum ;))
@@ -117,7 +116,7 @@ public class AuthenticationController {
 
 	}
 	
-	@PostMapping("/user/resetPassword")
+	@PostMapping("/resetPassword")
 	// gets email and creates token
 	// TODO send e-mail with token
 	public UserDTO resetPassword(HttpServletRequest request, 
@@ -135,23 +134,22 @@ public class AuthenticationController {
 	}
 	
 	private String getAppUrl(HttpServletRequest request) {
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        return "http://localhost:4200/auth/changePassword";
     }
 
-	@PostMapping("/user/changePassword")
-	public String changePassword(HttpServletRequest request, 
-			  @RequestParam("token") String token){
+	@GetMapping("/changePassword")
+	public ResponseEntity<?> changePassword(HttpServletRequest request, 
+			  @RequestParam("token") String token) throws Exception{
 		String result = securityService.validatePasswordResetToken(token);
 		if (result != null) {
-			return "redirect:/login";
+			throw new Exception("Invalid token.");
 		}
 		else {
-			//TODO send token when redirecting as part of Password DTO body
-			return "redirect:/changePassword";
+			return ResponseEntity.ok().build();
 		}
 	}
 	
-	@PostMapping("/user/savePassword")
+	@PostMapping("/savePassword")
 	public void savePassword(HttpServletRequest request, @RequestBody PasswordDTO passwordDto) throws Exception {
 
 	    String result = securityService.validatePasswordResetToken(passwordDto.getToken());
@@ -177,7 +175,7 @@ public class AuthenticationController {
 	
 	private SimpleMailMessage constructResetTokenEmail(
 			  String contextPath, Locale locale, String token, User user) {
-			    String url = contextPath + "/user/changePassword?token=" + token;
+			    String url = contextPath + "?token=" + token;
 			    String message = "Reset password link:"; 
 			    return constructEmail("Reset Password", message + " \r\n" + url, user);
 			}

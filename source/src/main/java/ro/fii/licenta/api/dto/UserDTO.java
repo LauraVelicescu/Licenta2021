@@ -4,9 +4,7 @@ import java.util.Date;
 
 import ro.fii.licenta.framework.PersistableEntity;
 
-public class UserDTO extends PersistableEntity {
-
-	private static final long serialVersionUID = 1L;
+public class UserDTO {
 
 	protected Long id;
 

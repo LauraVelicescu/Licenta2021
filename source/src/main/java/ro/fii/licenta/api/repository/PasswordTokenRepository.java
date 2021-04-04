@@ -7,8 +7,6 @@ import ro.fii.licenta.framework.PersistableEntityRepository;
 
 public interface PasswordTokenRepository extends PersistableEntityRepository<PasswordResetToken, Long>{
 
-	PasswordResetToken findByToken(String token);
+	PasswordResetToken findByToken (String token);
 	
-	User getUserByToken(String token);
-
 }

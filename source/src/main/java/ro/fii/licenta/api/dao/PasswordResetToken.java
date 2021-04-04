@@ -9,10 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import ro.fii.licenta.framework.PersistableEntity;
 
 @Entity
+@Table(name = "password_reset_token")
 public class PasswordResetToken extends PersistableEntity{
  
     /**
@@ -34,14 +36,6 @@ public class PasswordResetToken extends PersistableEntity{
  
     private Date expiryDate;
     
-    
-
-	public PasswordResetToken(String token, User user) {
-		super();
-		this.token = token;
-		this.user = user;
-	}
-
 	public Long getId() {
 		return id;
 	}
