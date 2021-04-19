@@ -70,6 +70,10 @@ export class ResetPasswordComponent implements OnInit {
         : { passwordMatch: true };
     };
   }
+
+  btnClick = function (){
+    this.router.navigateByUrl('/auth/login');
+  }
 }
 
 

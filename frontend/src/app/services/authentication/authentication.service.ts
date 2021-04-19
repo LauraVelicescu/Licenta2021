@@ -3,7 +3,8 @@ import {User} from 'src/app/user';
 import {MainServiceService} from '../main/main-service.service';
 import {UserDTO} from '../../components/dto/UserDTO';
 import {catchError, map} from 'rxjs/operators';
-import {PasswordDTO} from "../../components/dto/PasswordDTO";
+import {PasswordDTO} from '../../components/dto/PasswordDTO';
+import {SecurityStorage} from '../../security/SecurityStorage';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +14,18 @@ export class AuthenticationService {
   private rootURL = 'api/authenticate';
   private registerUrl = '/register';
   private loginUrl = '/login';
+  private forgotPasswordURL = '/resetPassword';
   private validateChangePasswordURL = '/changePassword';
   private resetPasswordURL = '/savePassword';
 
-  constructor(private mainService: MainServiceService) {
+  constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage) {
   }
 
   public login(userInfo: UserDTO) {
-    return this.mainService.post(this.rootURL + this.loginUrl, userInfo).pipe(map((result) => {
+    console.log('sunt in  login');
+    return this.mainService.post(this.rootURL + this.loginUrl,
+      {username: userInfo.emailAddress, password: userInfo.password}).pipe(map((result : any) => {
+      this.securityStorage.store(result.token);
       console.log(result);
       return result;
     }), catchError(err => {
@@ -29,11 +34,11 @@ export class AuthenticationService {
   }
 
   public isLoggedIn() {
-    return localStorage.getItem('ACCESS_TOKEN') !== null;
+    return this.securityStorage.getStored() !== null;
   }
 
   public logout() {
-    localStorage.removeItem('ACCESS_TOKEN');
+    this.securityStorage.clear();
   }
 
   public validateToken(token: string){
@@ -45,6 +50,13 @@ export class AuthenticationService {
     }));
   }
 
+  public forgotPassword(userInfo: UserDTO){
+    return this.mainService.post(this.rootURL + this.forgotPasswordURL, userInfo).pipe(map((result) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err);
+    }))
+  }
   public resetPassword(passwordInfo: PasswordDTO){
     return this.mainService.post(this.rootURL + this.resetPasswordURL, passwordInfo).pipe(map((result) => {
       return result;

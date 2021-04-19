@@ -3,22 +3,28 @@ import {environment} from '../../../environments/environment';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
+import {SecurityStorage} from '../../security/SecurityStorage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainServiceService {
+
   constructor(private http: HttpClient,
-              private router: Router) {
+              private router: Router,
+              private securityStorage: SecurityStorage){
   }
 
 
   private headers(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json; charset=utf-8',
+      Authorization: this.securityStorage.getStored() ? 'Bearer ' + this.securityStorage.getStored() : '',
       'Access-Control-Allow-Origin': '*'
     });
   }
+
+
 
   processURL(url: string): string {
     if (environment.production === true) {

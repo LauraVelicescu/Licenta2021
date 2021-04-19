@@ -13,6 +13,8 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { ComponentsModule } from "./components/components.module";
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import {SecurityStorage} from "./security/SecurityStorage";
 
 @NgModule({
   imports: [
@@ -24,7 +26,7 @@ import { ComponentsModule } from "./components/components.module";
     AppRoutingModule
   ],
   declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],
-  providers: [],
+  providers: [SecurityStorage],
   exports: [],
   bootstrap: [AppComponent]
 })

@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 		// We don't need CSRF for this example
 		httpSecurity.cors().and().csrf().disable()
 				// dont authenticate this particular request
-				.authorizeRequests().antMatchers("/**").permitAll().
+				.authorizeRequests().antMatchers("/authenticate/*").permitAll().
 				// all other requests need to be authenticated
 				anyRequest().authenticated().and().
 				// make sure we use stateless session; session won't be used to

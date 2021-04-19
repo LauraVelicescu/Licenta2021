@@ -10,6 +10,7 @@ import {LoginComponent} from '../../pages/login/login.component';
 import {RegisterComponent} from '../../pages/register/register.component';
 import {AppModule} from '../../app.module';
 import {ResetPasswordComponent} from "../../pages/resetPassword/resetPassword.component";
+import {ForgotPasswordComponent} from "../../pages/forgot-password/forgot-password.component";
 
 @NgModule({
     imports: [
@@ -23,7 +24,8 @@ import {ResetPasswordComponent} from "../../pages/resetPassword/resetPassword.co
   declarations: [
     LoginComponent,
     RegisterComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    ForgotPasswordComponent
   ]
 })
 export class AuthLayoutModule {

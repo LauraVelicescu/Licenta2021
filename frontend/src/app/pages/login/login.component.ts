@@ -5,6 +5,7 @@ import {AuthenticationService} from '../../services/authentication/authenticatio
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {UserDTO} from '../../components/dto/UserDTO';
 
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -12,7 +13,7 @@ import {UserDTO} from '../../components/dto/UserDTO';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-
+  response = 'nimic inca';
   constructor(private loginService: AuthenticationService, private router: Router, private formBuilder: FormBuilder) {
   }
 
@@ -35,9 +36,14 @@ export class LoginComponent implements OnInit {
       user.password = this.loginForm.controls.password.value;
       this.loginService.login(user).subscribe((result) => {
         console.log(result);
+        this.router.navigateByUrl('/adm/dashboard')
       }, error => {
         console.log(error);
       })
     }
+  }
+
+  btnClick = function (){
+    this.router.navigateByUrl('/auth/forgotPassword');
   }
 }
