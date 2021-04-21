@@ -3,13 +3,16 @@ package ro.fii.licenta.api.dao;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -33,6 +36,18 @@ public class User extends PersistableEntity {
     
     private Date birthDay;
 
+	private String aboutMe;
+    
+    private String facebookLink;
+    
+    private String twitterLink;
+    
+    private String linkedinLink;
+    
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profilePicture;
+    
     private boolean blocked;
 
     private int failAttemtps;
@@ -114,6 +129,51 @@ public class User extends PersistableEntity {
     
     public void setBirthDay(Date birthDay) {
 		this.birthDay = birthDay;
+	}
+    
+    @Column(name = "about_me")
+    public String getAboutMe() {
+		return aboutMe;
+	}
+
+	public void setAboutMe(String aboutMe) {
+		this.aboutMe = aboutMe;
+	}
+
+	@Column(name = "facebook_link")
+	public String getFacebookLink() {
+		return facebookLink;
+	}
+
+	public void setFacebookLink(String facebookLink) {
+		this.facebookLink = facebookLink;
+	}
+
+	@Column(name = "twitter_link")
+	public String getTwitterLink() {
+		return twitterLink;
+	}
+
+	public void setTwitterLink(String twitterLink) {
+		this.twitterLink = twitterLink;
+	}
+
+	@Column(name = "linkedin_link")
+	public String getLinkedinLink() {
+		return linkedinLink;
+	}
+
+	public void setLinkedinLink(String linkedinLink) {
+		this.linkedinLink = linkedinLink;
+	}
+
+	@Column(name = "profile_picture")
+	public byte[] getProfilePicture() {
+		return profilePicture;
+	}
+
+	public void setProfilePicture(byte[] profilePicture) {
+		this.profilePicture = profilePicture;
 	}
 
     @Column(name = "person_type")

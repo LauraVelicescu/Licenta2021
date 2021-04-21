@@ -12,7 +12,7 @@ import {LoginComponent} from '../../pages/login/login.component';
 
 export const AdminLayoutRoutes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
-  { path: "icons", component: IconsComponent },
+  { path: 'icons', component: IconsComponent },
   { path: "maps", component: MapComponent },
   { path: "notifications", component: NotificationsComponent },
   { path: "user", component: UserComponent },
