@@ -34,7 +34,7 @@ public class User extends PersistableEntity {
 
     private String lastName;
     
-    private Date birthDay;
+    private Date birthday;
 
 	private String aboutMe;
     
@@ -123,12 +123,12 @@ public class User extends PersistableEntity {
     }
     
     @Column(name = "birthday")
-    public Date getBirthDay() {
-		return birthDay;
+    public Date getBirthday() {
+		return birthday;
 	}
     
-    public void setBirthDay(Date birthDay) {
-		this.birthDay = birthDay;
+    public void setBirthday(Date birthday) {
+		this.birthday = birthday;
 	}
     
     @Column(name = "about_me")

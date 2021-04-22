@@ -2,6 +2,8 @@ package ro.fii.licenta.api.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import ro.fii.licenta.framework.PersistableEntity;
 
 public class UserDTO {
@@ -16,7 +18,7 @@ public class UserDTO {
 	
 	protected String lastName;
 	
-	protected Date birthDay;
+	protected Date birthday;
 	
 	private String aboutMe;
     
@@ -72,12 +74,13 @@ public class UserDTO {
 		this.lastName = lastName;
 	}
 
-	public Date getBirthDay() {
-		return birthDay;
+	@JsonProperty("birthday")
+	public Date getBirthday() {
+		return birthday;
 	}
 
-	public void setBirthDay(Date birthDay) {
-		this.birthDay = birthDay;
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
 	}
 
 	public String getAboutMe() {
