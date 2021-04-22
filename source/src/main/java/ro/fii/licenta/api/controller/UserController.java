@@ -65,13 +65,36 @@ public class UserController {
 	
 	
 	@PostMapping(value = "/updateUser")
-	public ResponseEntity<?> updateUserInformation(@RequestBody UserDTO userDTO) throws Exception {
-		User dbUser = userService.findUserByEmail(userDTO.getEmailAddress());
-		if (dbUser != null) {
-			modelMapper.map(userDTO, dbUser);
+	public ResponseEntity<?> updateUserInformation(@RequestBody UserDTO userDTO, HttpServletRequest request) throws Exception {
+		
+		final String requestTokenHeader = request.getHeader("Authorization");
+		
+		String username = null;
+		String jwtToken = null;
+		// JWT Token is in the form "Bearer token". Remove Bearer word and get
+		// only the Token
+		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+			jwtToken = requestTokenHeader.substring(7);
+			try {
+				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Unable to get JWT Token");
+			} catch (ExpiredJwtException e) {
+				System.out.println("JWT Token has expired");
+			}
+		} else {
+			System.out.println("JWT Token does not begin with Bearer String");
+		}
+		User user = userService.findUserByEmail(username);
+		
+		if (user == null) {
+			throw new NotFoundException(String.format("User ith email %s was not found", username));
 		}
 		
-		return null;
+		modelMapper.getConfiguration().setSkipNullEnabled(true);
+		modelMapper.map(userDTO, user);
+		modelMapper.getConfiguration().setSkipNullEnabled(false);
+		return new ResponseEntity<>(modelMapper.map(userService.save(user), UserDTO.class), HttpStatus.OK);
 		
 	}
 

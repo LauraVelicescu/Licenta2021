@@ -56,6 +56,7 @@ export class ResetPasswordComponent implements OnInit {
       }, error => {
         console.log(error);
       })
+      this.router.navigateByUrl('/auth/login');
     }
   }
 
@@ -71,9 +72,6 @@ export class ResetPasswordComponent implements OnInit {
     };
   }
 
-  btnClick = function (){
-    this.router.navigateByUrl('/auth/login');
-  }
 }
 
 
