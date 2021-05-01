@@ -37,17 +37,17 @@ export const ROUTES: RouteInfo[] = [
     class: ""
   },
   {
-    path: "tables",
-    title: "Organization",
-    rtlTitle: "قائمة الجدول",
-    icon: "icon-globe-2",
-    class: ""
-  },
-  {
     path: "typography",
     title: "Settings",
     rtlTitle: "طباعة",
     icon: "icon-settings",
+    class: ""
+  },
+  {
+    path: "ngo",
+    title: "Create NGO",
+    rtlTitle: "طباعة",
+    icon: "icon-simple-add",
     class: ""
   }
 ];

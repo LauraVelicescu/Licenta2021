@@ -3,10 +3,8 @@ package ro.fii.licenta.api.dao;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,8 +42,6 @@ public class User extends PersistableEntity {
     
     private String linkedinLink;
     
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
     
     private boolean blocked;
@@ -167,6 +163,7 @@ public class User extends PersistableEntity {
 		this.linkedinLink = linkedinLink;
 	}
 
+	@Lob
 	@Column(name = "profile_picture")
 	public byte[] getProfilePicture() {
 		return profilePicture;

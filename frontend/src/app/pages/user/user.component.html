@@ -134,14 +134,16 @@
             <div class=" block block-three"></div>
             <div class=" block block-four"></div>
             <a href="javascript:void(0)">
-              <img alt="..." class=" avatar" src="assets/img/emilyz.jpg" />
 
-              <h5 class=" title"><output [value]="currentUser.firstName + ' ' + currentUser.lastName" ></output></h5>
+              <img alt="..." class=" avatar" [src]="retrievedImage" (click)="fileInput.click()"/>
+              <input #fileInput type = file (change)="onFileChanged($event)" style="display: none">
+
+              <h5 class=" title"><output [value]="currentUser?.firstName + ' ' + currentUser?.lastName" ></output></h5>
             </a>
-            <p class=" description">Ceo/Co-Founder</p>
+<!--            <p class=" description">Ceo/Co-Founder</p>-->
           </div>
           <div class=" card-description col d-flex justify-content-center">
-          <output [value]="currentUser.aboutMe"></output>
+          <output [value]="currentUser?.aboutMe ? currentUser.aboutMe : ''"></output>
           </div>
         </div>
         <div class=" card-footer">

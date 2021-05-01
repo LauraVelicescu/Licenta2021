@@ -9,4 +9,5 @@ public interface UserRepository extends PersistableEntityRepository<User, Long> 
 	User findByEmailAddress(String emailAddress);
 	
 	User findByFirstName(String firstName);
+
 }

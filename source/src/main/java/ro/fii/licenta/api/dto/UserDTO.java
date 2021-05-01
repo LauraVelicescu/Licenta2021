@@ -1,10 +1,12 @@
 package ro.fii.licenta.api.dto;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import ro.fii.licenta.framework.PersistableEntity;
 
 public class UserDTO {
 
@@ -15,20 +17,20 @@ public class UserDTO {
 	protected String password;
 
 	protected String firstName;
-	
+
 	protected String lastName;
-	
+
 	protected Date birthday;
-	
+
 	private String aboutMe;
-    
-    private String facebookLink;
-    
-    private String twitterLink;
-    
-    private String linkedinLink;
-    
-    private byte[] profilePicture;
+
+	private String facebookLink;
+
+	private String twitterLink;
+
+	private String linkedinLink;
+
+	private byte[] profilePicture;
 
 	protected boolean blocked;
 
@@ -120,7 +122,7 @@ public class UserDTO {
 	}
 
 	public void setProfilePicture(byte[] profilePicture) {
-		this.profilePicture = profilePicture;
+		this.profilePicture = this.decompressBytes(profilePicture);
 	}
 
 	public boolean isBlocked() {
@@ -139,4 +141,23 @@ public class UserDTO {
 		this.failAttemtps = failAttemtps;
 	}
 
+	// decompress the image bytes before returning it to the angular app
+
+	private byte[] decompressBytes(byte[] data) {
+		Inflater inflater = new Inflater();
+		inflater.setInput(data);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+		byte[] buffer = new byte[1024];
+		try {
+			while (!inflater.finished()) {
+				int count = inflater.inflate(buffer);
+				outputStream.write(buffer, 0, count);
+			}
+			outputStream.close();
+		} catch (IOException ioe) {
+		} catch (DataFormatException e) {
+		}
+		return outputStream.toByteArray();
+
+	}
 }

@@ -1,49 +1,46 @@
 import { Injectable } from '@angular/core';
+import {NGODTO} from "../components/dto/NGODTO";
 import {MainServiceService} from "./main/main-service.service";
 import {SecurityStorage} from "../security/SecurityStorage";
-import {UserDTO} from "../components/dto/UserDTO";
 import {catchError, map} from "rxjs/operators";
-import {User} from "../user";
+import {UserDTO} from "../components/dto/UserDTO";
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
-
+export class NGOService {
   private rootURL = 'api'
-  private updateURL = '/updateUser';
-  private getURL = '/getUser'
+  private updateURL = '/updateNGO';
+  private getURL = '/getNGO'
   private uploadImageURL = '/uploadImage'
 
   constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage) {
   }
 
-  public update(userInfo: UserDTO) {
-    console.log('sunt in  update');
+
+  update(ngo: NGODTO) {
     return this.mainService.post(this.rootURL + this.updateURL,
-      userInfo).pipe(map((result: UserDTO) => {
+      ngo).pipe(map((result: NGODTO) => {
       return result;
     }), catchError(err => {
       throw new Error(err);
     }));
   }
 
-  public getUser(){
-    return this.mainService.get(this.rootURL + this.getURL).pipe(map((result : UserDTO) => {
-      return result;
-    }), catchError(err => {
-      console.log(err)
-      throw new Error(err);
-    }));
-  }
-
-  public updateProfilePicture(profilePicture: any){
-    return this.mainService.postFile(this.rootURL + this.uploadImageURL,  profilePicture).pipe(map((result :UserDTO ) => {
+  getNGO() {
+    return this.mainService.get(this.rootURL + this.getURL).pipe(map((result : NGODTO) => {
       return result;
     }), catchError(err => {
       console.log(err)
       throw new Error(err);
     }));
   }
-
+  public updateLogo(logo: any){
+    return this.mainService.postFile(this.rootURL + this.uploadImageURL,  logo).pipe(map((result :NGODTO ) => {
+      return result;
+    }), catchError(err => {
+      console.log(err)
+      throw new Error(err);
+    }));
+  }
 }

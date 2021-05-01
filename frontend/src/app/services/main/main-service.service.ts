@@ -24,6 +24,13 @@ export class MainServiceService {
     });
   }
 
+  private headersFile(): HttpHeaders {
+    return new HttpHeaders({
+      Authorization: this.securityStorage.getStored() ? 'Bearer ' + this.securityStorage.getStored() : '',
+      'Access-Control-Allow-Origin': '*'
+    });
+  }
+
 
 
   processURL(url: string): string {
@@ -50,6 +57,15 @@ export class MainServiceService {
   post(url: string, body?: any) {
     url = this.processURL(url);
     const headers = this.headers();
+    return this.http.post(url, body, {
+      headers: headers,
+      withCredentials: true,
+     });
+  }
+
+  postFile(url: string, body?: any) {
+    url = this.processURL(url);
+    const headers = this.headersFile();
     return this.http.post(url, body, {
       headers: headers,
       withCredentials: true

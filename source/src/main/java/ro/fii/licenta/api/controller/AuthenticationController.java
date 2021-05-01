@@ -97,41 +97,6 @@ public class AuthenticationController {
 		}
 	}
 
-	
-//	@PostMapping("/login")
-//    public String login(HttpServletRequest request, @RequestBody UserDTO userDto) throws NotFoundException, InvalidPasswordException {
-//    	// TODO sa se verifice parola care vine plain text sa coincida cu ea criptata (vezi tu cum ;))
-//    	// TODO de actualizat sau nu faill attempts si blocked daca se logheaza gresit
-//    	// TODO check if user is blocked
-//        User user = userRepository.findByEmailAddress(userDto.getEmailAddress());
-//        if (user == null) {
-//            throw new NotFoundException("This user does not exist.");
-//        } else 
-//        	if(user.isBlocked()){
-//        		throw new InvalidPasswordException("The user has been blocked due to too many wrong password attempts.");
-//        	}
-//        		else {
-//        			if(passwordEncoder.matches( userDto.getPassword(), user.getPassword())) {
-//                        request.getSession().setAttribute("user", user);
-//                	} else {
-//                		user.setFailAttemtps(user.getFailAttemtps()+1);
-//                		if(user.getFailAttemtps() == 3) {
-//                			user.setBlocked(true);
-//                		}
-//                		userRepository.save(user);
-//                		throw new InvalidPasswordException("Wrong password.");
-//                	}
-//                }
-//
-//                return request.getSession()
-//                        .getAttribute("user").toString();
-//            }
-
-	@GetMapping("/user")
-	public String getUser(HttpServletRequest request) {
-		request.getSession().getMaxInactiveInterval();
-		return request.getSession().getAttribute("user").toString();
-	}
 
 	@PostMapping("/register")
 	public UserDTO register(HttpServletRequest request, @RequestBody UserDTO userDto)
@@ -191,6 +156,7 @@ public class AuthenticationController {
 	public void savePassword(HttpServletRequest request, @RequestBody PasswordDTO passwordDto) throws Exception {
 
 	    String result = securityService.validatePasswordResetToken(passwordDto.getToken());
+	    System.out.print(false);
 
 	    if(result != null) {
 	        throw new Exception("Password reset unsuccesful.");
@@ -204,12 +170,6 @@ public class AuthenticationController {
 	    }
 	}
 
-	@GetMapping("/logout")
-
-	public String logout(HttpServletRequest request) {
-		request.getSession().removeAttribute("user");
-		return "";
-	}
 	
 	private SimpleMailMessage constructResetTokenEmail(
 			  String contextPath, Locale locale, String token, User user) {
