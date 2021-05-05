@@ -1,14 +1,19 @@
 package ro.fii.licenta.api.dao;
 
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "ngo")
@@ -33,6 +38,8 @@ public class NGO {
     private String linkedinLink;
     
     private byte[] logo;
+
+    private List<User> admins;
 
     @Id
    	@Column(name = "id")
@@ -115,6 +122,17 @@ public class NGO {
 
 	public void setLogo(byte[] logo) {
 		this.logo = logo;
+	}
+	
+	
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "ngo_admin", joinColumns = @JoinColumn(name = "ngo_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+	public List<User> getAdmins() {
+		return admins;
+	}
+
+	public void setAdmins(List<User> admins) {
+		this.admins = admins;
 	}
     
     
