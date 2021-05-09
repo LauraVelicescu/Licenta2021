@@ -13,8 +13,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ngo")
 public class NGO {
-	
-	private static final long serialVersionUID = 1L;
 	  
     private Long id;
 
@@ -116,7 +114,5 @@ public class NGO {
 	public void setLogo(byte[] logo) {
 		this.logo = logo;
 	}
-    
-    
 
 }

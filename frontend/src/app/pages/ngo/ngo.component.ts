@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {NGOService} from '../../services/ngo.service';
 import {NGODTO} from '../../components/dto/NGODTO';
+import {formatDate} from "@angular/common";
 
 @Component({
   selector: 'app-ngo',
@@ -33,23 +34,19 @@ export class NGOComponent implements OnInit {
       }
     )
     this.NGOService.getNGO().subscribe((result : NGODTO) => {
-      // console.log(result);
       this.currentNGO = result;
       this.base64Data = this.currentNGO.logo;
       this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
-      // console.log(this.currentUser);
-      // console.log(this.currentUser.birthday)
-    //   this.userForm.patchValue({
-    //       emailAddress: this.currentUser.emailAddress,
-    //       firstName: this.currentUser.firstName,
-    //       lastName: this.currentUser.lastName,
-    //       birthday: formatDate(this.currentUser.birthday, 'yyyy-MM-dd', 'en-US'),
-    //       facebookLink: this.currentUser.facebookLink,
-    //       twitterLink: this.currentUser.twitterLink,
-    //       linkedinLink: this.currentUser.linkedinLink,
-    //       aboutMe: this.currentUser.aboutMe,
-    //     }
-    //   )
+      this.NGOForm.patchValue({
+          name: this.currentNGO.name,
+          acronym: this.currentNGO.acronym,
+          foundingDate: formatDate(this.currentNGO.foundingDate, 'yyyy-MM-dd', 'en-US'),
+          facebookLink: this.currentNGO.facebookLink,
+          twitterLink: this.currentNGO.twitterLink,
+          linkedinLink: this.currentNGO.linkedinLink,
+          description: this.currentNGO.description,
+        }
+      )
     })
   }
 

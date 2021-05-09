@@ -14,6 +14,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import java.util.List;
+
 import ro.fii.licenta.framework.PersistableEntity;
 
 @Entity
@@ -49,6 +51,9 @@ public class User extends PersistableEntity {
     private int failAttemtps;
 
     private PersonType personType;
+    
+    @ManyToMany
+    private List<NGO> administeredNGOs;
 
     @Id
 	@Column(name = "id")
@@ -191,9 +196,7 @@ public class User extends PersistableEntity {
     public void setGroups(Set<Group> groups) {
         this.groups = groups;
     }
-
 	
-
 	
 }
 
