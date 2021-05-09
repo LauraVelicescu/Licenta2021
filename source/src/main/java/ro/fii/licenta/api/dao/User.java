@@ -196,17 +196,7 @@ public class User extends PersistableEntity {
     public void setGroups(Set<Group> groups) {
         this.groups = groups;
     }
-
-	public Set<NGO> getAdministeredNGOs() {
-		return administeredNGOs;
-	}
-
-	public void setAdministeredNGOs(Set<NGO> administeredNGOs) {
-		this.administeredNGOs = administeredNGOs;
-	}
-
 	
-
 	
 }
 
