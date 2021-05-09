@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<typeInfoHistroy>
-    <typeInfo handle="=source/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;ro.fii.licenta.api.controller{JWTAuthenticationController.java[JWTAuthenticationController" modifiers="1" timestamp="1617544594717"/>
-    <typeInfo handle="=source/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;ro.fii.licenta.api.config{SecurityConfig.java[SecurityConfig" modifiers="1" timestamp="1618741753093"/>
-    <typeInfo handle="=source/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;ro.fii.licenta.api.service{NGOService.java[NGOService" modifiers="513" timestamp="1619888126622"/>
-</typeInfoHistroy>

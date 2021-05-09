@@ -122,7 +122,7 @@ public class UserDTO {
 	}
 
 	public void setProfilePicture(byte[] profilePicture) {
-		this.profilePicture = this.decompressBytes(profilePicture);
+		this.profilePicture = profilePicture != null ? this.decompressBytes(profilePicture) : null;
 	}
 
 	public boolean isBlocked() {
