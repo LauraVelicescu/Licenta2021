@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.NGO;
-import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.NGODTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.service.NGOService;
