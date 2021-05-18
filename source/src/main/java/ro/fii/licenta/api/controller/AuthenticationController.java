@@ -32,7 +32,7 @@ import ro.fii.licenta.api.dto.JwtResponse;
 import ro.fii.licenta.api.dto.PasswordDTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.exception.UserAlreadyExistAuthenticationException;
-import ro.fii.licenta.api.exception.UserNotFoundException;
+import ro.fii.licenta.api.exception.BusinessException;
 import ro.fii.licenta.api.repository.UserRepository;
 import ro.fii.licenta.api.service.SecurityService;
 import ro.fii.licenta.api.service.UserService;
@@ -89,9 +89,9 @@ public class AuthenticationController {
 		try {
 			authenticationManagerBean.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
+			throw new Exception("USER_DISABLED");
 		} catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
+			throw new Exception("INVALID_CREDENTIALS");
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
@@ -123,10 +123,10 @@ public class AuthenticationController {
 	// gets email and creates token
 	// TODO send e-mail with token
 	public UserDTO resetPassword(HttpServletRequest request, 
-	  @RequestBody UserDTO userDto) throws UserNotFoundException {
+	  @RequestBody UserDTO userDto) throws BusinessException {
 	    User user = userService.findUserByEmail(userDto.getEmailAddress());
 	    if (user == null) {
-	        throw new UserNotFoundException("This user does not exist.");
+	        throw new BusinessException("This user does not exist.");
 	    }
 	    String token = UUID.randomUUID().toString();
 	    userService.createPasswordResetTokenForUser(user, token);
@@ -166,7 +166,7 @@ public class AuthenticationController {
 	    if(user != null) {
 	        userService.changeUserPassword(user, passwordEncoder.encode(passwordDto.getNewPassword()));
 	    } else {
-	        throw new UserNotFoundException("This user does not exist.");
+	        throw new BusinessException("This user does not exist.");
 	    }
 	}
 

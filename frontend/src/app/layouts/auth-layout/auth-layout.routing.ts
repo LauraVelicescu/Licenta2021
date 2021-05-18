@@ -5,6 +5,7 @@ import {RegisterComponent} from '../../pages/register/register.component';
 import {AuthLayoutComponent} from './auth-layout.component';
 import {ResetPasswordComponent} from '../../pages/resetPassword/resetPassword.component';
 import {ForgotPasswordComponent} from '../../pages/forgot-password/forgot-password.component';
+import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
 
 
 export const AuthLayoutRoutes: Routes = [
@@ -12,16 +13,16 @@ export const AuthLayoutRoutes: Routes = [
     path:'', component: AuthLayoutComponent
   },
   {
-    path: 'login', component: LoginComponent
+    path: ApplicationRoutes.LOGIN_ROUTE, component: LoginComponent
   },
   {
-    path: 'register', component: RegisterComponent
+    path: ApplicationRoutes.REGISTER_ROUTE, component: RegisterComponent
   },
   {
-    path: 'changePassword', component: ResetPasswordComponent
+    path: ApplicationRoutes.CHANGE_PASSWORD_ROUTE, component: ResetPasswordComponent
   },
   {
-    path: 'forgotPassword', component: ForgotPasswordComponent
+    path: ApplicationRoutes.FORGOT_PASSWORD_ROUTE, component: ForgotPasswordComponent
   },
   {
     path: '**', redirectTo: '/adm/dashboard'

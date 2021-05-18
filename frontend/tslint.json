@@ -9,6 +9,9 @@
     "deprecation": {
       "severity": "warn"
     },
+    "no-empty-interface": {
+      "severity": "none"
+    },
     "import-blacklist": [
       true,
       "rxjs/Rx"

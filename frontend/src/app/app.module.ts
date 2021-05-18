@@ -2,8 +2,6 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgModule } from "@angular/core";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
-import { RouterModule } from "@angular/router";
-import { ToastrModule } from 'ngx-toastr';
 
 import { AppComponent } from "./app.component";
 import { AdminLayoutComponent } from "./layouts/admin-layout/admin-layout.component";
@@ -13,9 +11,49 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { ComponentsModule } from "./components/components.module";
-import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
 import {SecurityStorage} from "./security/SecurityStorage";
-import { NGOComponent } from './pages/ngo/ngo.component';
+import {NotifierModule, NotifierOptions} from 'angular-notifier';
+
+const notifierDefaultOptions: NotifierOptions = {
+  position: {
+    horizontal: {
+      position: 'left',
+      distance: 12,
+    },
+    vertical: {
+      position: 'bottom',
+      distance: 12,
+      gap: 10,
+    },
+  },
+  theme: 'material',
+  behaviour: {
+    autoHide: 5000,
+    onClick: false,
+    onMouseover: 'pauseAutoHide',
+    showDismissButton: true,
+    stacking: 4,
+  },
+  animations: {
+    enabled: true,
+    show: {
+      preset: 'slide',
+      speed: 300,
+      easing: 'ease',
+    },
+    hide: {
+      preset: 'fade',
+      speed: 300,
+      easing: 'ease',
+      offset: 50,
+    },
+    shift: {
+      speed: 300,
+      easing: 'ease',
+    },
+    overlap: 150,
+  },
+};
 
 @NgModule({
     imports: [
@@ -25,9 +63,10 @@ import { NGOComponent } from './pages/ngo/ngo.component';
         ComponentsModule,
         NgbModule,
         AppRoutingModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NotifierModule.withConfig(notifierDefaultOptions)
     ],
-  declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent, NGOComponent],
+  declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],
   providers: [SecurityStorage],
   exports: [],
   bootstrap: [AppComponent]

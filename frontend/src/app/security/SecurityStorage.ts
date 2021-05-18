@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 
 
 @Injectable()
 export class SecurityStorage {
-  static storageKey = 'Authorization';
+  static storageKey = "Authorization";
 
   store(obj: string) {
     try {

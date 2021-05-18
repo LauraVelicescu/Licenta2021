@@ -11,38 +11,45 @@ import javax.persistence.Transient;
 
 @MappedSuperclass
 public class PersistableEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected Long id;
+	protected Long id;
 
-    protected PersistableEntity() {
+	protected PersistableEntity() {
 
-    }
+	}
 
-    protected PersistableEntity(Long id) {
-        this.id = id;
-    }
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
 
-    @Transient
-    public boolean isNew() {
-        return id == null;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(getClass().getSimpleName());
-        sb.append("(");
-        sb.append("id: ");
-        sb.append(id != null ? String.valueOf(id) : " ?");
-        sb.append(")");
-        sb.append("]");
-        return sb.toString();
-    }
+	protected PersistableEntity(Long id) {
+		this.id = id;
+	}
+
+	@Transient
+	public boolean isNew() {
+		return id == null;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(getClass().getSimpleName());
+		sb.append("(");
+		sb.append("id: ");
+		sb.append(id != null ? String.valueOf(id) : " ?");
+		sb.append(")");
+		sb.append("]");
+		return sb.toString();
+	}
 
 }
-

@@ -1,14 +1,16 @@
 package ro.fii.licenta.api.service;
 
-import ro.fii.licenta.api.dao.NGO;
+import ro.fii.licenta.api.dao.Ngo;
 
 public interface NGOService {
 	
-	NGO findByName(String name);
+	Ngo findByName(String name);
 	
-	NGO findByAcronym(String acronym);
+	Ngo findByAcronym(String acronym);
 	
-	NGO findById(int id);
+	Ngo findById(int id);
 	
-	NGO save (NGO ngo);
+	Ngo save (Ngo ngo);
+	
+//	List<NGO> findAllByUser(int userId);
 }

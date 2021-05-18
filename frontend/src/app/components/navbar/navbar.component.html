@@ -8,7 +8,7 @@
           <span class=" navbar-toggler-bar bar3"> </span>
         </button>
       </div>
-      <a class=" navbar-brand" href="javascript:void(0)"> {{ getTitle() }} </a>
+<!--      <a class=" navbar-brand" href="javascript:void(0)"> {{ getTitle() }} </a>-->
     </div>
     <button
       aria-label="Toggle navigation"
@@ -114,24 +114,3 @@
   </div>
 </nav>
 
-<ng-template #content let-modal>
-  <div class=" modal-header">
-    <input
-      class=" form-control"
-      id="inlineFormInputGroup"
-      placeholder="SEARCH"
-      type="text"
-    />
-
-    <button
-      aria-label="Close"
-      class=" close"
-      data-dismiss="modal"
-      type="button"
-      (click)="modal.dismiss('Cross click')"
-    >
-      <i class=" tim-icons icon-simple-remove"> </i>
-    </button>
-  </div>
-
-</ng-template>

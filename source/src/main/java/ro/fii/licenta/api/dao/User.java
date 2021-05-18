@@ -1,20 +1,16 @@
 package ro.fii.licenta.api.dao;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import java.util.List;
 
 import ro.fii.licenta.framework.PersistableEntity;
 
@@ -22,118 +18,103 @@ import ro.fii.licenta.framework.PersistableEntity;
 @Table(name = "user")
 public class User extends PersistableEntity {
 
-    private static final long serialVersionUID = 1L;
-  
-    private Long id;
-    
-    private String emailAddress;
+	private static final long serialVersionUID = 1L;
 
-    private String password;
-    
-    private String firstName;
+	private String emailAddress;
 
-    private String lastName;
-    
-    private Date birthday;
+	private String password;
+
+	private String firstName;
+
+	private String lastName;
+
+	private Date birthday;
 
 	private String aboutMe;
-    
-    private String facebookLink;
-    
-    private String twitterLink;
-    
-    private String linkedinLink;
-    
-    private byte[] profilePicture;
-    
-    private boolean blocked;
 
-    private int failAttemtps;
+	private String facebookLink;
 
-    private PersonType personType;
-    
-    @ManyToMany
-    private List<NGO> administeredNGOs;
+	private String twitterLink;
 
-    @Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() {
-		return id;
-	}
+	private String linkedinLink;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+	private byte[] profilePicture;
+
+	private boolean blocked;
+
+	private int failAttemtps;
+
+	private PersonType personType;
+
+	private List<Ngo> administeredNGOs;
 
 	private Set<Group> groups;
 
+	@Column(name = "password")
+	public String getPassword() {
+		return password;
+	}
 
-    @Column(name = "password")
-    public String getPassword() {
-        return password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	@Column(name = "blocked")
+	public boolean isBlocked() {
+		return blocked;
+	}
 
-    @Column(name = "blocked")
-    public boolean isBlocked() {
-        return blocked;
-    }
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
 
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
-    }
+	@Column(name = "fail_attempts")
+	public int getFailAttemtps() {
+		return failAttemtps;
+	}
 
-    @Column(name = "fail_attempts")
-    public int getFailAttemtps() {
-        return failAttemtps;
-    }
+	public void setFailAttemtps(int failAttemtps) {
+		this.failAttemtps = failAttemtps;
+	}
 
-    public void setFailAttemtps(int failAttemtps) {
-        this.failAttemtps = failAttemtps;
-    }
+	@Column(name = "first_name")
+	public String getFirstName() {
+		return firstName;
+	}
 
-    @Column(name = "first_name")
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	@Column(name = "last_name")
+	public String getLastName() {
+		return lastName;
+	}
 
-    @Column(name = "last_name")
-    public String getLastName() {
-        return lastName;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	@Column(name = "email_address")
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    @Column(name = "email_address")
-    public String getEmailAddress() {
-        return emailAddress;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-    
-    @Column(name = "birthday")
-    public Date getBirthday() {
+	@Column(name = "birthday")
+	public Date getBirthday() {
 		return birthday;
 	}
-    
-    public void setBirthday(Date birthday) {
+
+	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
-    
-    @Column(name = "about_me")
-    public String getAboutMe() {
+
+	@Column(name = "about_me")
+	public String getAboutMe() {
 		return aboutMe;
 	}
 
@@ -178,25 +159,33 @@ public class User extends PersistableEntity {
 		this.profilePicture = profilePicture;
 	}
 
-    @Column(name = "person_type")
-    public PersonType getPersonType() {
-        return personType;
-    }
+	@Column(name = "person_type")
+	public PersonType getPersonType() {
+		return personType;
+	}
 
-    public void setPersonType(PersonType personType) {
-        this.personType = personType;
-    }
+	public void setPersonType(PersonType personType) {
+		this.personType = personType;
+	}
 
-    @ManyToMany
-    @JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
-    public Set<Group> getGroups() {
-        return groups;
-    }
+	@ManyToMany
+	@JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
+	public Set<Group> getGroups() {
+		return groups;
+	}
 
-    public void setGroups(Set<Group> groups) {
-        this.groups = groups;
-    }
-	
-	
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
+	}
+
+	@ManyToMany
+	@JoinTable(name = "ngo_admins", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ngo_id"))
+	public List<Ngo> getAdministeredNGOs() {
+		return administeredNGOs;
+	}
+
+	public void setAdministeredNGOs(List<Ngo> administeredNGOs) {
+		this.administeredNGOs = administeredNGOs;
+	}
+
 }
-

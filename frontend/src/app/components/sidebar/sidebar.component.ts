@@ -1,74 +1,33 @@
-import { Component, OnInit } from "@angular/core";
+import {Component, OnInit} from '@angular/core';
+import {NestedTreeControl} from '@angular/cdk/tree';
+import {MatTreeNestedDataSource} from '@angular/material/tree';
+import {ApplicationService} from '../../shared/services/application/application.service';
+import {RouteInfo} from '../../shared/util/ApplicationRoutesInfo';
 
-declare interface RouteInfo {
-  path: string;
-  title: string;
-  rtlTitle: string;
-  icon: string;
-  class: string;
+
+interface FoodNode {
+  name: string;
+  children?: FoodNode[];
 }
-export const ROUTES: RouteInfo[] = [
-  {
-    path: "dashboard",
-    title: "Dashboard",
-    rtlTitle: "لوحة القيادة",
-    icon: "icon-chart-pie-36",
-    class: ""
-  },
-  {
-    path: "icons",
-    title: "Projects",
-    rtlTitle: "الرموز",
-    icon: "icon-components",
-    class: ""
-  },
-  {
-    path: "maps",
-    title: "Calendar",
-    rtlTitle: "خرائط",
-    icon: "icon-calendar-60",
-    class: "" },
-
-  {
-    path: "user",
-    title: "User Profile",
-    rtlTitle: "ملف تعريفي للمستخدم",
-    icon: "icon-single-02",
-    class: ""
-  },
-  {
-    path: "typography",
-    title: "Settings",
-    rtlTitle: "طباعة",
-    icon: "icon-settings",
-    class: ""
-  },
-  {
-    path: "ngo",
-    title: "Create NGO",
-    rtlTitle: "طباعة",
-    icon: "icon-simple-add",
-    class: ""
-  }
-];
 
 @Component({
-  selector: "app-sidebar",
-  templateUrl: "./sidebar.component.html",
-  styleUrls: ["./sidebar.component.css"]
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  menuItems: any[];
+  menuItems: RouteInfo[];
+  public parentPath = '';
+  treeControl = new NestedTreeControl<RouteInfo>(node => node.subPaths);
+  dataSource = new MatTreeNestedDataSource<RouteInfo>();
 
-  constructor() {}
+  constructor(private applicationService: ApplicationService) {
+  }
 
   ngOnInit() {
-    this.menuItems = ROUTES.filter(menuItem => menuItem);
+    this.menuItems = this.applicationService.buildNavbarForUser();
+    this.dataSource.data = this.menuItems;
   }
-  isMobileMenu() {
-    if (window.innerWidth > 991) {
-      return false;
-    }
-    return true;
-  }
+
+  hasChild = (_: number, node: RouteInfo) => !!node.subPaths && node.subPaths.length > 0;
 }

@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {User} from '../../user';
-import {AuthenticationService} from '../../services/authentication/authentication.service';
+import {AuthenticationService} from '../../shared/services/authentication/authentication.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {UserDTO} from '../../components/dto/UserDTO';
+import {UserDTO} from '../../shared/dto/UserDTO';
+import {NotificationService} from '../../shared/services/notification-service/notification.service';
 
 
 @Component({
@@ -13,8 +13,9 @@ import {UserDTO} from '../../components/dto/UserDTO';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  response = 'nimic inca';
-  constructor(private loginService: AuthenticationService, private router: Router, private formBuilder: FormBuilder) {
+  response = '';
+
+  constructor(private loginService: AuthenticationService, private router: Router, private formBuilder: FormBuilder, private notifierService: NotificationService) {
   }
 
   ngOnInit() {
@@ -27,23 +28,20 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      console.log('invalid');
       return;
     } else {
-      console.log(this.loginForm.controls.emailAddress.value);
-      let user: UserDTO = new UserDTO();
+      const user: UserDTO = new UserDTO();
       user.emailAddress = this.loginForm.controls.emailAddress.value;
       user.password = this.loginForm.controls.password.value;
       this.loginService.login(user).subscribe((result) => {
-        console.log(result);
-        this.router.navigateByUrl('/adm/dashboard')
+        this.router.navigateByUrl('/adm/dashboard').then();
       }, error => {
-        console.log(error);
+        this.notifierService.error(error);
       })
     }
   }
 
-  btnClick = function (){
-    this.router.navigateByUrl('/auth/forgotPassword');
+  btnClick() {
+    this.router.navigateByUrl('/auth/forgotPassword').then();
   }
 }

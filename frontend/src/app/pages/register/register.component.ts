@@ -1,7 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
-import {AuthenticationService} from '../../services/authentication/authentication.service';
-import {UserDTO} from '../../components/dto/UserDTO';
+import {AuthenticationService} from '../../shared/services/authentication/authentication.service';
+import {UserDTO} from '../../shared/dto/UserDTO';
+import {NotificationService} from '../../shared/services/notification-service/notification.service';
+import {Router} from '@angular/router';
+import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +14,8 @@ import {UserDTO} from '../../components/dto/UserDTO';
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private registerService: AuthenticationService) {
+  constructor(private formBuilder: FormBuilder, private registerService: AuthenticationService, private notificationService: NotificationService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -40,17 +44,12 @@ export class RegisterComponent implements OnInit {
       user.emailAddress = this.registerForm.controls.emailAddress.value;
       user.password = this.registerForm.controls.password.value;
       this.registerService.register(user).subscribe((result) => {
-        console.log(result);
+        this.notificationService.success('Cont creat cu succes!');
+        this.router.navigate([ApplicationRoutes.AUTH_MODULE_ROUTE + '/' + ApplicationRoutes.LOGIN_ROUTE]).then();
       }, error => {
-        console.log(error);
+        this.notificationService.error(error);
       })
     }
-  }
-
-  print($event: FocusEvent) {
-    console.log($event);
-    console.log(this.registerForm.controls.firstName.errors);
-    console.log(this.registerForm);
   }
 
   public matchValues(
@@ -61,7 +60,7 @@ export class RegisterComponent implements OnInit {
       !!control.parent.value &&
       control.value === control.parent.controls[matchTo].value
         ? null
-        : { passwordMatch: true };
+        : {passwordMatch: true};
     };
   }
 

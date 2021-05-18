@@ -1,23 +1,30 @@
-import { Routes } from "@angular/router";
+import {Routes} from '@angular/router';
 
-import { DashboardComponent } from "../../pages/dashboard/dashboard.component";
-import { IconsComponent } from "../../pages/icons/icons.component";
-import { MapComponent } from "../../pages/map/map.component";
-import { NotificationsComponent } from "../../pages/notifications/notifications.component";
-import { UserComponent } from "../../pages/user/user.component";
-import { TablesComponent } from "../../pages/tables/tables.component";
-import { TypographyComponent } from "../../pages/typography/typography.component";
-import {LoginComponent} from '../../pages/login/login.component';
-import {NGOComponent} from "../../pages/ngo/ngo.component";
-// import { RtlComponent } from "../../pages/rtl/rtl.component";
+import {DashboardComponent} from '../../pages/dashboard/dashboard.component';
+import {UserLayoutComponent} from './submodules/user-module/user-layout/user-layout.component';
+import {NgoLayoutComponent} from './submodules/ngo-module/ngo-layout/ngo-layout.component';
 
 export const AdminLayoutRoutes: Routes = [
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'icons', component: IconsComponent },
-  { path: "maps", component: MapComponent },
-  { path: "notifications", component: NotificationsComponent },
-  { path: "user", component: UserComponent },
-  { path: "tables", component: TablesComponent },
-  { path: "typography", component: TypographyComponent },
-  { path: "ngo", component: NGOComponent}
-  ];
+  {
+    path: 'user', component: UserLayoutComponent,
+    children: [{
+      path: '',
+      loadChildren: () => import('./submodules/user-module/user-layout/user-layout.module').then(m => m.UserLayoutModule)
+    }]
+  },
+  {
+    path: 'ngo', component: NgoLayoutComponent,
+    children: [{
+      path: '',
+      loadChildren: () => import('./submodules/ngo-module/ngo-layout/ngo-layout.module').then(m => m.NgoLayoutModule)
+    }]
+  },
+  {path: 'dashboard', component: DashboardComponent},
+  // { path: 'icons', component: IconsComponent },
+  // { path: "maps", component: MapComponent },
+  // { path: "notifications", component: NotificationsComponent },
+  // { path: "user", component: UserComponent },
+  // { path: "tables", component: TablesComponent },
+  // { path: "typography", component: TypographyComponent },
+  // { path: "ngo", component: NGOComponent}
+];

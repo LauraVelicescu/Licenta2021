@@ -1,41 +1,39 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {User} from '../../user';
-import {AuthenticationService} from '../../services/authentication/authentication.service';
-import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from '@angular/forms';
-import {UserDTO} from '../../components/dto/UserDTO';
-import {PasswordDTO} from "../../components/dto/PasswordDTO";
+import {Component, OnInit} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
+import {AuthenticationService} from "../../shared/services/authentication/authentication.service";
+import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} from "@angular/forms";
+import {PasswordDTO} from "../../shared/dto/PasswordDTO";
+import {NotificationService} from '../../shared/services/notification-service/notification.service';
+import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './resetPassword.component.html',
-  styleUrls: ['./resetPassword.component.scss']
+  selector: "app-login",
+  templateUrl: "./resetPassword.component.html",
+  styleUrls: ["./resetPassword.component.scss"]
 })
 export class ResetPasswordComponent implements OnInit {
   resetPasswordForm: FormGroup;
-  invalidToken: boolean = false;
+  invalidToken = false;
 
-  constructor(private resetPasswordService: AuthenticationService, private router: Router, private activatedRoute: ActivatedRoute, private formBuilder: FormBuilder) {
+  constructor(private resetPasswordService: AuthenticationService, private router: Router, private activatedRoute: ActivatedRoute, private formBuilder: FormBuilder,
+              private notificationService: NotificationService) {
   }
 
   ngOnInit() {
     this.resetPasswordForm = this.formBuilder.group({
-      password: ['', [Validators.required, Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$')]],
-      cpassword: ['',
+      password: ["", [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$")]],
+      cpassword: ["",
         [
           Validators.required,
-          this.matchValues('password'),
+          this.matchValues("password"),
         ],
       ],
     });
-    console.log(this.activatedRoute);
-    console.log(this.activatedRoute.queryParams);
     this.activatedRoute.queryParamMap.subscribe((result) => {
-      this.resetPasswordService.validateToken(result.get('token')).subscribe((result2) => {
-        console.log(result2);
+      this.resetPasswordService.validateToken(result.get("token")).subscribe((result2) => {
       }, error => {
         this.invalidToken = true;
-        console.log(error);
+        this.notificationService.error(error);
       })
     })
   }
@@ -43,20 +41,20 @@ export class ResetPasswordComponent implements OnInit {
 
   async onSubmit() {
     if (this.resetPasswordForm.invalid) {
-      console.log('invalid');
       return;
     } else {
-      let password: PasswordDTO = new PasswordDTO();
+      const password: PasswordDTO = new PasswordDTO();
       password.newPassword = this.resetPasswordForm.controls.password.value;
       await this.activatedRoute.queryParamMap.subscribe((result) => {
-        password.token = result.get('token');
+        password.token = result.get("token");
       });
       this.resetPasswordService.resetPassword(password).subscribe((result) => {
-        console.log(result);
-      }, error => {
-        console.log(error);
+        this.notificationService.success("Parola resetata cu succes");
+        this.router.navigateByUrl(ApplicationRoutes.AUTH_MODULE_ROUTE + "/" + ApplicationRoutes.LOGIN_ROUTE);
+        }, error => {
+        this.notificationService.error(error);
       })
-      this.router.navigateByUrl('/auth/login');
+
     }
   }
 

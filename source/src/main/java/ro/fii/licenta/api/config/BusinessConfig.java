@@ -13,6 +13,8 @@ import ro.fii.licenta.api.service.UserService;
 import ro.fii.licenta.api.service.impl.NGOServiceImpl;
 import ro.fii.licenta.api.service.impl.SecurityServiceImpl;
 import ro.fii.licenta.api.service.impl.UserServiceImpl;
+import ro.fii.licenta.framework.RoleInitializer;
+import ro.fii.licenta.framework.UserInitializer;
 
 @Configuration
 public class BusinessConfig {
@@ -48,5 +50,15 @@ public class BusinessConfig {
 	    props.put("mail.debug", "true");
 	    
 	    return mailSender;
+	}
+	
+	@Bean
+	public UserInitializer userInitializer() {
+		return new UserInitializer();
+	}
+	
+	@Bean
+	public RoleInitializer roleInitializer() {
+		return new RoleInitializer();
 	}
 }

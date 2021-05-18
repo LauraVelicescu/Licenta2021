@@ -5,7 +5,7 @@ import {Routes, RouterModule} from '@angular/router';
 
 import {AdminLayoutComponent} from './layouts/admin-layout/admin-layout.component';
 import {AuthLayoutComponent} from './layouts/auth-layout/auth-layout.component';
-import {LoginGuard} from './login.guard';
+import {LoginGuard} from './shared/services/authentication/guards/auth-guard/login.guard';
 
 const routes: Routes = [
   {
@@ -21,7 +21,7 @@ const routes: Routes = [
       {
         path: '',
         loadChildren:
-          './layouts/admin-layout/admin-layout.module#AdminLayoutModule'
+          () => import('./layouts/admin-layout/admin-layout.module').then(m => m.AdminLayoutModule)
       }
     ]
   }, {
@@ -30,7 +30,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: './layouts/auth-layout/auth-layout.module#AuthLayoutModule'
+        loadChildren: () => import('./layouts/auth-layout/auth-layout.module').then(m => m.AuthLayoutModule)
       }
     ]
   }
