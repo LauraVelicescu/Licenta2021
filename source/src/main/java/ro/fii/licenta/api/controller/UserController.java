@@ -2,6 +2,8 @@ package ro.fii.licenta.api.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.Deflater;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +30,10 @@ import ro.fii.licenta.api.service.UserService;
 
 @RestController
 @CrossOrigin
+@RequestMapping(path = "/user")
 public class UserController {
+
+	// TODO DE MUTAT TOT IN SERVICE gen de mut
 
 	@Autowired
 	private UserService userService;
@@ -45,8 +51,6 @@ public class UserController {
 
 		String username = null;
 		String jwtToken = null;
-		// JWT Token is in the form "Bearer token". Remove Bearer word and get
-		// only the Token
 		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 			jwtToken = requestTokenHeader.substring(7);
 			try {
@@ -66,6 +70,21 @@ public class UserController {
 		}
 		return new ResponseEntity<>(modelMapper.map(user, UserDTO.class), HttpStatus.OK);
 
+	}
+
+	@GetMapping(value = "/findUsers")
+	public ResponseEntity<List<UserDTO>> findUsers(@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "pageNo", required = false) Integer pageNo) {
+		List<UserDTO> users = new ArrayList<UserDTO>();
+		userService.findAllUsers(page, pageNo).forEach(e -> {
+			users.add(modelMapper.map(e, UserDTO.class));
+		});
+		return ResponseEntity.ok(users);
+	}
+
+	@GetMapping(value = "/findUsers/count")
+	public ResponseEntity<Integer> findUsersCount() {
+		return ResponseEntity.ok(userService.findAllUsers(null, null).size());
 	}
 
 	@PostMapping(value = "/updateUser")

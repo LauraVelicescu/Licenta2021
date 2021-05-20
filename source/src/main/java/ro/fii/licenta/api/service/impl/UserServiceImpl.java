@@ -2,8 +2,12 @@ package ro.fii.licenta.api.service.impl;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import ro.fii.licenta.api.dao.PasswordResetToken;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.repository.PasswordTokenRepository;
@@ -11,10 +15,10 @@ import ro.fii.licenta.api.repository.UserRepository;
 import ro.fii.licenta.api.service.UserService;
 
 public class UserServiceImpl implements UserService {
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private PasswordTokenRepository passwordTokenRepository;
 
@@ -31,10 +35,10 @@ public class UserServiceImpl implements UserService {
 		myToken.setToken(token);
 		Calendar date = Calendar.getInstance();
 		long t = date.getTimeInMillis();
-		Date afterAddingThirtyMins=new Date(t + (30 * 60000));
+		Date afterAddingThirtyMins = new Date(t + (30 * 60000));
 		myToken.setExpiryDate(afterAddingThirtyMins);
-	    passwordTokenRepository.save(myToken);
-		
+		passwordTokenRepository.save(myToken);
+
 	}
 
 	@Override
@@ -45,18 +49,24 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void changeUserPassword(User user, String newPassword) {
 		user.setPassword(newPassword);
-	    userRepository.save(user);		
+		userRepository.save(user);
 	}
-	
+
 	@Override
 	public User save(User user) {
 		return userRepository.save(user);
-		
+
 	}
-	
+
 	@Override
 	public User findUserByFirstName(String firstName) {
 		return userRepository.findByFirstName(firstName);
+	}
+
+	@Override
+	public List<User> findAllUsers(Integer pageNo, Integer pageSize) {
+		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+		return page != null ? userRepository.findAll(page).getContent() : userRepository.findAll();
 	}
 
 }

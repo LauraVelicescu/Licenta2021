@@ -10,7 +10,7 @@ import {LoginGuard} from './shared/services/authentication/guards/auth-guard/log
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth',
+    redirectTo: 'adm',
     pathMatch: 'full'
   },
   {

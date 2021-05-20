@@ -1,5 +1,7 @@
 package ro.fii.licenta.api.service;
 
+import java.util.List;
+
 import ro.fii.licenta.api.dao.User;
 
 public interface UserService {
@@ -7,8 +9,6 @@ public interface UserService {
 	User findUserByEmail(String userEmail);
 	
 	User findUserByFirstName(String firstName);
-	
-	
 
 	void createPasswordResetTokenForUser(User user, String token);
 	
@@ -17,5 +17,7 @@ public interface UserService {
 	void changeUserPassword(User user, String newPassword);
 	
 	User save(User user);
+	
+	List<User> findAllUsers(Integer page, Integer pageSize);
 
 }

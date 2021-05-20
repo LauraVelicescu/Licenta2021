@@ -16,6 +16,12 @@ export class ApplicationRoutesInfo {
     icon: 'people',
     privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
     subPaths: [{
+      path: 'me',
+      title: 'Profilul meu',
+      icon: 'face',
+      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      parentPath: 'user'
+    }, {
       path: 'manage',
       title: 'Administrare utilizatori',
       icon: 'engineering',

@@ -1,18 +1,19 @@
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { NgModule } from "@angular/core";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { HttpClientModule } from "@angular/common/http";
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgModule} from '@angular/core';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 
-import { AppComponent } from "./app.component";
-import { AdminLayoutComponent } from "./layouts/admin-layout/admin-layout.component";
-import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import {AppComponent} from './app.component';
+import {AdminLayoutComponent} from './layouts/admin-layout/admin-layout.component';
+import {AuthLayoutComponent} from './layouts/auth-layout/auth-layout.component';
 
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
-import { AppRoutingModule } from "./app-routing.module";
-import { ComponentsModule } from "./components/components.module";
-import {SecurityStorage} from "./security/SecurityStorage";
+import {AppRoutingModule} from './app-routing.module';
+import {ComponentsModule} from './components/components.module';
+import {SecurityStorage} from './security/SecurityStorage';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
+import {MatNativeDateModule} from '@angular/material/core';
 
 const notifierDefaultOptions: NotifierOptions = {
   position: {
@@ -56,19 +57,21 @@ const notifierDefaultOptions: NotifierOptions = {
 };
 
 @NgModule({
-    imports: [
-        BrowserAnimationsModule,
-        FormsModule,
-        HttpClientModule,
-        ComponentsModule,
-        NgbModule,
-        AppRoutingModule,
-        ReactiveFormsModule,
-        NotifierModule.withConfig(notifierDefaultOptions)
-    ],
+  imports: [
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule,
+    ComponentsModule,
+    NgbModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    MatNativeDateModule,
+    NotifierModule.withConfig(notifierDefaultOptions)
+  ],
   declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],
   providers: [SecurityStorage],
   exports: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+}
