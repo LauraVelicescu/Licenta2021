@@ -1,0 +1,38 @@
+
+<h1 mat-dialog-title>Send e-mail</h1>
+
+<div class = "modal-content" mat-dialog-content>
+  <p>What do you want to let your users know?</p>
+  <mat-form-field>
+    <mat-label>Favorite Animal</mat-label>
+    <input matInput [(ngModel)]= "this.data">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Back</button>
+  <button mat-button [mat-dialog-close]="this.data" cdkFocusInitial>Send</button>
+</div>
+
+
+
+
+<!--<div class="modal ">-->
+<!--  <div class="modal-dialog" >-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 mat-dialog-title class="modal-title" >Send e-mail</h5>-->
+<!--        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">-->
+<!--          <i class="tim-icons icon-simple-remove"></i>-->
+<!--        </button>-->
+<!--      </div>-->
+<!--      <div mat-dialog-content class="modal-body">-->
+<!--        <p>Subject</p>-->
+<!--        <input matInput [(ngModel)]= "this.data">-->
+<!--      </div>-->
+<!--      <div mat-dialog-actions class="modal-footer">-->
+<!--        <button type="button" class="btn btn-primary" [mat-dialog-close]="this.data">Send</button>-->
+<!--        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onNoClick()">Close</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
