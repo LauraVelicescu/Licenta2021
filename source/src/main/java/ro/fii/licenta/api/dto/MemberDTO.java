@@ -4,11 +4,13 @@ import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.User;
 
 public class MemberDTO {
- private Long id;
-	 
-	 private User user;
-	 
-	 private Ngo ngo;
+	private Long id;
+
+	private User user;
+
+	private Ngo ngo;
+
+	private String function;
 
 	public Long getId() {
 		return id;
@@ -34,6 +36,13 @@ public class MemberDTO {
 		this.ngo = ngo;
 	}
 
-	 
+	public String getFunction() {
+		return function;
+	}
 
+	public void setFunction(String function) {
+		this.function = function;
+	}
+
+	
 }

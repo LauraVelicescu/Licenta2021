@@ -3,6 +3,7 @@ package ro.fii.licenta.api.dto;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -35,6 +36,8 @@ public class UserDTO {
 	protected boolean blocked;
 
 	protected int failAttemtps;
+
+	private List<NgoDTO> administeredNGOs;
 
 	public Long getId() {
 		return id;
@@ -160,4 +163,13 @@ public class UserDTO {
 		return outputStream.toByteArray();
 
 	}
+
+	public List<NgoDTO> getAdministeredNGOs() {
+		return administeredNGOs;
+	}
+
+	public void setAdministeredNGOs(List<NgoDTO> administeredNGOs) {
+		this.administeredNGOs = administeredNGOs;
+	}
+
 }

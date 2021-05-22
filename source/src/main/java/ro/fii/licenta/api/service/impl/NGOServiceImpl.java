@@ -8,14 +8,18 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
+import ro.fii.licenta.api.repository.MemberRepository;
 import ro.fii.licenta.api.repository.NGORepository;
 import ro.fii.licenta.api.service.NGOService;
 
@@ -23,6 +27,12 @@ public class NGOServiceImpl implements NGOService {
 
 	@Autowired
 	NGORepository ngoRepository;
+
+	@Autowired
+	MemberRepository memberRepository;
+
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@Override
 	public Ngo findByName(String name) {
@@ -66,6 +76,22 @@ public class NGOServiceImpl implements NGOService {
 			ngoRepository.delete(ngo);
 		}
 		return list;
+	}
+
+	@Override
+	public List<String> addMembers(List<MemberDTO> members) {
+		List<String> errors = new ArrayList<String>();
+		for (MemberDTO memberDTO : members) {
+			Member member = memberRepository.findByUserAndNgo(memberDTO.getUser().getId(), memberDTO.getNgo().getId());
+			if (member != null) {
+				errors.add("Userul " + memberDTO.getUser().getEmailAddress() + " este deja in ONG ul "
+						+ memberDTO.getNgo().getName());
+			} else {
+				member = modelMapper.map(memberDTO, Member.class);
+				memberRepository.save(member);
+			}
+		}
+		return errors;
 	}
 
 }
