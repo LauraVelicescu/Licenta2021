@@ -1,11 +1,26 @@
-<div class="content">
+<div class="content" [hidden]="persistState">
   <div class="row">
     <div class=" col-md-10" style="margin: auto">
       <div class="card">
-        <div class="card-header">
+        <mat-toolbar class="card-header">
           <h4 class="card-title">Utilizatorii aplicatiei</h4>
-          <p class="category">Aici aveti toti utilizatorii curenti ai aplicatiei</p>
-        </div>
+          <span class="example-spacer"></span>
+          <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon" (click)="handleOperation(operationType.ADD)">
+            <mat-icon>add</mat-icon>
+          </button>
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon" [disabled]="selection.selected.length !== 1" (click)="handleOperation(operationType.MODIFY, selection.selected)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"  [disabled]="selection.selected.length === 0" (click)="handleOperation(operationType.DELETE, selection.selected)">
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon" (click)="handleOperation(operationType.LOCK, selection.selected)">
+            <mat-icon>lock</mat-icon>
+          </button>
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon" (click)="handleOperation(operationType.UNLOCK, selection.selected)">
+            <mat-icon>lock_open</mat-icon>
+          </button>
+        </mat-toolbar>
         <div class="card-body">
           <table mat-table class="table" [dataSource]="dataSource">
 
@@ -41,9 +56,138 @@
             ></tr>
           </table>
           <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons [length]="length"
-                         style="background-color: lightpink; opacity: 0.5"></mat-paginator>
+                         style="background-color: lightpink; opacity: 0.5" #paginator></mat-paginator>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+
+
+<div class=" content" *ngIf="persistState">
+  <div class=" row">
+    <div class=" col-md-8">
+      <div class=" card">
+        <div class=" card-header"><h5 class=" title">Edit Profile</h5></div>
+        <div class=" card-body">
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+            <div class=" row">
+              <div class=" col-md-6 pl-md-1">
+                <div class=" form-group">
+                  <label> Email address </label>
+                  <input
+                    class=" form-control"
+                    placeholder="mike@email.com"
+                    formControlName="emailAddress"
+                    type="email"
+                    [(ngModel)]="currentUser.emailAddress"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class=" row">
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label> First name </label>
+                  <input
+                    class=" form-control"
+                    placeholder="First name"
+                    formControlName="firstName"
+                    type="text"
+                    value="Mike"
+                    [(ngModel)]="currentUser.firstName"
+                  />
+                </div>
+              </div>
+              <div class=" col-md-4 pl-md-1">
+                <div class=" form-group">
+                  <label> Last name </label>
+                  <input
+                    class=" form-control"
+                    placeholder="Last name"
+                    formControlName="lastName"
+                    type="text"
+                    value="Andrew"
+                    [(ngModel)]="currentUser.lastName"
+                  />
+                </div>
+              </div>
+              <div class=" col-md-4 pl-md-1">
+                <div class=" form-group">
+                  <label> Birthday </label>
+                  <input id = "datepicker"
+                         class=" form-control"
+                         placeholder=""
+                         formControlName="birthday"
+                         [(ngModel)]="currentUser.birthday"
+                         type="date">
+                </div>
+              </div>
+            </div>
+            <div class=" row">
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label> Facebook link </label>
+                  <input
+                    class=" form-control"
+                    placeholder="https://www.facebook.com/your.profile"
+                    formControlName="facebookLink"
+                    [(ngModel)]="currentUser.facebookLink"
+                    type="text"
+                  />
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label> Twitter link </label>
+                  <input
+                    class=" form-control"
+                    placeholder="https://twitter.com/your_profile"
+                    formControlName="twitterLink"
+                    [(ngModel)]="currentUser.twitterLink"
+                    type="text"
+                  />
+                </div>
+              </div>
+              <div class=" col-md-4 px-md-1">
+                <div class=" form-group">
+                  <label> LinkedIn link </label>
+                  <input
+                    class=" form-control"
+                    placeholder="https://www.linkedin.com/in/your-profile/"
+                    formControlName="linkedinLink"
+                    [(ngModel)]="currentUser.linkedinLink"
+                    type="text"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class=" row">
+              <div class=" col-md-12">
+                <div class=" form-group">
+                  <label> About Me </label>
+                  <textarea
+                    class=" form-control"
+                    cols="80"
+                    placeholder="Here can be your description"
+                    formControlName="aboutMe"
+                    [(ngModel)]="currentUser.aboutMe"
+                    rows="4"
+                  >
+                  </textarea>
+                </div>
+              </div>
+            </div>
+            <div class=" card-footer">
+              <button class=" btn btn-fill btn-danger" type="submit">Save</button>
+              <button class=" btn btn-fill btn-danger" (click)="cancelAction()">Back</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -101,9 +101,6 @@ public class AuthenticationController {
 	@PostMapping("/register")
 	public UserDTO register(HttpServletRequest request, @RequestBody UserDTO userDto)
 			throws UserAlreadyExistAuthenticationException {
-		// TODO email unic
-		// TODO parola criptata
-		// TODO setat person type default
 		System.out.println(userDto);
 
 		User user = this.modelMapper.map(userDto, User.class);

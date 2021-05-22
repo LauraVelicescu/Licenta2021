@@ -1,0 +1,15 @@
+<ng-container *ngIf="!overlay">
+  <div style="display: flex; justify-content: center; align-items: center; padding-top: 40px; overflow-y: hidden">
+    <mat-spinner [ngClass]="currentClass" [diameter]="diameter">
+    </mat-spinner>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="overlay">
+  <div class="overlay">
+    <div class="center">
+      <mat-spinner [ngClass]="currentClass" [diameter]="diameter">
+      </mat-spinner>
+    </div>
+  </div>
+</ng-container>

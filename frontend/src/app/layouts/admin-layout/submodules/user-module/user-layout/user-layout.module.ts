@@ -8,13 +8,18 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { UserProfileComponent } from './subcomponents/user-profille/user-profile/user-profile.component';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { UserRolesComponent } from './subcomponents/user-roles/user-roles.component';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 
 @NgModule({
   declarations: [
     UserLayoutComponent,
     UserManageComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    UserRolesComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +27,10 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     FormsModule,
     ReactiveFormsModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule
   ]
 })
 export class UserLayoutModule { }

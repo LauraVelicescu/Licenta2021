@@ -14,6 +14,8 @@ import {ComponentsModule} from './components/components.module';
 import {SecurityStorage} from './security/SecurityStorage';
 import {NotifierModule, NotifierOptions} from 'angular-notifier';
 import {MatNativeDateModule} from '@angular/material/core';
+import { LoadingComponent } from './shared/components/loading/loading.component';
+import {MatProgressSpinnerModule, MatSpinner} from '@angular/material/progress-spinner';
 
 const notifierDefaultOptions: NotifierOptions = {
   position: {
@@ -66,9 +68,10 @@ const notifierDefaultOptions: NotifierOptions = {
     AppRoutingModule,
     ReactiveFormsModule,
     MatNativeDateModule,
-    NotifierModule.withConfig(notifierDefaultOptions)
+    NotifierModule.withConfig(notifierDefaultOptions),
+    MatProgressSpinnerModule
   ],
-  declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent],
+  declarations: [AppComponent, AdminLayoutComponent, AuthLayoutComponent, LoadingComponent],
   providers: [SecurityStorage],
   exports: [],
   bootstrap: [AppComponent]

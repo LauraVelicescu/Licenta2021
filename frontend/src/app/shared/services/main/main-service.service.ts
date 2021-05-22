@@ -4,15 +4,26 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {SecurityStorage} from '../../../security/SecurityStorage';
+import {UserService} from '../user-service/user.service';
+import {NotificationService} from '../notification-service/notification.service';
+import {AuthenticationService} from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainServiceService {
 
+  private authenticationService: AuthenticationService;
+
   constructor(private http: HttpClient,
               private router: Router,
-              private securityStorage: SecurityStorage) {
+              private securityStorage: SecurityStorage,
+              private notificationService: NotificationService) {
+  }
+
+
+  setAuthenticationService(authenticationService: AuthenticationService) {
+    this.authenticationService = authenticationService;
   }
 
 
@@ -87,6 +98,26 @@ export class MainServiceService {
       headers,
       withCredentials: true
     });
+  }
+
+  httpError(err) {
+    if (!navigator.onLine) {
+      this.notificationService.warning('no_internet_connection');
+    } else {
+      if (err.status === 401) {
+        this.notificationService.warning('session_error');
+        this.authenticationService.logout();
+      } else if (err.status === 403) {
+      } else if (err.status === 412) {
+        // nothing here, managed by caller
+      } else if (err.status === 404) {
+      } else if (err.status === 400) {
+        this.notificationService.error(err.error);
+      } else {
+        console.error(err);
+        this.notificationService.error('error');
+      }
+    }
   }
 
   // download(url: string) {

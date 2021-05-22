@@ -4,4 +4,13 @@ export class ApplicationRoutes {
   public static REGISTER_ROUTE: string = "register";
   public static CHANGE_PASSWORD_ROUTE: string = "changePassword";
   public static FORGOT_PASSWORD_ROUTE: string = "forgotPassword";
+  public static ADMIN_MODULE_ROUTE: string = "adm";
+  public static USER_ROUTE: string = "user";
+  public static USER_ME_ROUTE: string = "me";
+  public static USER_MANAGE_ROUTE: string =  "manage";
+  public static USER_ROLES_ROUTE: string =  "roles";
+  public static NGO_ROUTE: string = "ngo";
+  public static NGO_MANAGE_ROUTE: string = "manage";
+  public static DASHBOARD_ROUTE: string = "dashboard";
+
 }

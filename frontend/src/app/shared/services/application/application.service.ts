@@ -2,13 +2,19 @@ import {Injectable} from '@angular/core';
 import {UserService} from '../user-service/user.service';
 import {ApplicationRoutesInfo, RouteInfo} from '../../util/ApplicationRoutesInfo';
 import {fakeAsync} from '@angular/core/testing';
+import {Observable, ReplaySubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationService {
 
+  private _loading: ReplaySubject<boolean> = new ReplaySubject<boolean>();
+
+
+
   constructor(private userService: UserService) {
+    this._loading.next(false);
   }
 
 
@@ -40,7 +46,12 @@ export class ApplicationService {
     return navbarLayout;
   }
 
-  public loading(value: boolean) {
-
+  public get loading(): Observable<boolean> {
+    return this._loading.asObservable();
   }
+
+  public emmitLoading(value: boolean) {
+    this._loading.next(value);
+  }
+
 }

@@ -4,6 +4,7 @@ import {Router} from '@angular/router';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import {AuthenticationService} from '../../shared/services/authentication/authentication.service';
 import {ApplicationRoutesInfo} from '../../shared/util/ApplicationRoutesInfo';
+import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
 
 @Component({
   selector: 'app-navbar',
@@ -203,6 +204,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.authenticationService.logout();
-    this.router.navigateByUrl('/auth');
+    this.router.navigateByUrl("/"+ ApplicationRoutes.AUTH_MODULE_ROUTE);
+  }
+
+  onProfile() {
+    this.router.navigateByUrl(ApplicationRoutes.ADMIN_MODULE_ROUTE + "/" + ApplicationRoutes.USER_ROUTE + "/" + ApplicationRoutes.USER_ME_ROUTE);
   }
 }

@@ -4,6 +4,7 @@ import {UserDTO} from '../../dto/UserDTO';
 import {catchError, map} from 'rxjs/operators';
 import {PasswordDTO} from '../../dto/PasswordDTO';
 import {SecurityStorage} from '../../../security/SecurityStorage';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class AuthenticationService {
   private validateChangePasswordURL = '/changePassword';
   private resetPasswordURL = '/savePassword';
 
-  constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage) {
+  constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage, private router: Router) {
+    this.mainService.setAuthenticationService(this);
   }
 
   public login(userInfo: UserDTO) {
@@ -36,6 +38,7 @@ export class AuthenticationService {
 
   public logout() {
     this.securityStorage.clear();
+    this.router.navigateByUrl('/auth/login');
   }
 
   public validateToken(token: string) {

@@ -1,3 +1,5 @@
 
 <router-outlet></router-outlet>
+<app-loading [overlay]="true" [diameter]="100" *ngIf="applicationService.loading | async">
+</app-loading>
 <notifier-container></notifier-container>
