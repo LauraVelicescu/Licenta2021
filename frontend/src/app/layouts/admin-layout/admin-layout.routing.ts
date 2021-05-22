@@ -3,23 +3,28 @@ import {Routes} from '@angular/router';
 import {DashboardComponent} from '../../pages/dashboard/dashboard.component';
 import {UserLayoutComponent} from './submodules/user-module/user-layout/user-layout.component';
 import {NgoLayoutComponent} from './submodules/ngo-module/ngo-layout/ngo-layout.component';
+import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
 
 export const AdminLayoutRoutes: Routes = [
   {
-    path: 'user', component: UserLayoutComponent,
+    path: '',
+    component: DashboardComponent
+  },
+  {
+    path: ApplicationRoutes.USER_ROUTE, component: UserLayoutComponent,
     children: [{
       path: '',
       loadChildren: () => import('./submodules/user-module/user-layout/user-layout.module').then(m => m.UserLayoutModule)
     }]
   },
   {
-    path: 'ngo', component: NgoLayoutComponent,
+    path: ApplicationRoutes.NGO_ROUTE, component: NgoLayoutComponent,
     children: [{
       path: '',
       loadChildren: () => import('./submodules/ngo-module/ngo-layout/ngo-layout.module').then(m => m.NgoLayoutModule)
     }]
   },
-  {path: 'dashboard', component: DashboardComponent},
+  {path: ApplicationRoutes.DASHBOARD_ROUTE, component: DashboardComponent},
   // { path: 'icons', component: IconsComponent },
   // { path: "maps", component: MapComponent },
   // { path: "notifications", component: NotificationsComponent },

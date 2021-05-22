@@ -25,7 +25,8 @@ export class UserService {
       userInfo).pipe(map((result: UserDTO) => {
       return result;
     }), catchError(err => {
-      throw new Error(err);
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
     }));
   }
 
@@ -33,6 +34,7 @@ export class UserService {
     return this.mainService.get(this.rootURL + this.getURL).pipe(map((result: UserDTO) => {
       return result;
     }), catchError(err => {
+      this.mainService.httpError(err);
       throw new Error(err);
     }));
   }
@@ -41,6 +43,7 @@ export class UserService {
     return this.mainService.postFile(this.rootURL + this.uploadImageURL, profilePicture).pipe(map((result: UserDTO) => {
       return result;
     }), catchError(err => {
+      this.mainService.httpError(err);
       throw new Error(err);
     }));
   }
@@ -57,6 +60,7 @@ export class UserService {
     return this.mainService.get(this.rootURL + this.getUsersURL + queryString).pipe(map((result: UserDTO[]) => {
       return plainToClass(UserDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
+      this.mainService.httpError(err);
       throw new Error(err.error.message);
     }));
   }
@@ -65,6 +69,7 @@ export class UserService {
     return this.mainService.get(this.rootURL + this.getUsersCountURL ).pipe(map((result: number) => {
       return result;
     }), catchError(err => {
+      this.mainService.httpError(err);
       throw new Error(err.error.message);
     }));
   }

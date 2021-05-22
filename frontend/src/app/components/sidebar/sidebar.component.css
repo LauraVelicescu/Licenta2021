@@ -10,13 +10,15 @@
 }
 
 .example-tree {
- background-color: transparent;
+  background-color: transparent;
+  color: black;
 }
+
 a {
   text-decoration: none;
   color: black;
 }
 
-.active-link{
+.active-link {
   text-decoration: underline;
 }
