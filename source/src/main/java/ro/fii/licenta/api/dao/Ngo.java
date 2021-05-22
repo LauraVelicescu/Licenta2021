@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import ro.fii.licenta.framework.NameDescriptionEntity;
@@ -33,7 +35,7 @@ public class Ngo extends NameDescriptionEntity {
 
 	private byte[] logo;
 
-	private List<User> admins;
+	private User admin;
 
 	@Column(name = "acronym")
 	public String getAcronym() {
@@ -99,14 +101,14 @@ public class Ngo extends NameDescriptionEntity {
 		this.logo = logo;
 	}
 
-	@ManyToMany
-	@JoinTable(name = "ngo_admins", joinColumns = @JoinColumn(name = "ngo_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-	public List<User> getAdmins() {
-		return admins;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	public User getAdmin() {
+		return admin;
 	}
 
-	public void setAdmins(List<User> admins) {
-		this.admins = admins;
+	public void setAdmin(User admin) {
+		this.admin = admin;
 	}
 
 }
