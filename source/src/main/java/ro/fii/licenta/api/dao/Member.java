@@ -1,5 +1,6 @@
 package ro.fii.licenta.api.dao;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -17,6 +18,8 @@ public class Member extends PersistableEntity {
 	private User user;
 
 	private Ngo ngo;
+	
+	private String function;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -38,4 +41,14 @@ public class Member extends PersistableEntity {
 		this.ngo = ngo;
 	}
 
+	@Column(name = "ngo_function")
+	public String getFunction() {
+		return function;
+	}
+
+	public void setFunction(String function) {
+		this.function = function;
+	}
+
+	
 }

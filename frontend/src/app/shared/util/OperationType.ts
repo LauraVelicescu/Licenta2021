@@ -3,5 +3,7 @@ export enum OperationType {
   MODIFY,
   DELETE,
   UNLOCK,
-  LOCK
+  LOCK,
+  ASSIGN_PEOPLE,
+  ACCEPT_PENDING
 }

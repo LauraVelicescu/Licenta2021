@@ -14,6 +14,9 @@
           <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"  [disabled]="selection.selected.length === 0" (click)="handleOperation(operationType.DELETE, selection.selected)">
             <mat-icon>delete</mat-icon>
           </button>
+          <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"  [disabled]="selection.selected.length !== 1" (click)="handleOperation(operationType.ASSIGN_PEOPLE, selection.selected)">
+            <mat-icon>people</mat-icon>
+          </button>
         </mat-toolbar>
         <div class="card-body">
           <table mat-table class="table" [dataSource]="dataSource">

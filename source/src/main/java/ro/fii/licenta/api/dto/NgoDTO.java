@@ -1,9 +1,6 @@
 package ro.fii.licenta.api.dto;
 
 import java.util.Date;
-import java.util.List;
-
-import ro.fii.licenta.api.dao.User;
 
 public class NgoDTO {
 	
@@ -24,8 +21,6 @@ public class NgoDTO {
     private String linkedinLink;
     
     private byte[] logo;
-
-    private List<User> admins;
 
 	public Long getId() {
 		return id;
@@ -98,15 +93,5 @@ public class NgoDTO {
 	public void setLogo(byte[] logo) {
 		this.logo = logo;
 	}
-
-	public List<User> getAdmins() {
-		return admins;
-	}
-
-	public void setAdmins(List<User> admins) {
-		this.admins = admins;
-	}
-    
-    
 
 }

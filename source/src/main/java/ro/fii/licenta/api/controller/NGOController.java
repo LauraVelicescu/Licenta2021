@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import javassist.NotFoundException;
-import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
-import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
 
@@ -82,7 +79,6 @@ public class NGOController {
 		ngoService.deleteNGOs(ngoDTO);
 	}
 
-
 	@GetMapping(value = "/getNGO")
 	public ResponseEntity<?> getNGO(HttpServletRequest request) {
 		return null;
@@ -104,6 +100,11 @@ public class NGOController {
 	public ResponseEntity<Integer> findNGOsCount(HttpServletRequest request) {
 		User currentUser = userService.getCurrentUser(request);
 		return ResponseEntity.ok(ngoService.findAllNgosByAdmin(null, null, currentUser).size());
+	}
+
+	@PostMapping(value = "/addMembers")
+	public ResponseEntity<List<String>> addMembers(@RequestBody List<MemberDTO> members) {
+		return ResponseEntity.ok(ngoService.addMembers(members));
 	}
 
 }

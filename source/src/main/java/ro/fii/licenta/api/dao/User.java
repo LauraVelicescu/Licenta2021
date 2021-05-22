@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import ro.fii.licenta.framework.PersistableEntity;
@@ -178,8 +179,7 @@ public class User extends PersistableEntity {
 		this.groups = groups;
 	}
 
-	@ManyToMany
-	@JoinTable(name = "ngo_admins", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ngo_id"))
+	@OneToMany(mappedBy = "admin")
 	public List<Ngo> getAdministeredNGOs() {
 		return administeredNGOs;
 	}
