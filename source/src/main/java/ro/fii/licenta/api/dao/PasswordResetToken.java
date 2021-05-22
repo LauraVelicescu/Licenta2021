@@ -19,8 +19,6 @@ public class PasswordResetToken extends PersistableEntity {
 	// private static final int EXPIRATION = 60 * 24;
 	private String token;
 
-	@OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-	@JoinColumn(nullable = false, name = "user_id")
 	private User user;
 
 	private Date expiryDate;
@@ -33,6 +31,9 @@ public class PasswordResetToken extends PersistableEntity {
 		this.token = token;
 	}
 
+
+	@OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+	@JoinColumn(nullable = false, name = "user_id")
 	public User getUser() {
 		return user;
 	}

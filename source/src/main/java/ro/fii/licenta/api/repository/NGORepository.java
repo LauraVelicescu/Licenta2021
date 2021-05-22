@@ -13,6 +13,6 @@ public interface NGORepository extends PersistableEntityRepository<Ngo, Long> {
 	Ngo findByAcronym(String acronym);
 
 	Ngo findById(int id);
-
-	List<Ngo> findAllByAdmins(User user);
+	
+	List<Ngo> findAllByAdmin(User user);
 }

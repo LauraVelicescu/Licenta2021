@@ -160,7 +160,4 @@ export class UserManageComponent implements OnInit, AfterViewInit {
     this.load();
   }
 
-  getFriendlyName() {
-    return this.currentUser.firstName && this.currentUser.lastName ? this.currentUser.firstName + ' ' + this.currentUser.lastName : '-';
-  }
 }

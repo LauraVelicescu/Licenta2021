@@ -4,10 +4,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.PasswordResetToken;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.repository.PasswordTokenRepository;
@@ -21,6 +25,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private PasswordTokenRepository passwordTokenRepository;
+	
+	@Autowired
+	private JWTTokenUtil jwtTokenUtil;
 
 	@Override
 	public User findUserByEmail(String userEmail) {
@@ -67,6 +74,31 @@ public class UserServiceImpl implements UserService {
 	public List<User> findAllUsers(Integer pageNo, Integer pageSize) {
 		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
 		return page != null ? userRepository.findAll(page).getContent() : userRepository.findAll();
+	}
+	
+	@Override
+	public User getCurrentUser(HttpServletRequest request) {
+		final String requestTokenHeader = request.getHeader("Authorization");
+
+		String username = null;
+		String jwtToken = null;
+		// JWT Token is in the form "Bearer token". Remove Bearer word and get
+		// only the Token
+		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+			jwtToken = requestTokenHeader.substring(7);
+			try {
+				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Unable to get JWT Token");
+			} catch (ExpiredJwtException e) {
+				System.out.println("JWT Token has expired");
+			}
+		} else {
+			System.out.println("JWT Token does not begin with Bearer String");
+		}
+		User user = userRepository.findByEmailAddress(username);
+		
+		return user;
 	}
 
 }
