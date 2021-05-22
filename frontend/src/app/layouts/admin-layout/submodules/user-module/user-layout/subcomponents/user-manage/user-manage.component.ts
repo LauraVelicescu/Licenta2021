@@ -9,6 +9,7 @@ import {OperationType} from '../../../../../../../shared/util/OperationType';
 import {ApplicationService} from '../../../../../../../shared/services/application/application.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {AuthenticationService} from '../../../../../../../shared/services/authentication/authentication.service';
+import {formatDate} from '@angular/common';
 
 @Component({
   selector: 'app-user-manage',
@@ -23,16 +24,12 @@ export class UserManageComponent implements OnInit, AfterViewInit {
 
   userForm: FormGroup;
   currentUser: UserDTO;
-  selectedFile: File;
-  retrievedImage: any;
-  base64Data: any;
   message: string;
   imageName: any;
 
-
   selection = new SelectionModel<UserDTO>(true, []);
 
-  @ViewChild("paginator") paginator: MatPaginator;
+  @ViewChild('paginator') paginator: MatPaginator;
   length: number;
 
   constructor(private formBuilder: FormBuilder, private userService: UserService, private notificationService: NotificationService,
@@ -61,6 +58,10 @@ export class UserManageComponent implements OnInit, AfterViewInit {
 
   public get operationType() {
     return OperationType;
+  }
+
+  public formatDate(date: Date) {
+    return formatDate(date, 'yyyy-MM-dd', 'en-US');
   }
 
   private load() {
@@ -96,8 +97,34 @@ export class UserManageComponent implements OnInit, AfterViewInit {
         this.currentUser = payload[0];
         break;
       case OperationType.DELETE:
+        this.applicationService.emmitLoading(true);
+        this.userService.deleteUsers(payload).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          result.forEach(e => {
+            this.notificationService.warning(e);
+          })
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+        this.load();
         break;
       case OperationType.UNLOCK:
+        this.applicationService.emmitLoading(true);
+        this.userService.blockUsers(payload).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+        this.load();
+        break;
+      case OperationType.LOCK:
+        this.applicationService.emmitLoading(true);
+        this.userService.blockUsers(payload).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+        this.load();
         break;
     }
   }
@@ -126,7 +153,7 @@ export class UserManageComponent implements OnInit, AfterViewInit {
           }
         )
       } else {
-        user.password = "";
+        user.password = '';
         this.authService.register(user).subscribe((result) => {
             this.applicationService.emmitLoading(false);
             this.load();
@@ -136,23 +163,6 @@ export class UserManageComponent implements OnInit, AfterViewInit {
           }
         )
       }
-    }
-  }
-
-  goToSite(url: string) {
-    window.open(url, '_blank');
-  }
-
-  onFileChanged(event) {
-    this.selectedFile = event.target.files[0];
-
-    const uploadImageData = new FormData();
-    if (this.selectedFile.type.includes('image')) {
-      uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
-      this.userService.updateProfilePicture(uploadImageData).subscribe((result) => {
-        this.base64Data = result.profilePicture;
-        this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
-      });
     }
   }
 

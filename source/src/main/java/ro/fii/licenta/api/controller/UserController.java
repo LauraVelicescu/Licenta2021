@@ -26,6 +26,7 @@ import javassist.NotFoundException;
 import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.UserDTO;
+import ro.fii.licenta.api.exception.BusinessException;
 import ro.fii.licenta.api.service.UserService;
 
 @RestController
@@ -109,8 +110,6 @@ public class UserController {
 
 		String username = null;
 		String jwtToken = null;
-		// JWT Token is in the form "Bearer token". Remove Bearer word and get
-		// only the Token
 		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 			jwtToken = requestTokenHeader.substring(7);
 			try {
@@ -130,8 +129,6 @@ public class UserController {
 
 	}
 
-	// compress the image bytes before storing it in the db
-
 	public static byte[] compressBytes(byte[] data) {
 		Deflater deflater = new Deflater();
 		deflater.setInput(data);
@@ -149,6 +146,35 @@ public class UserController {
 		}
 		return outputStream.toByteArray();
 
+	}
+
+	@PostMapping(value = "/delete")
+	public ResponseEntity<List<String>> deleteUsers(@RequestBody List<UserDTO> usersDTO,  HttpServletRequest request) {
+		final String requestTokenHeader = request.getHeader("Authorization");
+
+		String username = null;
+		String jwtToken = null;
+		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+			jwtToken = requestTokenHeader.substring(7);
+			try {
+				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Unable to get JWT Token");
+			} catch (ExpiredJwtException e) {
+				System.out.println("JWT Token has expired");
+			}
+		} else {
+			System.out.println("JWT Token does not begin with Bearer String");
+		}
+		User user = userService.findUserByEmail(username);
+		List<String> errors = this.userService.deleteUser(usersDTO, user);
+		return ResponseEntity.ok(errors);
+	}
+	
+	
+	@PostMapping(value = "/block")
+	public void blockUsers(@RequestBody List<UserDTO> usersDTO) throws BusinessException {
+		userService.blockUsers(usersDTO);
 	}
 
 }

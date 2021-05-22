@@ -47,13 +47,13 @@ public class AuthenticationController {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private JavaMailSender mailSender;
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private SecurityService securityService;
 
@@ -62,7 +62,7 @@ public class AuthenticationController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManagerBean;
 
@@ -77,11 +77,16 @@ public class AuthenticationController {
 		System.out.println(jwtRequest.getUsername() + ' ' + jwtRequest.getPassword());
 		authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
 
-		final UserDetails userDetails = userDetailsService
-				.loadUserByUsername(jwtRequest.getUsername());
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
+		User loggedUser = userRepository.findByEmailAddress(jwtRequest.getUsername());
+		if (loggedUser != null) {
+			if (loggedUser.isBlocked() == true) {
+				throw new Exception("USER_BLOCKED");
+			}
+		}
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
 
@@ -91,12 +96,19 @@ public class AuthenticationController {
 		} catch (DisabledException e) {
 			throw new Exception("USER_DISABLED");
 		} catch (BadCredentialsException e) {
+			User user = userRepository.findByEmailAddress(username);
+			if (user != null) {
+				user.setFailAttemtps(user.getFailAttemtps() + 1);
+				if (user.getFailAttemtps() == 3) {
+					user.setBlocked(true);
+				}
+				userRepository.save(user);
+			}
 			throw new Exception("INVALID_CREDENTIALS");
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
 	}
-
 
 	@PostMapping("/register")
 	public UserDTO register(HttpServletRequest request, @RequestBody UserDTO userDto)
@@ -115,73 +127,67 @@ public class AuthenticationController {
 		}
 
 	}
-	
+
 	@PostMapping("/resetPassword")
 	// gets email and creates token
 	// TODO send e-mail with token
-	public UserDTO resetPassword(HttpServletRequest request, 
-	  @RequestBody UserDTO userDto) throws BusinessException {
-	    User user = userService.findUserByEmail(userDto.getEmailAddress());
-	    if (user == null) {
-	        throw new BusinessException("This user does not exist.");
-	    }
-	    String token = UUID.randomUUID().toString();
-	    userService.createPasswordResetTokenForUser(user, token);
-	    mailSender.send(constructResetTokenEmail(getAppUrl(request), 
-	      request.getLocale(), token, user));
+	public UserDTO resetPassword(HttpServletRequest request, @RequestBody UserDTO userDto) throws BusinessException {
+		User user = userService.findUserByEmail(userDto.getEmailAddress());
+		if (user == null) {
+			throw new BusinessException("This user does not exist.");
+		}
+		String token = UUID.randomUUID().toString();
+		userService.createPasswordResetTokenForUser(user, token);
+		mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
 
 		return this.modelMapper.map(user, UserDTO.class);
 	}
-	
+
 	private String getAppUrl(HttpServletRequest request) {
-        return "http://localhost:4200/auth/changePassword";
-    }
+		return "http://localhost:4200/auth/changePassword";
+	}
 
 	@GetMapping("/changePassword")
-	public ResponseEntity<?> changePassword(HttpServletRequest request, 
-			  @RequestParam("token") String token) throws Exception{
+	public ResponseEntity<?> changePassword(HttpServletRequest request, @RequestParam("token") String token)
+			throws Exception {
 		String result = securityService.validatePasswordResetToken(token);
 		if (result != null) {
 			throw new Exception("Invalid token.");
-		}
-		else {
+		} else {
 			return ResponseEntity.ok().build();
 		}
 	}
-	
+
 	@PostMapping("/savePassword")
 	public void savePassword(HttpServletRequest request, @RequestBody PasswordDTO passwordDto) throws Exception {
 
-	    String result = securityService.validatePasswordResetToken(passwordDto.getToken());
-	    System.out.print(false);
+		String result = securityService.validatePasswordResetToken(passwordDto.getToken());
+		System.out.print(false);
 
-	    if(result != null) {
-	        throw new Exception("Password reset unsuccesful.");
-	    }
+		if (result != null) {
+			throw new Exception("Password reset unsuccesful.");
+		}
 
-	    User user = userService.getUserByPasswordResetToken(passwordDto.getToken());
-	    if(user != null) {
-	        userService.changeUserPassword(user, passwordEncoder.encode(passwordDto.getNewPassword()));
-	    } else {
-	        throw new BusinessException("This user does not exist.");
-	    }
+		User user = userService.getUserByPasswordResetToken(passwordDto.getToken());
+		if (user != null) {
+			userService.changeUserPassword(user, passwordEncoder.encode(passwordDto.getNewPassword()));
+		} else {
+			throw new BusinessException("This user does not exist.");
+		}
 	}
 
-	
-	private SimpleMailMessage constructResetTokenEmail(
-			  String contextPath, Locale locale, String token, User user) {
-			    String url = contextPath + "?token=" + token;
-			    String message = "Reset password link:"; 
-			    return constructEmail("Reset Password", message + " \r\n" + url, user);
-			}
-	
-	private SimpleMailMessage constructEmail(String subject, String body, 
-			  User user) {
-			    SimpleMailMessage email = new SimpleMailMessage();
-			    email.setSubject(subject);
-			    email.setText(body);
-			    email.setTo(user.getEmailAddress());
-			    email.setFrom("admin@ongmanager.com");
-			    return email;
-			}
+	private SimpleMailMessage constructResetTokenEmail(String contextPath, Locale locale, String token, User user) {
+		String url = contextPath + "?token=" + token;
+		String message = "Reset password link:";
+		return constructEmail("Reset Password", message + " \r\n" + url, user);
+	}
+
+	private SimpleMailMessage constructEmail(String subject, String body, User user) {
+		SimpleMailMessage email = new SimpleMailMessage();
+		email.setSubject(subject);
+		email.setText(body);
+		email.setTo(user.getEmailAddress());
+		email.setFrom("admin@ongmanager.com");
+		return email;
+	}
 }
