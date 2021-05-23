@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {UserService} from '../../../../../../../shared/services/user-service/user.service';
@@ -10,6 +10,7 @@ import {ApplicationService} from '../../../../../../../shared/services/applicati
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {AuthenticationService} from '../../../../../../../shared/services/authentication/authentication.service';
 import {formatDate} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-user-manage',
@@ -33,7 +34,7 @@ export class UserManageComponent implements OnInit, AfterViewInit {
   length: number;
 
   constructor(private formBuilder: FormBuilder, private userService: UserService, private notificationService: NotificationService,
-              private applicationService: ApplicationService, private authService: AuthenticationService) {
+              private applicationService: ApplicationService, private authService: AuthenticationService, private matDialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -126,6 +127,24 @@ export class UserManageComponent implements OnInit, AfterViewInit {
         });
         this.load();
         break;
+      case OperationType.SEND_EMAIL:
+        let dialogRef = this.matDialog.open(UserSendMassEmail, {
+          width: "750px",
+        });
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            this.applicationService.emmitLoading(true);
+            this.userService.sendEmail(payload, result.subject, result.body).subscribe((result2) => {
+              this.notificationService.info("Emails sent successfully")
+              this.applicationService.emmitLoading(false);
+            }, error => {
+              this.notificationService.error(error);
+              this.applicationService.emmitLoading(false);
+            })
+          }
+        })
+        break;
+
     }
   }
 
@@ -170,4 +189,33 @@ export class UserManageComponent implements OnInit, AfterViewInit {
     this.load();
   }
 
+}
+
+
+@Component({
+  selector: 'app-user-send-mass-email',
+  templateUrl: 'user_send_mass_email.html',
+})
+export class UserSendMassEmail {
+  subject: any;
+  body: any;
+
+
+  constructor(
+    public dialogRef: MatDialogRef<UserSendMassEmail>,
+    @Inject(MAT_DIALOG_DATA) public data2: any,
+    private applicationService: ApplicationService) {
+  }
+
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  conclude() {
+    this.dialogRef.close({
+      subject: this.subject,
+      body: this.body
+    });
+  }
 }

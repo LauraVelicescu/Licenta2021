@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +22,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import javassist.NotFoundException;
 import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dto.EmailPayloadDTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.exception.BusinessException;
+import ro.fii.licenta.api.service.MailingService;
 import ro.fii.licenta.api.service.UserService;
 
 @RestController
@@ -45,29 +47,19 @@ public class UserController {
 	@Autowired
 	private JWTTokenUtil jwtTokenUtil;
 
+	@Autowired
+	private MailingService mailingService;
+
+	@Autowired
+	private JavaMailSender mailSender;
+
 	@GetMapping(value = "/getUser")
 	public ResponseEntity<UserDTO> getUser(HttpServletRequest request) throws NotFoundException {
 
-		final String requestTokenHeader = request.getHeader("Authorization");
-
-		String username = null;
-		String jwtToken = null;
-		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-			jwtToken = requestTokenHeader.substring(7);
-			try {
-				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Unable to get JWT Token");
-			} catch (ExpiredJwtException e) {
-				System.out.println("JWT Token has expired");
-			}
-		} else {
-			System.out.println("JWT Token does not begin with Bearer String");
-		}
-		User user = userService.findUserByEmail(username);
+		User user = userService.getCurrentUser(request);
 
 		if (user == null) {
-			throw new NotFoundException(String.format("User ith email %s was not found", username));
+			throw new NotFoundException(String.format("User ith email %s was not found", "acadele"));
 		}
 		return new ResponseEntity<>(modelMapper.map(user, UserDTO.class), HttpStatus.OK);
 
@@ -106,23 +98,7 @@ public class UserController {
 	@PostMapping(value = "/uploadImage")
 	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file, HttpServletRequest request)
 			throws IOException {
-		final String requestTokenHeader = request.getHeader("Authorization");
-
-		String username = null;
-		String jwtToken = null;
-		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-			jwtToken = requestTokenHeader.substring(7);
-			try {
-				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Unable to get JWT Token");
-			} catch (ExpiredJwtException e) {
-				System.out.println("JWT Token has expired");
-			}
-		} else {
-			System.out.println("JWT Token does not begin with Bearer String");
-		}
-		User user = userService.findUserByEmail(username);
+		User user = userService.getCurrentUser(request);
 
 		user.setProfilePicture(compressBytes(file.getBytes()));
 		return new ResponseEntity<>(modelMapper.map(userService.save(user), UserDTO.class), HttpStatus.OK);
@@ -149,32 +125,23 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/delete")
-	public ResponseEntity<List<String>> deleteUsers(@RequestBody List<UserDTO> usersDTO,  HttpServletRequest request) {
-		final String requestTokenHeader = request.getHeader("Authorization");
-
-		String username = null;
-		String jwtToken = null;
-		if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-			jwtToken = requestTokenHeader.substring(7);
-			try {
-				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Unable to get JWT Token");
-			} catch (ExpiredJwtException e) {
-				System.out.println("JWT Token has expired");
-			}
-		} else {
-			System.out.println("JWT Token does not begin with Bearer String");
-		}
-		User user = userService.findUserByEmail(username);
+	public ResponseEntity<List<String>> deleteUsers(@RequestBody List<UserDTO> usersDTO, HttpServletRequest request) {
+		User user = userService.getCurrentUser(request);
 		List<String> errors = this.userService.deleteUser(usersDTO, user);
 		return ResponseEntity.ok(errors);
 	}
-	
-	
+
 	@PostMapping(value = "/block")
 	public void blockUsers(@RequestBody List<UserDTO> usersDTO) throws BusinessException {
 		userService.blockUsers(usersDTO);
+	}
+
+	@PostMapping(value = "/sendMassEmail")
+	public void sendEmailToUsers(@RequestBody EmailPayloadDTO body) {
+		for (UserDTO u : body.getUsers()) {
+			User user = modelMapper.map(u, User.class);
+			mailSender.send(mailingService.constructEmail(body.getSubject(), body.getBody(), user));
+		}
 	}
 
 }

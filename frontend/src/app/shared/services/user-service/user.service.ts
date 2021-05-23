@@ -18,6 +18,7 @@ export class UserService {
   private deleteURL = '/delete';
   private blockURL = '/block';
   private uploadImageURL = '/uploadImage'
+  private sendEmailURL = '/sendMassEmail'
 
   constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage) {
   }
@@ -87,6 +88,19 @@ export class UserService {
 
   public blockUsers(users: UserDTO[]) {
     return this.mainService.post(this.rootURL + this.blockURL, users).pipe(map((result: string[]) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public sendEmail(users: UserDTO[], emailSubject: string, emailBody: string){
+    return this.mainService.post(this.rootURL + this.sendEmailURL, {
+     users,
+     subject: emailSubject,
+     body: emailBody
+    }).pipe(map((result: string[]) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);

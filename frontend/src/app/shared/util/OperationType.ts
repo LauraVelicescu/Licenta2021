@@ -6,5 +6,6 @@ export enum OperationType {
   LOCK,
   ASSIGN_PEOPLE,
   ACCEPT_PENDING,
-  DECLINE_PENDING
+  DECLINE_PENDING,
+  SEND_EMAIL
 }
