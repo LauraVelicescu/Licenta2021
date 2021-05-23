@@ -1,0 +1,17 @@
+<h1>Send mail</h1>
+<mat-dialog-content>
+  <mat-form-field style="width: 100%">
+    <mat-label>Subject</mat-label>
+    <input matInput [(ngModel)]="subject">
+  </mat-form-field>
+
+  <mat-form-field  style="width: 100%">
+    <mat-label>Body</mat-label>
+    <textarea matInput [(ngModel)]="body">
+    </textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">No Thanks</button>
+  <button mat-button cdkFocusInitial (click)="conclude()">Ok</button>
+</mat-dialog-actions>

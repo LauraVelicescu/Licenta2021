@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import javassist.NotFoundException;
 import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dto.EmailPayloadDTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.exception.BusinessException;
 import ro.fii.licenta.api.service.MailingService;
@@ -46,11 +46,10 @@ public class UserController {
 
 	@Autowired
 	private JWTTokenUtil jwtTokenUtil;
-	
-	
+
 	@Autowired
 	private MailingService mailingService;
-	
+
 	@Autowired
 	private JavaMailSender mailSender;
 
@@ -60,7 +59,7 @@ public class UserController {
 		User user = userService.getCurrentUser(request);
 
 		if (user == null) {
-			throw new NotFoundException(String.format("User ith email %s was not found", username));
+			throw new NotFoundException(String.format("User ith email %s was not found", "acadele"));
 		}
 		return new ResponseEntity<>(modelMapper.map(user, UserDTO.class), HttpStatus.OK);
 
@@ -126,23 +125,22 @@ public class UserController {
 	}
 
 	@PostMapping(value = "/delete")
-	public ResponseEntity<List<String>> deleteUsers(@RequestBody List<UserDTO> usersDTO,  HttpServletRequest request) {
+	public ResponseEntity<List<String>> deleteUsers(@RequestBody List<UserDTO> usersDTO, HttpServletRequest request) {
 		User user = userService.getCurrentUser(request);
 		List<String> errors = this.userService.deleteUser(usersDTO, user);
 		return ResponseEntity.ok(errors);
 	}
-	
-	
+
 	@PostMapping(value = "/block")
 	public void blockUsers(@RequestBody List<UserDTO> usersDTO) throws BusinessException {
 		userService.blockUsers(usersDTO);
 	}
-	
+
 	@PostMapping(value = "/sendMassEmail")
-	public void sendEmailToUsers(@RequestBody List<UserDTO> usersDTO, String emailSubject, String emailBody) {
-		for(UserDTO u : usersDTO) {
+	public void sendEmailToUsers(@RequestBody EmailPayloadDTO body) {
+		for (UserDTO u : body.getUsers()) {
 			User user = modelMapper.map(u, User.class);
-			mailSender.send(mailingService.constructEmail(emailSubject, emailBody, user));
+			mailSender.send(mailingService.constructEmail(body.getSubject(), body.getBody(), user));
 		}
 	}
 

@@ -96,7 +96,11 @@ export class UserService {
   }
 
   public sendEmail(users: UserDTO[], emailSubject: string, emailBody: string){
-    return this.mainService.post(this.rootURL + this.sendEmailURL, users).pipe(map((result: string[]) => {
+    return this.mainService.post(this.rootURL + this.sendEmailURL, {
+     users,
+     subject: emailSubject,
+     body: emailBody
+    }).pipe(map((result: string[]) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);
