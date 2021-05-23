@@ -11,15 +11,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javassist.NotFoundException;
+import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
+import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
@@ -107,4 +110,26 @@ public class NGOController {
 		return ResponseEntity.ok(ngoService.addMembers(members));
 	}
 
+	@GetMapping(value = "/getNgoRequests/number/{ngoId}")
+	public ResponseEntity<Integer> getNgoRequestsNumber(@PathVariable(value = "ngoId") Long ngoId) {
+		return ResponseEntity.ok(ngoService.findAllMemberRequestsByNgo(null, null, ngoId).size());
+	}
+
+	@GetMapping(value = "/getNgoRequests/{ngoId}")
+	public ResponseEntity<List<MemberRequestDTO>> getNgoRequests(@PathVariable(value = "ngoId") Long ngoId,
+			@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "pageNo", required = false) Integer pageNo) {
+		List<MemberRequest> memberRequests = ngoService.findAllMemberRequestsByNgo(pageNo, pageNo, ngoId);
+		List<MemberRequestDTO> memberRequestDTOs = new ArrayList<MemberRequestDTO>();
+		for (MemberRequest mr : memberRequests) {
+			memberRequestDTOs.add(modelMapper.map(mr, MemberRequestDTO.class));
+		}
+		return ResponseEntity.ok(memberRequestDTOs);
+	}
+
+	@PostMapping(value = "/saveNgoRequestStatus/{status}")
+	public void getNgoRequests(@PathVariable(value = "status") Integer status,
+			@RequestBody List<MemberRequestDTO> memberRequestDTOs) {
+		ngoService.saveMember(memberRequestDTOs, status);
+	}
 }

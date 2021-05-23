@@ -15,11 +15,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import ro.fii.licenta.api.dao.Member;
+import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
+import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.repository.MemberRepository;
+import ro.fii.licenta.api.repository.MemberRequestRepository;
 import ro.fii.licenta.api.repository.NGORepository;
 import ro.fii.licenta.api.service.NGOService;
 
@@ -33,6 +36,9 @@ public class NGOServiceImpl implements NGOService {
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	@Autowired
+	private MemberRequestRepository memberRequestRepository;
 
 	@Override
 	public Ngo findByName(String name) {
@@ -92,6 +98,44 @@ public class NGOServiceImpl implements NGOService {
 			}
 		}
 		return errors;
+	}
+
+	@Override
+	public List<MemberRequest> findAllMemberRequestsByNgo(Integer pageNo, Integer pageSize, Long ngoId) {
+		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+		return page != null ? memberRequestRepository.findAll(new Specification<MemberRequest>() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Predicate toPredicate(Root<MemberRequest> root, CriteriaQuery<?> query,
+					CriteriaBuilder criteriaBuilder) {
+				return criteriaBuilder.and(criteriaBuilder.equal(root.get("ngo").get("id"), ngoId),
+						criteriaBuilder.equal(root.get("status"), 0));
+			}
+		}, page).getContent() : memberRequestRepository.findAllByNgoAndStatus(ngoId, 0);
+	}
+
+	@Override
+	public List<Member> saveMember(List<MemberRequestDTO> memberRequestDTOs, int status) {
+		List<Member> members = new ArrayList<Member>();
+		for (MemberRequestDTO mrd : memberRequestDTOs) {
+			MemberRequest mr = memberRequestRepository.findById(mrd.getId()).orElse(null);
+			if (mr != null) {
+				mr.setStatus(status);
+				memberRequestRepository.save(mr);
+				if (status == 1) {
+					Member m = new Member();
+					m.setNgo(mr.getNgo());
+					m.setUser(mr.getUser());
+					m.setFunction("-");
+					memberRepository.save(m);
+					members.add(m);
+				}
+			}
+
+		}
+		return members;
 	}
 
 }

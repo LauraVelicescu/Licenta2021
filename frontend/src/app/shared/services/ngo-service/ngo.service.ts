@@ -5,6 +5,7 @@ import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
 import {UserDTO} from '../../dto/UserDTO';
 import {MemberDTO} from '../../dto/MemberDTO';
+import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,9 @@ export class NGOService {
   private getNGOsCountURL = '/findNGOs/count'
   private uploadImageURL = '/uploadImage'
   private assignMemberToNGOURRL = '/addMembers';
+  private getNgoRequestsURL = '/getNgoRequests/:ngoId';
+  private getNgoRequestsNumberURL = '/getNgoRequests/number/:ngoId';
+  private saveNgoRequestStatusURL = '/saveNgoRequestStatus/:status';
 
   constructor(private mainService: MainServiceService) {
   }
@@ -95,6 +99,38 @@ export class NGOService {
       ngoMembers.push(ngoMember);
     })
     return this.mainService.post(this.rootURL + this.assignMemberToNGOURRL, ngoMembers).pipe(map((result: string[]) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public getNgoRequestsNumber(ngo: NgoDTO) {
+    return this.mainService.get(this.rootURL + this.getNgoRequestsNumberURL.replace(':ngoId', ngo.id.toString())).pipe(map((result: number) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+  public getNgoRequests(pageIndex: number, pageSize: number, ngo: NgoDTO) {
+    let queryString: string = '';
+    if (pageIndex && pageSize) {
+      queryString += '?page=' + pageIndex + '&pageSize=' + pageSize;
+    }
+    return this.mainService.get(this.rootURL + this.getNgoRequestsURL.replace(':ngoId', ngo.id.toString()) + queryString).pipe(map((result: MemberRequestDTO[]) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public saveStatusMemberRequest(ngoMemberRequests: MemberRequestDTO[], status: MemberRequestStatus) {
+    return this.mainService.post(this.rootURL + this.saveNgoRequestStatusURL.replace(':status', status.toString()), ngoMemberRequests ).pipe(map((result: MemberRequestDTO[]) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);

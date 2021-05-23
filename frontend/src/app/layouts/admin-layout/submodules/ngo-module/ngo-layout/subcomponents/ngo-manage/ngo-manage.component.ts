@@ -13,6 +13,7 @@ import {map, startWith} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {UserService} from '../../../../../../../shared/services/user-service/user.service';
 import {UserDTO} from '../../../../../../../shared/dto/UserDTO';
+import {MemberRequestDTO, MemberRequestStatus} from '../../../../../../../shared/dto/MemberRequestDTO';
 
 @Component({
   selector: 'app-ngo-manage',
@@ -141,8 +142,8 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
         })
         break;
       case OperationType.ASSIGN_PEOPLE:
-        this.openDialog();
         this.currentNGO = payload[0];
+        this.openDialog();
         break;
     }
   }
@@ -154,20 +155,7 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
   openDialog(): void {
     const dialogRef = this.matDialog.open(NgoMemberJoin, {
       width: '750px',
-      data: {name: 'x', animal: 'y'}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      this.applicationService.emmitLoading(true);
-      this.NGOService.addNgoMembers(this.currentNGO, result).subscribe((result2) => {
-        this.applicationService.emmitLoading(false);
-        result2.forEach(e => {
-          this.notificationService.warning(e);
-        })
-        this.load();
-      }, error => {
-        this.applicationService.emmitLoading(false);
-      })
+      data: {ngo: this.currentNGO}
     });
   }
 }
@@ -176,24 +164,36 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
 @Component({
   selector: 'app-ngo-member-join',
   templateUrl: 'ngo_member_join.html',
+  styleUrls: ['./ngo-manage.component.scss']
 })
-export class NgoMemberJoin implements OnInit {
+export class NgoMemberJoin implements OnInit, AfterViewInit {
 
   @ViewChild('search') searchTextBox: ElementRef;
 
   selectFormControl = new FormControl();
   searchTextboxControl = new FormControl();
   selectedValues: UserDTO[] = [];
-  data: UserDTO[] = []
+  comboData: UserDTO[] = []
 
   filteredOptions: Observable<any[]>;
 
 
+  selection = new SelectionModel<MemberRequestDTO>(true, []);
+
+  @ViewChild('paginator') paginator: MatPaginator;
+  length: number;
+
+  displayedColumns: string[] = ['id', 'Nume', 'Prenume', 'Motivatie'];
+  dataSource = new MatTableDataSource<MemberRequestDTO>([]);
+
+
   constructor(
     public dialogRef: MatDialogRef<NgoMemberJoin>,
-    @Inject(MAT_DIALOG_DATA) public data2: any,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private userService: UserService,
-    private applicationService: ApplicationService) {
+    private applicationService: ApplicationService,
+    private notificationService: NotificationService,
+    private ngoService: NGOService) {
   }
 
   onNoClick(): void {
@@ -201,10 +201,11 @@ export class NgoMemberJoin implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.data);
     this.applicationService.emmitLoading(true);
     this.userService.findUsers().subscribe((result) => {
       this.applicationService.emmitLoading(false);
-      this.data = result;
+      this.comboData = result;
       this.filteredOptions = this.searchTextboxControl.valueChanges
         .pipe(
           startWith<string>(''),
@@ -213,13 +214,24 @@ export class NgoMemberJoin implements OnInit {
     }, error => {
       this.applicationService.emmitLoading(false);
     });
+
+    this.load();
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.selection = new SelectionModel<MemberRequestDTO>(true, []);
+  }
+
+  public get operationType() {
+    return OperationType;
   }
 
   private _filter(name: string): UserDTO[] {
     const filterValue = name.toLowerCase();
     this.setSelectedValues();
     this.selectFormControl.patchValue(this.selectedValues);
-    return this.data.filter(option => ((option.firstName ?? '') + ' ' + (option.lastName ?? '')).toLowerCase().indexOf(filterValue) === 0);
+    return this.comboData.filter(option => ((option.firstName ?? '') + ' ' + (option.lastName ?? '')).toLowerCase().indexOf(filterValue) === 0);
   }
 
   selectionChange(event) {
@@ -252,10 +264,61 @@ export class NgoMemberJoin implements OnInit {
   }
 
   conclude() {
-    this.dialogRef.close(this.selectedValues);
+    this.applicationService.emmitLoading(true);
+    this.ngoService.addNgoMembers(this.data.ngo, this.selectedValues).subscribe((result2) => {
+      this.applicationService.emmitLoading(false);
+      result2.forEach(e => {
+        this.notificationService.warning(e);
+      })
+      this.load();
+    }, error => {
+      this.applicationService.emmitLoading(false);
+    })
   }
 
   getPrint(option: UserDTO) {
     return ((option?.firstName ?? '') + ' ' + (option?.lastName ?? ''));
   }
+
+  private load() {
+    this.dataSource.paginator = this.paginator;
+    this.selection.clear();
+    this.applicationService.emmitLoading(true);
+    this.ngoService.getNgoRequestsNumber(this.data.ngo).subscribe((number) => {
+      this.length = number;
+      this.ngoService.getNgoRequests(this.paginator.pageIndex, this.paginator.pageSize, this.data.ngo).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.dataSource.data = result;
+      }, error => {
+        this.applicationService.emmitLoading(false);
+        this.notificationService.error(error);
+      })
+    }, error => {
+      this.applicationService.emmitLoading(false);
+      this.notificationService.error(error);
+    })
+
+  }
+
+  handleOperation(operation: OperationType, payload?: MemberRequestDTO[]) {
+
+    switch (operation) {
+      case OperationType.ACCEPT_PENDING:
+        this.ngoService.saveStatusMemberRequest(payload, MemberRequestStatus.ACCEPTED).subscribe((result) => {
+          this.notificationService.warning('Users accepted to NGO');
+        }, error => {
+          this.notificationService.warning(error);
+        })
+        break;
+      case OperationType.DECLINE_PENDING:
+        this.ngoService.saveStatusMemberRequest(payload, MemberRequestStatus.DECLINED).subscribe((result) => {
+          this.notificationService.warning('Users accepted to NGO');
+        }, error => {
+          this.notificationService.warning(error);
+        })
+        break;
+    }
+    this.load();
+  }
+
 }
