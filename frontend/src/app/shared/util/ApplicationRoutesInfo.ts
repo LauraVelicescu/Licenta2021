@@ -1,3 +1,5 @@
+import {ApplicationRoutes} from "./ApplicationRoutes";
+
 export interface RouteInfo {
 
   path: string,
@@ -37,6 +39,12 @@ export class ApplicationRoutesInfo {
       path: 'nomenclature',
       title: 'Nomenclatoare',
       icon: 'collections',
+      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      parentPath: 'user'
+    }, {
+      path: 'apply',
+      title: 'Become a member',
+      icon: 'loupe',
       privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
       parentPath: 'user'
     }]

@@ -29,4 +29,7 @@ public interface NGOService {
 	List<MemberRequest> findAllMemberRequestsByNgo(Integer pageNo, Integer pageSize, Long ngoId);
 
 	List<Member> saveMember(List<MemberRequestDTO> memberRequestDTOs, int status);
+	
+	List<Ngo> findNgosNotMemberOf(Integer pageNo, Integer pageSize, User user);
+
 }

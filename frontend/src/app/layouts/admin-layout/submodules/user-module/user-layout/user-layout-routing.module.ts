@@ -4,6 +4,7 @@ import {UserManageComponent} from './subcomponents/user-manage/user-manage.compo
 import {UserProfileComponent} from './subcomponents/user-profille/user-profile/user-profile.component';
 import {ApplicationRoutes} from '../../../../../shared/util/ApplicationRoutes';
 import {UserRolesComponent} from './subcomponents/user-roles/user-roles.component';
+import {UserApplyComponent} from "./subcomponents/user-apply/user-apply.component";
 
 const routes: Routes = [
   {
@@ -14,6 +15,9 @@ const routes: Routes = [
   },
   {
     path: ApplicationRoutes.USER_ROLES_ROUTE, component: UserRolesComponent
+  },
+  {
+    path: ApplicationRoutes.USER_APPLY_ROUTE, component: UserApplyComponent
   }
 ];
 

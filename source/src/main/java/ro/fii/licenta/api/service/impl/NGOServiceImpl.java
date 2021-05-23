@@ -138,4 +138,30 @@ public class NGOServiceImpl implements NGOService {
 		return members;
 	}
 
+	@Override
+	public List<Ngo> findNgosNotMemberOf(Integer pageNo, Integer pageSize, User user) {
+		long userId = user.getId();
+		List<Long> ngoIds = memberRepository.findAllByNotMember(userId);
+		List<Ngo> ngosNotMemberOf = new ArrayList<Ngo>();
+		
+//		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+//		return page != null ? memberRepository.findAll(new Specification<MemberRequest>() {
+//
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public Predicate toPredicate(Root<MemberRequest> root, CriteriaQuery<?> query,
+//					CriteriaBuilder criteriaBuilder) {
+//				return criteriaBuilder.and(criteriaBuilder.equal(root.get("ngo").get("id"), ngoId),
+//						criteriaBuilder.equal(root.get("status"), 0));
+//			}
+//		}, page).getContent() : memberRequestRepository.findAllByNgoAndStatus(ngoId, 0);
+//	}
+//		
+//		for(Long id : ngoIds) {
+//			ngosNotMemberOf.add(ngoRepository.findById(id).get());
+//		}
+		return ngosNotMemberOf;
+	}
+
 }

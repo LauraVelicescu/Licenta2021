@@ -15,4 +15,5 @@ public interface NGORepository extends PersistableEntityRepository<Ngo, Long> {
 	Ngo findById(int id);
 	
 	List<Ngo> findAllByAdmin(User user);
+	
 }

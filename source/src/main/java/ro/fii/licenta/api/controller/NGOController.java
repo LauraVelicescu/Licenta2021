@@ -132,4 +132,23 @@ public class NGOController {
 			@RequestBody List<MemberRequestDTO> memberRequestDTOs) {
 		ngoService.saveMember(memberRequestDTOs, status);
 	}
+	
+	
+	@GetMapping(value = "/findNGOsNotMemberOf")
+	public ResponseEntity<List<NgoDTO>> findNGOsNotMemberOf(@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "pageNo", required = false) Integer pageNo, HttpServletRequest request) {
+		List<NgoDTO> ngos = new ArrayList<NgoDTO>();
+		User currentUser = userService.getCurrentUser(request);
+		ngoService.findNgosNotMemberOf(page, pageNo, currentUser).forEach(e -> {
+			ngos.add(modelMapper.map(e, NgoDTO.class));
+		});
+		return ResponseEntity.ok(ngos);
+	}
+
+	@GetMapping(value = "/findNGOsNotMemberOf/count")
+	public ResponseEntity<Integer> findNGOsNotMemberOfCount(HttpServletRequest request) {
+		User currentUser = userService.getCurrentUser(request);
+		return ResponseEntity.ok(ngoService.findAllNgosByAdmin(null, null, currentUser).size());
+	}
+
 }

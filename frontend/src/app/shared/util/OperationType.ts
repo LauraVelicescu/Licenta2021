@@ -7,5 +7,6 @@ export enum OperationType {
   ASSIGN_PEOPLE,
   ACCEPT_PENDING,
   DECLINE_PENDING,
-  SEND_EMAIL
+  SEND_EMAIL,
+  APPLY
 }

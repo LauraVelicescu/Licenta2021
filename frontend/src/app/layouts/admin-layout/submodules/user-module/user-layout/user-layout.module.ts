@@ -15,6 +15,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
+import {NgoMemberApply, UserApplyComponent} from './subcomponents/user-apply/user-apply.component';
 
 
 @NgModule({
@@ -23,7 +24,9 @@ import {MatInputModule} from "@angular/material/input";
     UserManageComponent,
     UserProfileComponent,
     UserRolesComponent,
-    UserSendMassEmail
+    UserSendMassEmail,
+    UserApplyComponent,
+    NgoMemberApply
   ],
   imports: [
     CommonModule,

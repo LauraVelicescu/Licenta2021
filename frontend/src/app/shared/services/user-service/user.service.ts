@@ -4,6 +4,7 @@ import {SecurityStorage} from '../../../security/SecurityStorage';
 import {UserDTO} from '../../dto/UserDTO';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
+import {MemberRequestDTO} from "../../dto/MemberRequestDTO";
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class UserService {
   private blockURL = '/block';
   private uploadImageURL = '/uploadImage'
   private sendEmailURL = '/sendMassEmail'
+  private applyURL = '/apply'
 
   constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage) {
   }
@@ -106,5 +108,16 @@ export class UserService {
       this.mainService.httpError(err);
       throw new Error(err.error.message);
     }));
+  }
+
+  public apply(request: MemberRequestDTO){
+    return this.mainService.post(this.rootURL + this.applyURL,
+      request
+    ).pipe(map((result: MemberRequestDTO) => {
+      return result;
+    }), catchError(( err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    })));
   }
 }

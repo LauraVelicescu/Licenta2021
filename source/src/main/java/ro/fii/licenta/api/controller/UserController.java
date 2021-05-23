@@ -24,11 +24,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javassist.NotFoundException;
 import ro.fii.licenta.api.config.JWTTokenUtil;
+import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.EmailPayloadDTO;
+import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.exception.BusinessException;
 import ro.fii.licenta.api.service.MailingService;
+import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.UserService;
 
 @RestController
@@ -52,6 +55,9 @@ public class UserController {
 
 	@Autowired
 	private JavaMailSender mailSender;
+	
+	@Autowired
+	private MemberService memberService;
 
 	@GetMapping(value = "/getUser")
 	public ResponseEntity<UserDTO> getUser(HttpServletRequest request) throws NotFoundException {
@@ -143,5 +149,18 @@ public class UserController {
 			mailSender.send(mailingService.constructEmail(body.getSubject(), body.getBody(), user));
 		}
 	}
+	
+	@PostMapping(value = "/apply")
+	public ResponseEntity<MemberRequestDTO> applyToNgo(@RequestBody MemberRequestDTO memberRequest, HttpServletRequest request) {
+		User user = userService.getCurrentUser(request);
+		memberRequest.setUser(modelMapper.map(user, UserDTO.class));
+		memberRequest.setStatus(0);
+		return new ResponseEntity<>(modelMapper.map(memberService.saveRequest(
+				modelMapper.map(memberRequest, MemberRequest.class))
+				, MemberRequestDTO.class), HttpStatus.OK);
+
+	}
+	
+	
 
 }

@@ -1,0 +1,14 @@
+<h1>Apply</h1>
+<mat-dialog-content>
+
+
+  <mat-form-field  style="width: 100%">
+    <mat-label>Motivation</mat-label>
+    <textarea matInput [(ngModel)]="motivation">
+    </textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Dismisss</button>
+  <button mat-button cdkFocusInitial (click)="conclude()">Apply</button>
+</mat-dialog-actions>

@@ -14,5 +14,8 @@ public interface MemberRepository extends PersistableEntityRepository<Member, Lo
 	public Member findByUserAndNgo(Long userId, Long ngoId);
 
 	public List<Member> findByNgo(Ngo ngo);
+	
+	@Query("SELECT m.ngo.id from Member m where m.user.id != ?1")
+	public List<Long> findAllByNotMember(Long userId);
 
 }
