@@ -13,6 +13,7 @@ export class ApplicationRoutes {
   public static NGO_ROUTE: string = "ngo";
   public static NGO_MANAGE_ROUTE: string = "manage";
   public static DASHBOARD_ROUTE: string = "dashboard";
+  public static NGO_MANAGE_FUNCTIONS_ROUTE: string = "functions";
 
 
 }

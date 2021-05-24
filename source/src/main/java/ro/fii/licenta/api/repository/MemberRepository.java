@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.Ngo;
+import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.framework.PersistableEntityRepository;
 
 public interface MemberRepository extends PersistableEntityRepository<Member, Long> {
@@ -15,7 +16,8 @@ public interface MemberRepository extends PersistableEntityRepository<Member, Lo
 
 	public List<Member> findByNgo(Ngo ngo);
 	
-	@Query("SELECT m.ngo.id from Member m where m.user.id != ?1")
-	public List<Long> findAllByNotMember(Long userId);
+	
+	@Query("SELECT m.ngo.id FROM Member m WHERE m.user.id = ?1")
+	public List<Long> findNgoIdsForUser(Long userId);
 
 }

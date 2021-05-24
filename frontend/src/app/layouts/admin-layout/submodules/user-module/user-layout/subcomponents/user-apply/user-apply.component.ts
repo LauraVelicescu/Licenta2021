@@ -67,9 +67,9 @@ export class UserApplyComponent implements OnInit, AfterViewInit {
     this.persistState = false;
     this.selection.clear();
     this.applicationService.emmitLoading(true);
-    this.NGOService.findNGOsCount().subscribe((number) => {
+    this.NGOService.findNGOsNotMemberOfCount().subscribe((number) => {
       this.length = number;
-      this.NGOService.findNGOs(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
+      this.NGOService.findNGOsNotMemberOf(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
         this.applicationService.emmitLoading(false);
         this.dataSource.data = result;
       }, error => {

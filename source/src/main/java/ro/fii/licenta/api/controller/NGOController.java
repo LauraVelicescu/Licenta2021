@@ -24,6 +24,7 @@ import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
+import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
 
@@ -39,6 +40,9 @@ public class NGOController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private MemberService memberService;
 
 	@PostMapping(value = "/createNGO")
 	public ResponseEntity<?> createNGO(@RequestBody NgoDTO ngoDTO, HttpServletRequest request) throws Exception {
@@ -148,7 +152,18 @@ public class NGOController {
 	@GetMapping(value = "/findNGOsNotMemberOf/count")
 	public ResponseEntity<Integer> findNGOsNotMemberOfCount(HttpServletRequest request) {
 		User currentUser = userService.getCurrentUser(request);
-		return ResponseEntity.ok(ngoService.findAllNgosByAdmin(null, null, currentUser).size());
+		return ResponseEntity.ok(ngoService.findNgosNotMemberOf(null, null, currentUser).size());
+	}
+	
+	@GetMapping(value = "/findMyNGOs")
+	public ResponseEntity<List<NgoDTO>> findUserNGOs(HttpServletRequest request){
+		User currentUser = userService.getCurrentUser(request);
+		List<NgoDTO> ngos = new ArrayList<NgoDTO>();
+		List<Long> ngoIds = memberService.findNgoByUser(currentUser.getId());
+		for(Long id : ngoIds) {
+			ngos.add(modelMapper.map(ngoService.findById(id), NgoDTO.class));
+		}
+		return ResponseEntity.ok(ngos);
 	}
 
 }

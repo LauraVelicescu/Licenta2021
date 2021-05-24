@@ -62,10 +62,10 @@ export class ApplicationRoutesInfo {
       privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
       parentPath: 'ngo'
     }, {
-      path: 'users',
-      title: 'Utilizatori ONG',
-      icon: 'person_search',
-      privileges: ['privilegiu5'],
+      path: 'functions',
+      title: 'Functions',
+      icon: 'category',
+      privileges:['privilegiu1'],
       parentPath: 'ngo'
     }]
   }

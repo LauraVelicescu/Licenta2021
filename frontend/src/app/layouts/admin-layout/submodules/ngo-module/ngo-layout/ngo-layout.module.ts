@@ -14,13 +14,15 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
+import { NgoManageFunctionsComponent } from './subcomponents/ngo-manage-functions/ngo-manage-functions.component';
 
 
 @NgModule({
   declarations: [
     NgoLayoutComponent,
     NgoManageComponent,
-    NgoMemberJoin
+    NgoMemberJoin,
+    NgoManageFunctionsComponent
   ],
   imports: [
     CommonModule,

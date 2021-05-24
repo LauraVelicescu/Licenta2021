@@ -16,7 +16,7 @@ public interface NGOService {
 
 	Ngo findByAcronym(String acronym);
 
-	Ngo findById(int id);
+	Ngo findById(Long id);
 
 	Ngo save(Ngo ngo);
 
