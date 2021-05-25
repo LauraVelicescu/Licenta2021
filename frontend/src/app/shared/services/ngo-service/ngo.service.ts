@@ -6,6 +6,7 @@ import {plainToClass} from 'class-transformer';
 import {UserDTO} from '../../dto/UserDTO';
 import {MemberDTO} from '../../dto/MemberDTO';
 import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
+import {FunctionDTO} from '../../dto/FunctionDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,9 @@ export class NGOService {
   private getNGOsNotMemberOfCountURL = '/findNGOsNotMemberOf/count';
   private getNGOsNotMemberOfURL = '/findNGOsNotMemberOf';
   private getMyNGOsURL = '/findMyNGOs';
+  private getNGOFunctionsCountURL = '/findNgoFunctions/count/:ngoId';
+  private getNGOFunctionsURL = '/findNgoFunctions/:ngoId';
+  private deleteNGOFunctionsURL = '/deleteNGOFunction';
 
   constructor(private mainService: MainServiceService) {
   }
@@ -175,4 +179,38 @@ export class NGOService {
       throw new Error(err.error.message);
     }));
   }
+
+  public findNGOFunctionsCount(ngo: NgoDTO) {
+    return this.mainService.get(this.rootURL + this.getNGOFunctionsCountURL.replace(":ngoId", ngo.id.toString())).pipe(map((result: number) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findNGOFunctions(ngo: NgoDTO, page?: number, pageSize?: number, filter?: any, ) {
+    let queryString: string = '';
+    if (page && pageSize) {
+      queryString += '?page=' + page + '&pageSize=' + pageSize;
+    }
+    if (filter) {
+      queryString += queryString ? '&deimplementat' : '?deimplementat';
+    }
+    return this.mainService.get(this.rootURL + this.getNGOFunctionsURL.replace(":ngoId", ngo.id.toString()) + queryString).pipe(map((result: FunctionDTO[]) => {
+      return plainToClass(FunctionDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public deleteFunction(ngoFunctions: FunctionDTO[]){
+    return this.mainService.post(this.rootURL + this.deleteNGOFunctionsURL,
+      ngoFunctions).pipe(map((result: string[]) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+}
 }

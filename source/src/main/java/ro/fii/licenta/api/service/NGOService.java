@@ -5,6 +5,7 @@ import java.util.List;
 import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
+import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
@@ -31,5 +32,8 @@ public interface NGOService {
 	List<Member> saveMember(List<MemberRequestDTO> memberRequestDTOs, int status);
 	
 	List<Ngo> findNgosNotMemberOf(Integer pageNo, Integer pageSize, User user);
-
+	
+	List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId );
+	
+	List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions);
 }

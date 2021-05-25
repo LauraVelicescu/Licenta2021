@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
+import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
@@ -24,6 +25,7 @@ import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.repository.MemberRepository;
 import ro.fii.licenta.api.repository.MemberRequestRepository;
 import ro.fii.licenta.api.repository.NGORepository;
+import ro.fii.licenta.api.repository.NgoFunctionRepository;
 import ro.fii.licenta.api.service.NGOService;
 
 public class NGOServiceImpl implements NGOService {
@@ -39,6 +41,9 @@ public class NGOServiceImpl implements NGOService {
 
 	@Autowired
 	private MemberRequestRepository memberRequestRepository;
+	
+	@Autowired
+	private NgoFunctionRepository ngoFunctionRepository;
 
 	@Override
 	public Ngo findByName(String name) {
@@ -147,5 +152,25 @@ public class NGOServiceImpl implements NGOService {
 
 		return ngosNotMemberOf;
 	}
+
+	@Override
+	public List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId ) {
+		
+		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+		List<NgoFunction> ngoFunctions = ngoFunctionRepository.findAllByNgoId(ngoId, page).getContent();
+
+		return ngoFunctions;
+	}
+
+	@Override
+	public List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions) {
+		List<String> list = new ArrayList<String>();
+		for (NgoFunction n : ngoFunctions) {
+			ngoFunctionRepository.delete(n);
+		}
+		return list;
+	}
+	
+	
 
 }

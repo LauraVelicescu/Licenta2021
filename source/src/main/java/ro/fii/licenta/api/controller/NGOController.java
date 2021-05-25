@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
+import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
+import ro.fii.licenta.api.dto.NgoFunctionDTO;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
@@ -40,7 +42,7 @@ public class NGOController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private MemberService memberService;
 
@@ -136,8 +138,7 @@ public class NGOController {
 			@RequestBody List<MemberRequestDTO> memberRequestDTOs) {
 		ngoService.saveMember(memberRequestDTOs, status);
 	}
-	
-	
+
 	@GetMapping(value = "/findNGOsNotMemberOf")
 	public ResponseEntity<List<NgoDTO>> findNGOsNotMemberOf(@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "pageNo", required = false) Integer pageNo, HttpServletRequest request) {
@@ -154,16 +155,49 @@ public class NGOController {
 		User currentUser = userService.getCurrentUser(request);
 		return ResponseEntity.ok(ngoService.findNgosNotMemberOf(null, null, currentUser).size());
 	}
-	
+
 	@GetMapping(value = "/findMyNGOs")
-	public ResponseEntity<List<NgoDTO>> findUserNGOs(HttpServletRequest request){
+	public ResponseEntity<List<NgoDTO>> findUserNGOs(HttpServletRequest request) {
 		User currentUser = userService.getCurrentUser(request);
 		List<NgoDTO> ngos = new ArrayList<NgoDTO>();
 		List<Long> ngoIds = memberService.findNgoByUser(currentUser.getId());
-		for(Long id : ngoIds) {
+		for (Long id : ngoIds) {
 			ngos.add(modelMapper.map(ngoService.findById(id), NgoDTO.class));
 		}
 		return ResponseEntity.ok(ngos);
+	}
+
+	@GetMapping(value = "/findNgoFunctions/{ngoId}")
+	public ResponseEntity<List<NgoFunctionDTO>> findNgoFunctions(
+			@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "pageNo", required = false) Integer pageNo,
+			@PathVariable(value = "ngoId") Long ngoId) {
+
+		List<NgoFunctionDTO> ngoFunctionDtos = new ArrayList<NgoFunctionDTO>();
+		List<NgoFunction> ngoFunctions = ngoService.findAllNgoFunctions(page, pageNo, ngoId);
+		for (NgoFunction function : ngoFunctions) {
+			ngoFunctionDtos.add(modelMapper.map(function, NgoFunctionDTO.class));
+		}
+
+		return ResponseEntity.ok(ngoFunctionDtos);
+	}
+
+	@GetMapping(value = "/findNgoFunctions/count/{ngoId}")
+	public ResponseEntity<Integer> findNgoFunctionCount(@PathVariable(value = "ngoId") Long ngoId) {
+		List<NgoFunction> ngoFunctions = ngoService.findAllNgoFunctions(null, null, ngoId);
+
+		return ResponseEntity.ok(ngoFunctions.size());
+	}
+
+	@PostMapping(value = "/deleteNGOFunction")
+	public void deleteNGOFunction(@RequestBody List<NgoFunctionDTO> ngoFunctionsDTO, HttpServletRequest request)
+			throws Exception {
+
+		List<NgoFunction> ngoFunctions = new ArrayList<NgoFunction>();
+		for (NgoFunctionDTO function : ngoFunctionsDTO)
+			ngoFunctions.add(modelMapper.map(function, NgoFunction.class));
+
+		List<String> errs = ngoService.deleteNGOFunctions(ngoFunctions);
 	}
 
 }
