@@ -6,11 +6,11 @@ import ro.fii.licenta.api.dao.User;
 public class MemberDTO {
 	private Long id;
 
-	private User user;
+	private UserDTO user;
 
-	private Ngo ngo;
+	private NgoDTO ngo;
 
-	private String function;
+	private NgoFunctionDTO function;
 
 	public Long getId() {
 		return id;
@@ -20,27 +20,27 @@ public class MemberDTO {
 		this.id = id;
 	}
 
-	public User getUser() {
+	public UserDTO getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserDTO user) {
 		this.user = user;
 	}
 
-	public Ngo getNgo() {
+	public NgoDTO getNgo() {
 		return ngo;
 	}
 
-	public void setNgo(Ngo ngo) {
+	public void setNgo(NgoDTO ngo) {
 		this.ngo = ngo;
 	}
 
-	public String getFunction() {
+	public NgoFunctionDTO getFunction() {
 		return function;
 	}
 
-	public void setFunction(String function) {
+	public void setFunction(NgoFunctionDTO function) {
 		this.function = function;
 	}
 

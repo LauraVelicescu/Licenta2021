@@ -19,7 +19,7 @@ public class Member extends PersistableEntity {
 
 	private Ngo ngo;
 	
-	private String function;
+	private NgoFunction function;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -41,12 +41,13 @@ public class Member extends PersistableEntity {
 		this.ngo = ngo;
 	}
 
-	@Column(name = "ngo_function")
-	public String getFunction() {
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "function_id")
+	public NgoFunction getFunction() {
 		return function;
 	}
 
-	public void setFunction(String function) {
+	public void setFunction(NgoFunction function) {
 		this.function = function;
 	}
 

@@ -26,9 +26,13 @@ export class NGOService {
   private getNGOsNotMemberOfCountURL = '/findNGOsNotMemberOf/count';
   private getNGOsNotMemberOfURL = '/findNGOsNotMemberOf';
   private getMyNGOsURL = '/findMyNGOs';
+  private getNGOMembersURL ='/getNGOMembers/:ngoId';
   private getNGOFunctionsCountURL = '/findNgoFunctions/count/:ngoId';
   private getNGOFunctionsURL = '/findNgoFunctions/:ngoId';
   private deleteNGOFunctionsURL = '/deleteNGOFunction';
+  private addNGOFunctionURL = '/addNGOFunction/:ngoId';
+  private updateNGOFunctionURL = '/updateNGOFunction';
+  private setMemberFunctionURL = '/setMemberFunction/:functionId';
 
   constructor(private mainService: MainServiceService) {
   }
@@ -128,7 +132,6 @@ export class NGOService {
       let ngoMember: MemberDTO = new MemberDTO();
       ngoMember.user = e;
       ngoMember.ngo = ngo;
-      ngoMember.function = 'functie random';
       ngoMembers.push(ngoMember);
     })
     return this.mainService.post(this.rootURL + this.assignMemberToNGOURRL, ngoMembers).pipe(map((result: string[]) => {
@@ -213,4 +216,36 @@ export class NGOService {
       throw new Error(err.error.message);
     }));
 }
+
+  public addFunction(ngoFunction:FunctionDTO, ngo: NgoDTO){
+    return this.mainService.post(this.rootURL + this.addNGOFunctionURL.replace(":ngoId", ngo.id.toString()), ngoFunction).pipe(map((result: FunctionDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public updateFunction(ngoFunction:FunctionDTO){
+    return this.mainService.post(this.rootURL + this.updateNGOFunctionURL, ngoFunction).pipe(map((result: FunctionDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public getNGOMembers(ngo: NgoDTO){
+    return this.mainService.get(this.rootURL + this.getNGOMembersURL.replace(":ngoId", ngo.id.toString())).pipe(map((result: MemberDTO[]) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public setMemberFunction(member: MemberDTO, ngoFunction: FunctionDTO){
+    return this.mainService.post(this.rootURL + this.setMemberFunctionURL.replace(":functionId", ngoFunction.id.toString()), member).pipe(map((result: MemberDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
 }

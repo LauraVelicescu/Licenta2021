@@ -36,4 +36,9 @@ public interface NGOService {
 	List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId );
 	
 	List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions);
+	
+	NgoFunction save(NgoFunction ngoFunction);
+
+	NgoFunction findNgoFunctionById(Long id);
+	
 }

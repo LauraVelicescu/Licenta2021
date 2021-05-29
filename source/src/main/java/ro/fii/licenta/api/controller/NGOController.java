@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javassist.NotFoundException;
+import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.NgoFunction;
@@ -26,6 +27,7 @@ import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.NgoFunctionDTO;
+import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
@@ -188,6 +190,29 @@ public class NGOController {
 
 		return ResponseEntity.ok(ngoFunctions.size());
 	}
+	
+	@PostMapping(value = "/addNGOFunction/{ngoId}")
+	public ResponseEntity<NgoFunctionDTO> addNgoFunction(@RequestBody NgoFunctionDTO ngoFunctionDto, @PathVariable(value = "ngoId") Long ngoId){
+	ngoFunctionDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+	return ResponseEntity.ok(modelMapper.map(ngoService.save(modelMapper.map(ngoFunctionDto, NgoFunction.class)), NgoFunctionDTO.class));	
+	}
+	
+	@PostMapping(value = "/updateNGOFunction")
+	public ResponseEntity<NgoFunctionDTO> updateNgoFunction(@RequestBody NgoFunctionDTO ngoFunctionDto){
+	
+	NgoFunction dbFunction = ngoService.findNgoFunctionById(ngoFunctionDto.getId());
+	
+	if (dbFunction != null) {
+		new NotFoundException(String.format("Function with name %s was not found", ngoFunctionDto.getName()));
+	}
+
+	modelMapper.getConfiguration().setSkipNullEnabled(true);
+	modelMapper.map(ngoFunctionDto, dbFunction);
+	modelMapper.getConfiguration().setSkipNullEnabled(false);
+	
+	return ResponseEntity.ok(modelMapper.map(ngoService.save(dbFunction), NgoFunctionDTO.class));	
+	}
+	
 
 	@PostMapping(value = "/deleteNGOFunction")
 	public void deleteNGOFunction(@RequestBody List<NgoFunctionDTO> ngoFunctionsDTO, HttpServletRequest request)
@@ -199,5 +224,27 @@ public class NGOController {
 
 		List<String> errs = ngoService.deleteNGOFunctions(ngoFunctions);
 	}
+	
+	@GetMapping(value ="/getNGOMembers/{ngoId}")
+	public ResponseEntity<List<MemberDTO>> getNGOMembers(@PathVariable(value = "ngoId") Long ngoId){
+		Ngo ngo = ngoService.findById(ngoId);
+		List<Member> members = memberService.findAllMembersByNgo(ngo);
+		List<MemberDTO> membersDto = new ArrayList<MemberDTO>();
+		for(Member m : members) {
+			membersDto.add(modelMapper.map(m, MemberDTO.class));
+		}
+		return ResponseEntity.ok(membersDto);
+		
+	}
+	
+	@PostMapping(value = "/setMemberFunction/{functionId}")
+	public ResponseEntity<MemberDTO> setMemberFunction(@RequestBody MemberDTO memberDto, @PathVariable(value = "functionId") Long functionId){
+		
+		memberDto.setFunction(modelMapper.map(ngoService.findNgoFunctionById(functionId), NgoFunctionDTO.class));
+		return ResponseEntity.ok(modelMapper.map(memberService.save(modelMapper.map(memberDto, Member.class)), MemberDTO.class));
+		
+	}
+	
+	
 
 }

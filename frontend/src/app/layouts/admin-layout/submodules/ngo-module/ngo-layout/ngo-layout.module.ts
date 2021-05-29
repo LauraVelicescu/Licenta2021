@@ -15,6 +15,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import { NgoManageFunctionsComponent } from './subcomponents/ngo-manage-functions/ngo-manage-functions.component';
+import { AssignUserComponent } from './subcomponents/ngo-manage-modals/assign-user/assign-user.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { NgoManageFunctionsComponent } from './subcomponents/ngo-manage-function
     NgoLayoutComponent,
     NgoManageComponent,
     NgoMemberJoin,
-    NgoManageFunctionsComponent
+    NgoManageFunctionsComponent,
+    AssignUserComponent
   ],
   imports: [
     CommonModule,

@@ -99,6 +99,7 @@ public class NGOServiceImpl implements NGOService {
 						+ memberDTO.getNgo().getName());
 			} else {
 				member = modelMapper.map(memberDTO, Member.class);
+				member.setFunction(null);
 				memberRepository.save(member);
 			}
 		}
@@ -133,7 +134,7 @@ public class NGOServiceImpl implements NGOService {
 					Member m = new Member();
 					m.setNgo(mr.getNgo());
 					m.setUser(mr.getUser());
-					m.setFunction("-");
+					m.setFunction(null);
 					memberRepository.save(m);
 					members.add(m);
 				}
@@ -170,6 +171,19 @@ public class NGOServiceImpl implements NGOService {
 		}
 		return list;
 	}
+
+	@Override
+	public NgoFunction save(NgoFunction ngoFunction) {
+		return ngoFunctionRepository.save(ngoFunction);
+	}
+
+	@Override
+	public NgoFunction findNgoFunctionById(Long id) {
+		return ngoFunctionRepository.findById(id).get();
+	}
+
+
+	
 	
 	
 

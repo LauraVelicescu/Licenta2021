@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs';
 import {NgoDTO} from '../../../../../../../shared/dto/NgoDTO';
-import {FormControl} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {map, startWith} from 'rxjs/operators';
 import {UserService} from '../../../../../../../shared/services/user-service/user.service';
 import {ApplicationService} from '../../../../../../../shared/services/application/application.service';
@@ -12,6 +12,10 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {FunctionDTO} from '../../../../../../../shared/dto/FunctionDTO';
+import {UserDTO} from "../../../../../../../shared/dto/UserDTO";
+import {MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {AssignUserComponent} from "../ngo-manage-modals/assign-user/assign-user.component";
+import {NgoMemberJoin} from "../ngo-manage/ngo-manage.component";
 
 @Component({
   selector: 'app-ngo-manage-functions',
@@ -34,22 +38,29 @@ export class NgoManageFunctionsComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   length: number;
 
+  functionForm: FormGroup;
   displayedColumns: string[] = ['id', 'name', 'description'];
   dataSource = new MatTableDataSource<FunctionDTO>([]);
   selectedOption: NgoDTO;
+  currentNGO: NgoDTO;
   private currentFunction: FunctionDTO;
 
   constructor(
               private applicationService: ApplicationService,
               private notificationService: NotificationService,
+              private formBuilder: FormBuilder,
+              public dialogRef: MatDialogRef<AssignUserComponent>,
+              private matDialog: MatDialog,
               private ngoService: NGOService)
   {}
 
   ngOnInit(): void {
 
+
+
     this.applicationService.emmitLoading(true);
     this.ngoService.findMyNGOs().subscribe((result) => {
-      console.log(result);
+      // console.log(result);
       this.applicationService.emmitLoading(false);
       this.comboData = result;
       this.filteredOptions = this.searchTextboxControl.valueChanges
@@ -60,6 +71,13 @@ export class NgoManageFunctionsComponent implements OnInit {
     }, error => {
       this.applicationService.emmitLoading(false);
     });
+
+
+    this.functionForm = this.formBuilder.group({
+        name: [''],
+        description: [''],
+      }
+    )
   }
 
   openedChange(e) {
@@ -113,12 +131,18 @@ export class NgoManageFunctionsComponent implements OnInit {
           this.load();
         })
         break;
-
+      case OperationType.ASSIGN_PEOPLE:
+        this.currentFunction = payload[0];
+        console.log(this.selectedOption );
+        this.openDialog();
+        this.load()
+        break;
     }
   }
 
   private load() {
     this.dataSource.paginator = this.paginator;
+    this.persistState = false;
     this.selection.clear();
     this.applicationService.emmitLoading(true);
     this.ngoService.findNGOFunctionsCount(this.selectedOption).subscribe((number) => {
@@ -137,6 +161,46 @@ export class NgoManageFunctionsComponent implements OnInit {
   }
 
   private openDialog() {
+    console.log(this.selectedOption)
+   this.dialogRef = this.matDialog.open(AssignUserComponent, {
+      width: '750px',
+      data: {ngo: this.selectedOption,
+             ngoFunction: this.currentFunction
+      }
+    });
+  }
 
+  cancelAction() {
+    this.load();
+  }
+
+  onSubmit() {
+    if (this.functionForm.invalid) {
+      return;
+    } else {
+      const ngoFunction: FunctionDTO = this.currentFunction;
+      ngoFunction.name = this.functionForm.controls.name.value;
+      ngoFunction.description = this.functionForm.controls.description.value;
+      if (ngoFunction.id) {
+        this.applicationService.emmitLoading(true);
+        this.ngoService.updateFunction(ngoFunction).subscribe((result) => {
+            this.applicationService.emmitLoading(false);
+            this.load();
+          }, error => {
+            this.applicationService.emmitLoading(false);
+            this.notificationService.error(error);
+          }
+        )
+      } else {
+        this.ngoService.addFunction(ngoFunction, this.selectedOption).subscribe((result) => {
+            this.applicationService.emmitLoading(false);
+            this.load();
+          }, error => {
+            this.applicationService.emmitLoading(false);
+            this.notificationService.error(error);
+          }
+        )
+      }
+    }
   }
 }
