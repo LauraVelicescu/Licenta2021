@@ -130,6 +130,7 @@ export class UserManageComponent implements OnInit, AfterViewInit {
       case OperationType.SEND_EMAIL:
         let dialogRef = this.matDialog.open(UserSendMassEmail, {
           width: "750px",
+          panelClass: "card"
         });
         dialogRef.afterClosed().subscribe((result) => {
           if (result) {

@@ -4,6 +4,7 @@ import {DashboardComponent} from '../../pages/dashboard/dashboard.component';
 import {UserLayoutComponent} from './submodules/user-module/user-layout/user-layout.component';
 import {NgoLayoutComponent} from './submodules/ngo-module/ngo-layout/ngo-layout.component';
 import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
+import {ProjectLayoutComponent} from './submodules/project-module/project-layout.component';
 
 export const AdminLayoutRoutes: Routes = [
   {
@@ -22,6 +23,13 @@ export const AdminLayoutRoutes: Routes = [
     children: [{
       path: '',
       loadChildren: () => import('./submodules/ngo-module/ngo-layout/ngo-layout.module').then(m => m.NgoLayoutModule)
+    }]
+  },
+  {
+    path: ApplicationRoutes.PROJECT_ROUTE, component: ProjectLayoutComponent,
+    children: [{
+      path: '',
+      loadChildren: () => import('./submodules/project-module/project-layout.module').then(m => m.ProjectLayoutModule)
     }]
   },
   {path: ApplicationRoutes.DASHBOARD_ROUTE, component: DashboardComponent},

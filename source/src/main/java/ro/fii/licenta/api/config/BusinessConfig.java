@@ -10,15 +10,15 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import ro.fii.licenta.api.service.MailingService;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
+import ro.fii.licenta.api.service.ProjectService;
 import ro.fii.licenta.api.service.SecurityService;
 import ro.fii.licenta.api.service.UserService;
 import ro.fii.licenta.api.service.impl.MailingServiceImpl;
 import ro.fii.licenta.api.service.impl.MemberServiceImpl;
 import ro.fii.licenta.api.service.impl.NGOServiceImpl;
+import ro.fii.licenta.api.service.impl.ProjectServiceImpl;
 import ro.fii.licenta.api.service.impl.SecurityServiceImpl;
 import ro.fii.licenta.api.service.impl.UserServiceImpl;
-import ro.fii.licenta.framework.RoleInitializer;
-import ro.fii.licenta.framework.UserInitializer;
 
 @Configuration
 public class BusinessConfig {
@@ -49,6 +49,11 @@ public class BusinessConfig {
 	}
 	
 	@Bean
+	ProjectService projectService() {
+		return new ProjectServiceImpl();
+	}
+	
+	@Bean
 	public JavaMailSender getJavaMailSender() {
 	    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 	    mailSender.setHost("smtp.gmail.com");
@@ -64,15 +69,5 @@ public class BusinessConfig {
 	    props.put("mail.debug", "true");
 	    
 	    return mailSender;
-	}
-	
-	@Bean
-	public UserInitializer userInitializer() {
-		return new UserInitializer();
-	}
-	
-	@Bean
-	public RoleInitializer roleInitializer() {
-		return new RoleInitializer();
 	}
 }
