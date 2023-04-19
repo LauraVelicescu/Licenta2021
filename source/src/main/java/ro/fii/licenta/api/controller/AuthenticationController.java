@@ -12,10 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,19 +20,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.PersonType;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.JwtRequest;
 import ro.fii.licenta.api.dto.JwtResponse;
 import ro.fii.licenta.api.dto.PasswordDTO;
 import ro.fii.licenta.api.dto.UserDTO;
-import ro.fii.licenta.api.exception.UserAlreadyExistAuthenticationException;
 import ro.fii.licenta.api.exception.BusinessException;
+import ro.fii.licenta.api.exception.UserAlreadyExistAuthenticationException;
 import ro.fii.licenta.api.repository.UserRepository;
 import ro.fii.licenta.api.service.SecurityService;
 import ro.fii.licenta.api.service.UserService;
-import ro.fii.licenta.api.service.impl.JWTUserDetailsServiceImpl;
 
 @RestController
 @RequestMapping(path = "/authenticate")
@@ -62,52 +56,11 @@ public class AuthenticationController {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	@Autowired
-	private AuthenticationManager authenticationManagerBean;
-
-	@Autowired
-	private JWTTokenUtil jwtTokenUtil;
-
-	@Autowired
-	private JWTUserDetailsServiceImpl userDetailsService;
-
+	
 	@PostMapping(value = "/login")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
-		System.out.println(jwtRequest.getUsername() + ' ' + jwtRequest.getPassword());
-		authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
-
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(jwtRequest.getUsername());
-
-		final String token = jwtTokenUtil.generateToken(userDetails);
-
-		User loggedUser = userRepository.findByEmailAddress(jwtRequest.getUsername());
-		if (loggedUser != null) {
-			if (loggedUser.isBlocked() == true) {
-				throw new Exception("USER_BLOCKED");
-			}
-		}
+	public ResponseEntity<JwtResponse> createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+		final String token = this.userService.authenticate(jwtRequest.getUsername(), jwtRequest.getPassword());
 		return ResponseEntity.ok(new JwtResponse(token));
-	}
-
-	private void authenticate(String username, String password) throws Exception {
-		try {
-			authenticationManagerBean.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED");
-		} catch (BadCredentialsException e) {
-			User user = userRepository.findByEmailAddress(username);
-			if (user != null) {
-				user.setFailAttemtps(user.getFailAttemtps() + 1);
-				if (user.getFailAttemtps() == 3) {
-					user.setBlocked(true);
-				}
-				userRepository.save(user);
-			}
-			throw new Exception("INVALID_CREDENTIALS");
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
-		}
 	}
 
 	@PostMapping("/register")

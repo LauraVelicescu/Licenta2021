@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
-@Table(name = "group")
+@Table(name = "role_group")
 public class Group extends NameDescriptionEntity {
 
 	private static final long serialVersionUID = 1L;

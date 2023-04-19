@@ -7,9 +7,16 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.auth.InvalidCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import ro.fii.licenta.api.config.JWTTokenUtil;
@@ -28,13 +35,51 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private PasswordTokenRepository passwordTokenRepository;
-	
+
 	@Autowired
 	private JWTTokenUtil jwtTokenUtil;
+
+	@Autowired
+	private AuthenticationManager authenticationManager;
+
+	@Autowired
+	private UserDetailsService userDetailsService;
 
 	@Override
 	public User findUserByEmail(String userEmail) {
 		return userRepository.findByEmailAddress(userEmail);
+	}
+
+	public String authenticate(String username, String password) throws InvalidCredentialsException {
+
+		return authenticateUser(username, password);
+
+	}
+	
+	private String authenticateUser(String username, String password) throws InvalidCredentialsException {
+		try {
+			this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+			if (!userDetails.isAccountNonLocked()) {
+				throw new InvalidCredentialsException("USER_BLOCKED");
+			}
+
+			final String token = jwtTokenUtil.generateToken(userDetails);
+			return token;
+		} catch (DisabledException e) {
+			throw new InvalidCredentialsException("USER_DISABLED");
+		} catch (BadCredentialsException e) {
+			User user = this.userRepository.findByEmailAddress(username);
+			if (user != null) {
+				user.setFailAttemtps(user.getFailAttemtps() + 1);
+				if (user.getFailAttemtps() == 3) {
+					user.setBlocked(true);
+				}
+				this.userRepository.save(user);
+			}
+			throw new InvalidCredentialsException("INVALID_CREDENTIALS");
+		}
 	}
 
 	@Override
@@ -78,7 +123,7 @@ public class UserServiceImpl implements UserService {
 		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
 		return page != null ? userRepository.findAll(page).getContent() : userRepository.findAll();
 	}
-	
+
 	@Override
 	public User getCurrentUser(HttpServletRequest request) {
 		final String requestTokenHeader = request.getHeader("Authorization");
@@ -100,7 +145,7 @@ public class UserServiceImpl implements UserService {
 			System.out.println("JWT Token does not begin with Bearer String");
 		}
 		User user = userRepository.findByEmailAddress(username);
-		
+
 		return user;
 	}
 

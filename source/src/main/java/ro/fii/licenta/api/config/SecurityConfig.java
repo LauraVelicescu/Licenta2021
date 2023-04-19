@@ -13,6 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -22,6 +23,9 @@ import ro.fii.licenta.api.service.impl.JWTUserDetailsServiceImpl;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+
+	private static final String[] AUTH_LIST = { "/swagger-resources/**", "/swagger-ui.html**", "/webjars/**",
+			"/swagger-ui/*", "/**/swagger/**", "/**/authenticate/**", "/**/user-test/**" };
 
 	@Autowired
 	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -52,13 +56,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 		// TODO Auto-generated method stub
 		return super.authenticationManagerBean();
 	}
+
 	
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		// We don't need CSRF for this example
 		httpSecurity.cors().and().csrf().disable()
 				// dont authenticate this particular request
-				.authorizeRequests().antMatchers("/authenticate/*").permitAll().
+				.authorizeRequests().antMatchers(AUTH_LIST).permitAll().
 				// all other requests need to be authenticated
 				anyRequest().authenticated().and().
 				// make sure we use stateless session; session won't be used to
@@ -68,6 +73,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 
 		// Add a filter to validate the tokens with every request
 		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	}
+	
+	@Bean
+	public BasicAuthenticationEntryPoint swaggerAuthenticationEntryPoint() {
+		BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+		entryPoint.setRealmName("Swagger Realm");
+		return entryPoint;
 	}
 	
 	
