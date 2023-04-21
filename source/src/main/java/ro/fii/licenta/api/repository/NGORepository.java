@@ -19,6 +19,6 @@ public interface NGORepository extends PersistableEntityRepository<Ngo, Long> {
 	
 	List<Ngo> findAllByAdmin(User user);
 	
-	Page<Ngo> findByIdNotIn(List<Long> memberIds, Pageable page);
+	Page<Ngo> findByIdNotIn(List<Long> ngoIds, Pageable page);
 	
 }

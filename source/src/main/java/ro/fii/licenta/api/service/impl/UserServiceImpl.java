@@ -11,10 +11,7 @@ import org.apache.http.auth.InvalidCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -58,12 +55,7 @@ public class UserServiceImpl implements UserService {
 	
 	private String authenticateUser(String username, String password) throws InvalidCredentialsException {
 		try {
-			this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-			final UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-			if (!userDetails.isAccountNonLocked()) {
-				throw new InvalidCredentialsException("USER_BLOCKED");
-			}
+			final UserDetails userDetails = (UserDetails) this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password)).getPrincipal();
 
 			final String token = jwtTokenUtil.generateToken(userDetails);
 			return token;
@@ -77,8 +69,13 @@ public class UserServiceImpl implements UserService {
 					user.setBlocked(true);
 				}
 				this.userRepository.save(user);
+			} else {
+				throw new InvalidCredentialsException("INVALID_USERNAME");
 			}
-			throw new InvalidCredentialsException("INVALID_CREDENTIALS");
+
+			throw new InvalidCredentialsException("INVALID_PASSWORD");
+		} catch (LockedException e) {
+			throw new InvalidCredentialsException("USER_BLOCKED");
 		}
 	}
 

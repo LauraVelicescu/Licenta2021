@@ -30,161 +30,157 @@ import ro.fii.licenta.api.service.NGOService;
 
 public class NGOServiceImpl implements NGOService {
 
-	@Autowired
-	NGORepository ngoRepository;
+    @Autowired
+    NGORepository ngoRepository;
 
-	@Autowired
-	MemberRepository memberRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
-	@Autowired
-	private ModelMapper modelMapper;
+    @Autowired
+    private ModelMapper modelMapper;
 
-	@Autowired
-	private MemberRequestRepository memberRequestRepository;
-	
-	@Autowired
-	private NgoFunctionRepository ngoFunctionRepository;
+    @Autowired
+    private MemberRequestRepository memberRequestRepository;
 
-	@Override
-	public Ngo findByName(String name) {
-		return ngoRepository.findByName(name);
-	}
+    @Autowired
+    private NgoFunctionRepository ngoFunctionRepository;
 
-	@Override
-	public Ngo findByAcronym(String acronym) {
-		return ngoRepository.findByAcronym(acronym);
-	}
+    @Override
+    public Ngo findByName(String name) {
+        return ngoRepository.findByName(name);
+    }
 
-	@Override
-	public Ngo save(Ngo ngo) {
-		return ngoRepository.save(ngo);
-	}
+    @Override
+    public Ngo findByAcronym(String acronym) {
+        return ngoRepository.findByAcronym(acronym);
+    }
 
-	@Override
-	public Ngo findById(Long id) {
-		return ngoRepository.findById(id).get();
-	}
+    @Override
+    public Ngo save(Ngo ngo) {
+        return ngoRepository.save(ngo);
+    }
 
-	@Override
-	public List<Ngo> findAllNgosByAdmin(Integer pageNo, Integer pageSize, User user) {
-		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
-		return page != null ? ngoRepository.findAll(new Specification<Ngo>() {
+    @Override
+    public Ngo findById(Long id) {
+        return ngoRepository.findById(id).get();
+    }
 
-			private static final long serialVersionUID = 1L;
+    @Override
+    public List<Ngo> findAllNgosByAdmin(Integer pageNo, Integer pageSize, User user) {
+        Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+        return page != null ? ngoRepository.findAll(new Specification<Ngo>() {
 
-			@Override
-			public Predicate toPredicate(Root<Ngo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-				return criteriaBuilder.equal(root.get("admin"), user);
-			}
-		}, page).getContent() : ngoRepository.findAllByAdmin(user);
-	}
+            private static final long serialVersionUID = 1L;
 
-	@Override
-	public List<String> deleteNGOs(List<NgoDTO> ngosDtos) {
-		List<String> list = new ArrayList<String>();
-		for (NgoDTO n : ngosDtos) {
-			Ngo ngo = ngoRepository.findById(n.getId()).get();
-			ngoRepository.delete(ngo);
-		}
-		return list;
-	}
+            @Override
+            public Predicate toPredicate(Root<Ngo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.equal(root.get("admin"), user);
+            }
+        }, page).getContent() : ngoRepository.findAllByAdmin(user);
+    }
 
-	@Override
-	public List<String> addMembers(List<MemberDTO> members) {
-		List<String> errors = new ArrayList<String>();
-		for (MemberDTO memberDTO : members) {
-			Member member = memberRepository.findByUserAndNgo(memberDTO.getUser().getId(), memberDTO.getNgo().getId());
-			if (member != null) {
-				errors.add("Userul " + memberDTO.getUser().getEmailAddress() + " este deja in ONG ul "
-						+ memberDTO.getNgo().getName());
-			} else {
-				member = modelMapper.map(memberDTO, Member.class);
-				member.setFunction(null);
-				memberRepository.save(member);
-			}
-		}
-		return errors;
-	}
+    @Override
+    public List<String> deleteNGOs(List<NgoDTO> ngosDtos) {
+        List<String> list = new ArrayList<String>();
+        for (NgoDTO n : ngosDtos) {
+            Ngo ngo = ngoRepository.findById(n.getId()).get();
+            ngoRepository.delete(ngo);
+        }
+        return list;
+    }
 
-	@Override
-	public List<MemberRequest> findAllMemberRequestsByNgo(Integer pageNo, Integer pageSize, Long ngoId) {
-		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
-		return page != null ? memberRequestRepository.findAll(new Specification<MemberRequest>() {
+    @Override
+    public List<String> addMembers(List<MemberDTO> members) {
+        List<String> errors = new ArrayList<String>();
+        for (MemberDTO memberDTO : members) {
+            Member member = memberRepository.findByUserAndNgo(memberDTO.getUser().getId(), memberDTO.getNgo().getId());
+            if (member != null) {
+                errors.add("Userul " + memberDTO.getUser().getEmailAddress() + " este deja in ONG ul " + memberDTO.getNgo().getName());
+            } else {
+                member = modelMapper.map(memberDTO, Member.class);
+                member.setFunction(null);
+                memberRepository.save(member);
+            }
+        }
+        return errors;
+    }
 
-			private static final long serialVersionUID = 1L;
+    @Override
+    public List<MemberRequest> findAllMemberRequestsByNgo(Integer pageNo, Integer pageSize, Long ngoId) {
+        Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+        return page != null ? memberRequestRepository.findAll(new Specification<MemberRequest>() {
 
-			@Override
-			public Predicate toPredicate(Root<MemberRequest> root, CriteriaQuery<?> query,
-					CriteriaBuilder criteriaBuilder) {
-				return criteriaBuilder.and(criteriaBuilder.equal(root.get("ngo").get("id"), ngoId),
-						criteriaBuilder.equal(root.get("status"), 0));
-			}
-		}, page).getContent() : memberRequestRepository.findAllByNgoAndStatus(ngoId, 0);
-	}
+            private static final long serialVersionUID = 1L;
 
-	@Override
-	public List<Member> saveMember(List<MemberRequestDTO> memberRequestDTOs, int status) {
-		List<Member> members = new ArrayList<Member>();
-		for (MemberRequestDTO mrd : memberRequestDTOs) {
-			MemberRequest mr = memberRequestRepository.findById(mrd.getId()).orElse(null);
-			if (mr != null) {
-				mr.setStatus(status);
-				memberRequestRepository.save(mr);
-				if (status == 1) {
-					Member m = new Member();
-					m.setNgo(mr.getNgo());
-					m.setUser(mr.getUser());
-					m.setFunction(null);
-					memberRepository.save(m);
-					members.add(m);
-				}
-			}
+            @Override
+            public Predicate toPredicate(Root<MemberRequest> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.and(criteriaBuilder.equal(root.get("ngo").get("id"), ngoId), criteriaBuilder.equal(root.get("status"), 0));
+            }
+        }, page).getContent() : memberRequestRepository.findAllByNgoAndStatus(ngoId, 0);
+    }
 
-		}
-		return members;
-	}
+    @Override
+    public List<Member> saveMember(List<MemberRequestDTO> memberRequestDTOs, int status) {
+        List<Member> members = new ArrayList<Member>();
+        for (MemberRequestDTO mrd : memberRequestDTOs) {
+            MemberRequest mr = memberRequestRepository.findById(mrd.getId()).orElse(null);
+            if (mr != null) {
+                mr.setStatus(status);
+                memberRequestRepository.save(mr);
+                if (status == 1) {
+                    Member m = new Member();
+                    m.setNgo(mr.getNgo());
+                    m.setUser(mr.getUser());
+                    m.setFunction(null);
+                    memberRepository.save(m);
+                    members.add(m);
+                }
+            }
 
-	@Override
-	public List<Ngo> findNgosNotMemberOf(Integer pageNo, Integer pageSize, User user) {
-		long userId = user.getId();
-		List<Long> ngoIds = memberRepository.findNgoIdsForUser(userId);
-		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
-		List<Ngo> ngosNotMemberOf = ngoRepository.findByIdNotIn(ngoIds, page).getContent();
+        }
+        return members;
+    }
 
-		return ngosNotMemberOf;
-	}
+    @Override
+    public List<Ngo> findNgosNotMemberOf(Integer pageNo, Integer pageSize, User user) {
+        long userId = user.getId();
+        List<Long> ngoIds = memberRepository.findNgoIdsForUser(userId);
+        Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+        return page != null ? ngoIds.size() > 0 ? ngoRepository.findByIdNotIn(ngoIds, page).getContent() : ngoRepository.findAll(page).getContent() : ngoIds.size() > 0 ? ngoRepository.findAll(new Specification<Ngo>() {
+            @Override
+            public Predicate toPredicate(Root<Ngo> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.not(root.get("id").in(ngoIds));
+            }
+        }) : ngoRepository.findAll();
+    }
 
-	@Override
-	public List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId ) {
-		
-		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
-		List<NgoFunction> ngoFunctions = ngoFunctionRepository.findAllByNgoId(ngoId, page).getContent();
+    @Override
+    public List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId) {
 
-		return ngoFunctions;
-	}
+        Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+        List<NgoFunction> ngoFunctions = ngoFunctionRepository.findAllByNgoId(ngoId, page).getContent();
 
-	@Override
-	public List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions) {
-		List<String> list = new ArrayList<String>();
-		for (NgoFunction n : ngoFunctions) {
-			ngoFunctionRepository.delete(n);
-		}
-		return list;
-	}
+        return ngoFunctions;
+    }
 
-	@Override
-	public NgoFunction save(NgoFunction ngoFunction) {
-		return ngoFunctionRepository.save(ngoFunction);
-	}
+    @Override
+    public List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions) {
+        List<String> list = new ArrayList<String>();
+        for (NgoFunction n : ngoFunctions) {
+            ngoFunctionRepository.delete(n);
+        }
+        return list;
+    }
 
-	@Override
-	public NgoFunction findNgoFunctionById(Long id) {
-		return ngoFunctionRepository.findById(id).get();
-	}
+    @Override
+    public NgoFunction save(NgoFunction ngoFunction) {
+        return ngoFunctionRepository.save(ngoFunction);
+    }
 
+    @Override
+    public NgoFunction findNgoFunctionById(Long id) {
+        return ngoFunctionRepository.findById(id).get();
+    }
 
-	
-	
-	
 
 }
