@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class UserDTO {
 
@@ -36,7 +36,10 @@ public class UserDTO {
 	protected boolean blocked;
 
 	protected int failAttemtps;
-
+//	@JsonManagedReference
+//	@JsonBackReference
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
 	private List<NgoDTO> administeredNGOs;
 
 	public Long getId() {

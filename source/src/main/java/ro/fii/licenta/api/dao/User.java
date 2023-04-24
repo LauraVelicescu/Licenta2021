@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import ro.fii.licenta.framework.PersistableEntity;
 
 @Entity
@@ -46,7 +47,7 @@ public class User extends PersistableEntity {
 	private int failAttemtps;
 
 	private PersonType personType;
-
+	@JsonManagedReference
 	private List<Ngo> administeredNGOs;
 
 	private Set<Group> groups;

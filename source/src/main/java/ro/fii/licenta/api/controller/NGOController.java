@@ -1,36 +1,23 @@
 package ro.fii.licenta.api.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javassist.NotFoundException;
-import ro.fii.licenta.api.dao.Member;
-import ro.fii.licenta.api.dao.MemberRequest;
-import ro.fii.licenta.api.dao.Ngo;
-import ro.fii.licenta.api.dao.NgoFunction;
-import ro.fii.licenta.api.dao.User;
+import org.springframework.web.bind.annotation.*;
+import ro.fii.licenta.api.dao.*;
 import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.NgoFunctionDTO;
-import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -244,7 +231,4 @@ public class NGOController {
 		return ResponseEntity.ok(modelMapper.map(memberService.save(modelMapper.map(memberDto, Member.class)), MemberDTO.class));
 		
 	}
-	
-	
-
 }

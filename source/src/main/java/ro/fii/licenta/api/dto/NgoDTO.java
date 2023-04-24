@@ -1,6 +1,9 @@
 package ro.fii.licenta.api.dto;
 
+import com.fasterxml.jackson.annotation.*;
+
 import java.util.Date;
+import java.util.List;
 
 public class NgoDTO {
 	
@@ -21,6 +24,13 @@ public class NgoDTO {
     private String linkedinLink;
     
     private byte[] logo;
+
+	@JsonManagedReference
+	private List<OrganizationalComponentDTO> componentList;
+
+	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+	@JsonIdentityReference(alwaysAsId = true)
+	private UserDTO admin;
 
 	public Long getId() {
 		return id;
@@ -94,4 +104,19 @@ public class NgoDTO {
 		this.logo = logo;
 	}
 
+	public List<OrganizationalComponentDTO> getComponentList() {
+		return componentList;
+	}
+
+	public void setComponentList(List<OrganizationalComponentDTO> componentList) {
+		this.componentList = componentList;
+	}
+
+	public UserDTO getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(UserDTO admin) {
+		this.admin = admin;
+	}
 }
