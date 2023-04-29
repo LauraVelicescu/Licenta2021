@@ -3,6 +3,7 @@ package ro.fii.licenta.api.controller;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ro.fii.licenta.api.exception.ValidationException;
 import ro.fii.licenta.framework.PersistableEntity;
 
 @RestController
@@ -37,7 +39,8 @@ public abstract class GenericRestController<T extends PersistableEntity> {
 		// Code that uses applicationContext
 		ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
 		Class<T> entityClass = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-		repository = (JpaRepository<T, Long>) applicationContext.getBean(entityClass.getSimpleName().toLowerCase() + "Repository");
+		repository = (JpaRepository<T, Long>) applicationContext
+				.getBean(entityClass.getSimpleName().toLowerCase() + "Repository");
 	}
 
 	@GetMapping("/{id}")
@@ -59,12 +62,25 @@ public abstract class GenericRestController<T extends PersistableEntity> {
 	public ResponseEntity<T> update(@PathVariable Long id, @RequestBody T entity) {
 		if (repository.existsById(id)) {
 			entity.setId(id);
+			this.validateUpdateOrThrow(entity, (e) -> {
+				return ResponseEntity.badRequest().build();
+			});
 			repository.save(entity);
 			return ResponseEntity.ok(entity);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 	}
+
+	public void validateUpdateOrThrow(T entity, Function<Exception, ResponseEntity<T>> errorHandler) {
+		try {
+			this.validateBeforeUpdate(entity);
+		} catch (ValidationException e) {
+			errorHandler.apply(e);
+		}
+	}
+
+	public abstract void validateBeforeUpdate(T entity) throws ValidationException;
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {

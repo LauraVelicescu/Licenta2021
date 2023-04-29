@@ -19,6 +19,8 @@ public interface NGOService {
 
 	Ngo findById(Long id);
 
+	void deleteById(Long id);
+
 	Ngo save(Ngo ngo);
 
 	List<Ngo> findAllNgosByAdmin(Integer pageNo, Integer pageSize, User user);
@@ -30,15 +32,15 @@ public interface NGOService {
 	List<MemberRequest> findAllMemberRequestsByNgo(Integer pageNo, Integer pageSize, Long ngoId);
 
 	List<Member> saveMember(List<MemberRequestDTO> memberRequestDTOs, int status);
-	
+
 	List<Ngo> findNgosNotMemberOf(Integer pageNo, Integer pageSize, User user);
-	
-	List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId );
-	
+
+	List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId);
+
 	List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions);
-	
+
 	NgoFunction save(NgoFunction ngoFunction);
 
 	NgoFunction findNgoFunctionById(Long id);
-	
+
 }

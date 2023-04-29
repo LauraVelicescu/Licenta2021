@@ -4,18 +4,19 @@ import java.util.List;
 
 import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.MemberRequest;
-import ro.fii.licenta.api.dao.Ngo;
-import ro.fii.licenta.api.dao.User;
-
 
 public interface MemberService {
-	
-	MemberRequest saveRequest (MemberRequest request);
-	
+
+	MemberRequest saveRequest(MemberRequest request);
+
 	List<Long> findNgoByUser(Long userId);
-	
-	List<Member> findAllMembersByNgo(Ngo ngo);
-	
+
+	List<Member> findMembersByNgoId(Long id);
+
 	Member save(Member member);
+
+	Member findById(Long id);
+
+	void deleteById(Long id);
 
 }

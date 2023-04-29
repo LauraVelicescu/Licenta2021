@@ -38,8 +38,6 @@ import ro.fii.licenta.api.service.UserService;
 @RequestMapping(path = "/user")
 public class UserController {
 
-	// TODO DE MUTAT TOT IN SERVICE gen de mut
-
 	@Autowired
 	private UserService userService;
 

@@ -6,31 +6,29 @@ import java.util.Date;
 import java.util.List;
 
 public class NgoDTO {
-	
+
 	private Long id;
 
-    private String name;
-    
-    private String acronym;
-    
-    private Date foundingDate;
+	private String name;
+
+	private String acronym;
+
+	private Date foundingDate;
 
 	private String description;
-    
-    private String facebookLink;
-    
-    private String twitterLink;
-    
-    private String linkedinLink;
-    
-    private byte[] logo;
+
+	private String facebookLink;
+
+	private String twitterLink;
+
+	private String linkedinLink;
+
+	private byte[] logo;
 
 	@JsonManagedReference
 	private List<OrganizationalComponentDTO> componentList;
 
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-	@JsonIdentityReference(alwaysAsId = true)
-	private UserDTO admin;
+	private Long adminId;
 
 	public Long getId() {
 		return id;
@@ -112,11 +110,12 @@ public class NgoDTO {
 		this.componentList = componentList;
 	}
 
-	public UserDTO getAdmin() {
-		return admin;
+	public Long getAdminId() {
+		return adminId;
 	}
 
-	public void setAdmin(UserDTO admin) {
-		this.admin = admin;
+	public void setAdminId(Long adminId) {
+		this.adminId = adminId;
 	}
+
 }

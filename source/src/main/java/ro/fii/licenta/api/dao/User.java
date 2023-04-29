@@ -45,12 +45,13 @@ public class User extends PersistableEntity {
 	private boolean blocked;
 
 	private int failAttemtps;
+	
+	private Set<Role> roles;
 
 	private PersonType personType;
+	
 	@JsonManagedReference
 	private List<Ngo> administeredNGOs;
-
-	private Set<Group> groups;
 
 	@Column(name = "password")
 	public String getPassword() {
@@ -169,15 +170,15 @@ public class User extends PersistableEntity {
 	public void setPersonType(PersonType personType) {
 		this.personType = personType;
 	}
-
+	
 	@ManyToMany
-	@JoinTable(name = "user_group", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "group_id"))
-	public Set<Group> getGroups() {
-		return groups;
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	public Set<Role> getRoles() {
+		return roles;
 	}
 
-	public void setGroups(Set<Group> groups) {
-		this.groups = groups;
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 
 	@OneToMany(mappedBy = "admin")

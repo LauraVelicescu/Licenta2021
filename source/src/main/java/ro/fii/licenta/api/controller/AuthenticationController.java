@@ -66,7 +66,6 @@ public class AuthenticationController {
 	@PostMapping("/register")
 	public UserDTO register(HttpServletRequest request, @RequestBody UserDTO userDto)
 			throws UserAlreadyExistAuthenticationException {
-		System.out.println(userDto);
 
 		User user = this.modelMapper.map(userDto, User.class);
 		User dbUser = this.userRepository.findByEmailAddress(user.getEmailAddress());
@@ -82,10 +81,8 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/resetPassword")
-	// gets email and creates token
-	// TODO send e-mail with token
-	public UserDTO resetPassword(HttpServletRequest request, @RequestBody UserDTO userDto) throws BusinessException {
-		User user = userService.findUserByEmail(userDto.getEmailAddress());
+	public ResponseEntity<String> resetPassword(HttpServletRequest request, @RequestBody String email) throws BusinessException {
+		User user = userService.findUserByEmail(email);
 		if (user == null) {
 			throw new BusinessException("This user does not exist.");
 		}
@@ -93,7 +90,7 @@ public class AuthenticationController {
 		userService.createPasswordResetTokenForUser(user, token);
 		mailSender.send(constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
 
-		return this.modelMapper.map(user, UserDTO.class);
+		return ResponseEntity.ok(token);
 	}
 
 	private String getAppUrl(HttpServletRequest request) {
@@ -115,7 +112,6 @@ public class AuthenticationController {
 	public void savePassword(HttpServletRequest request, @RequestBody PasswordDTO passwordDto) throws Exception {
 
 		String result = securityService.validatePasswordResetToken(passwordDto.getToken());
-		System.out.print(false);
 
 		if (result != null) {
 			throw new Exception("Password reset unsuccesful.");

@@ -1,118 +1,134 @@
 package ro.fii.licenta.api.dao;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import ro.fii.licenta.framework.NameDescriptionEntity;
-
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "ngo")
 public class Ngo extends NameDescriptionEntity {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private String acronym;
+	private String acronym;
 
-    private Date foundingDate;
+	private Date foundingDate;
 
-    private String description;
+	private String description;
 
-    private String facebookLink;
+	private String facebookLink;
 
-    private String twitterLink;
+	private String twitterLink;
 
-    private String linkedinLink;
+	private String linkedinLink;
 
-    private byte[] logo;
-    @JsonBackReference
-    private User admin;
-    @JsonManagedReference
-    private List<OrganizationalComponent> componentList = new ArrayList<>();
+	private byte[] logo;
 
-    @Column(name = "acronym")
-    public String getAcronym() {
-        return acronym;
-    }
+	@JsonBackReference
+	private User admin;
 
-    public void setAcronym(String acronym) {
-        this.acronym = acronym;
-    }
+	@JsonManagedReference
+	private List<OrganizationalComponent> componentList;
 
-    @Column(name = "founding_date")
-    public Date getFoundingDate() {
-        return foundingDate;
-    }
+	@Column(name = "acronym")
+	public String getAcronym() {
+		return acronym;
+	}
 
-    public void setFoundingDate(Date foundingDate) {
-        this.foundingDate = foundingDate;
-    }
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
 
-    @Column(name = "description")
-    public String getDescription() {
-        return description;
-    }
+	@Column(name = "founding_date")
+	public Date getFoundingDate() {
+		return foundingDate;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setFoundingDate(Date foundingDate) {
+		this.foundingDate = foundingDate;
+	}
 
-    @Column(name = "facebook_link")
-    public String getFacebookLink() {
-        return facebookLink;
-    }
+	@Column(name = "description")
+	public String getDescription() {
+		return description;
+	}
 
-    public void setFacebookLink(String facebookLink) {
-        this.facebookLink = facebookLink;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    @Column(name = "twitter_link")
-    public String getTwitterLink() {
-        return twitterLink;
-    }
+	@Column(name = "facebook_link")
+	public String getFacebookLink() {
+		return facebookLink;
+	}
 
-    public void setTwitterLink(String twitterLink) {
-        this.twitterLink = twitterLink;
-    }
+	public void setFacebookLink(String facebookLink) {
+		this.facebookLink = facebookLink;
+	}
 
-    @Column(name = "linkedin_link")
-    public String getLinkedinLink() {
-        return linkedinLink;
-    }
+	@Column(name = "twitter_link")
+	public String getTwitterLink() {
+		return twitterLink;
+	}
 
-    public void setLinkedinLink(String linkedinLink) {
-        this.linkedinLink = linkedinLink;
-    }
+	public void setTwitterLink(String twitterLink) {
+		this.twitterLink = twitterLink;
+	}
 
-    @Lob
-    @Column(name = "logo")
-    public byte[] getLogo() {
-        return logo;
-    }
+	@Column(name = "linkedin_link")
+	public String getLinkedinLink() {
+		return linkedinLink;
+	}
 
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
-    }
+	public void setLinkedinLink(String linkedinLink) {
+		this.linkedinLink = linkedinLink;
+	}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    public User getAdmin() {
-        return admin;
-    }
+	@Lob
+	@Column(name = "logo")
+	public byte[] getLogo() {
+		return logo;
+	}
 
-    public void setAdmin(User admin) {
-        this.admin = admin;
-    }
+	public void setLogo(byte[] logo) {
+		this.logo = logo;
+	}
 
-	@OneToMany(mappedBy = "parentNgo", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    public List<OrganizationalComponent> getComponentList() {
-        return componentList;
-    }
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	public User getAdmin() {
+		return admin;
+	}
 
-    public void setComponentList(List<OrganizationalComponent> componentList) {
-        this.componentList = componentList;
-    }
+	public void setAdmin(User admin) {
+		this.admin = admin;
+	}
+
+	@OneToMany(mappedBy = "parentNgo", cascade = CascadeType.ALL, orphanRemoval = true)
+	public List<OrganizationalComponent> getComponentList() {
+		return componentList;
+	}
+
+	public void setComponentList(List<OrganizationalComponent> componentList) {
+//		if (this.componentList != null) {
+//			this.componentList.clear();
+//			this.componentList.addAll(componentList);
+//		} else {
+			this.componentList = componentList;
+//		}
+	}
 }

@@ -1,15 +1,22 @@
 package ro.fii.licenta.api.dao;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import ro.fii.licenta.framework.NameDescriptionEntity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "component")
 public class OrganizationalComponent extends NameDescriptionEntity {
 
-    private boolean lead;
+	private static final long serialVersionUID = 1L;
+	private boolean lead;
     @JsonBackReference
     private Ngo parentNgo;
 
