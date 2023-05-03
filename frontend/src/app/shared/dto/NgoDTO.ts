@@ -1,3 +1,5 @@
+import {OrganizationalComponentDTO} from './OrganizationalComponentDTO';
+
 export class NgoDTO {
   public id: number;
   public name: string;
@@ -8,4 +10,6 @@ export class NgoDTO {
   public twitterLink: string;
   public linkedinLink: string;
   public logo: any;
+  public adminId: number;
+  public componentList: OrganizationalComponentDTO[];
 }

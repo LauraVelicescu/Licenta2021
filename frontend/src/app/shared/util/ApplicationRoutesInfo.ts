@@ -67,6 +67,12 @@ export class ApplicationRoutesInfo {
       icon: 'category',
       privileges:['privilegiu1'],
       parentPath: 'ngo'
+    }, {
+      path: 'members',
+      title: 'Ngo Members',
+      icon: 'people',
+      privileges:['privilegiu1'],
+      parentPath: 'ngo'
     }]
   }
 

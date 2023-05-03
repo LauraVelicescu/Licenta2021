@@ -17,7 +17,7 @@ const routes: Routes = [
   {
     path: ApplicationRoutes.ADMIN_MODULE_ROUTE,
     component: AdminLayoutComponent,
-    canActivate: [LoginGuard],
+   canActivate: [LoginGuard],
     children: [
       {
         path: '',

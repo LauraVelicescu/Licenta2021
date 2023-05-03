@@ -128,6 +128,9 @@ export class NgoManageFunctionsComponent implements OnInit {
         this.applicationService.emmitLoading(true);
         this.ngoService.deleteFunction(payload).subscribe((result) => {
           this.applicationService.emmitLoading(false);
+          result.forEach(e => {
+            this.notificationService.warning(e);
+          })
           this.load();
         })
         break;

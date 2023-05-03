@@ -9,6 +9,7 @@ import {NotificationService} from "../../../../../../../../shared/services/notif
 import {NGOService} from "../../../../../../../../shared/services/ngo-service/ngo.service";
 import {MemberDTO} from "../../../../../../../../shared/dto/MemberDTO";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {MemberService} from '../../../../../../../../shared/services/member-service/member.service';
 
 @Component({
   selector: 'app-assign-user',
@@ -30,15 +31,14 @@ export class AssignUserComponent implements OnInit {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private applicationService: ApplicationService,
               private notificationService: NotificationService,
-              private ngoService: NGOService) { }
+              private ngoService: NGOService,
+              private memberService: MemberService) { }
 
   ngOnInit(): void {
 
     this.selectedNGO = this.data.ngo;
-    console.log(this.selectedNGO);
     this.applicationService.emmitLoading(true);
-    this.ngoService.getNGOMembers(this.selectedNGO).subscribe((result) => {
-      console.log(result);
+    this.memberService.getNGOMembers(this.selectedNGO).subscribe((result) => {
       this.applicationService.emmitLoading(false);
       this.comboData = result;
       this.filteredOptions = this.searchTextboxControl.valueChanges
@@ -91,9 +91,8 @@ export class AssignUserComponent implements OnInit {
 
   conclude() {
     this.applicationService.emmitLoading(true);
-    console.log(this.selectedOption);
-    console.log(this.data.ngoFunction.id);
-    this.ngoService.setMemberFunction(this.selectedOption, this.data.ngoFunction).subscribe((result2) => {
+    this.selectedOption.function = this.data.ngoFunction;
+    this.memberService.updateMember(this.selectedOption).subscribe((result2) => {
       this.applicationService.emmitLoading(false);
       this.dialogRef.close();
     }, error => {

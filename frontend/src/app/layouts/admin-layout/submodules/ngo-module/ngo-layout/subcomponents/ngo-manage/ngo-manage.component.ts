@@ -13,32 +13,43 @@ import {map, startWith} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {UserService} from '../../../../../../../shared/services/user-service/user.service';
 import {UserDTO} from '../../../../../../../shared/dto/UserDTO';
+import {formatDate} from '@angular/common';
 import {MemberRequestDTO, MemberRequestStatus} from '../../../../../../../shared/dto/MemberRequestDTO';
+import {OrganizationalComponentDTO} from '../../../../../../../shared/dto/OrganizationalComponentDTO';
+import {MemberService} from '../../../../../../../shared/services/member-service/member.service';
 
 @Component({
   selector: 'app-ngo-manage',
   templateUrl: './ngo-manage.component.html',
   styleUrls: ['./ngo-manage.component.scss']
 })
-export class NgoManageComponent implements OnInit, AfterViewInit {
+export class NgoManageComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'acronym'];
+  displayedColumnsForComponents: string[] = ['id', 'name', 'description', 'lead'];
+
   dataSource = new MatTableDataSource<NgoDTO>([]);
 
+
   persistState: boolean = false;
+  persistStateForComponent: boolean = false;
   NGOForm: FormGroup;
-  selectedFile: File;
-  currentNGO: NgoDTO
-  retrievedImage: any;
-  base64Data: any;
+  NGOComponentForm: FormGroup;
+  currentNGO: NgoDTO;
+  currentNGOComponent: OrganizationalComponentDTO;
   message: string;
   imageName: any;
 
   selection = new SelectionModel<NgoDTO>(true, []);
-
-  @ViewChild('paginator') paginator: MatPaginator;
   length: number;
 
+  selectionComponents = new SelectionModel<OrganizationalComponentDTO>(true, []);
+
+
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
+
   // tslint:disable-next-line:no-shadowed-variable
+  private componentEdit: boolean = false
+
   constructor(private formBuilder: FormBuilder, private NGOService: NGOService, private notificationService: NotificationService,
               private applicationService: ApplicationService, private matDialog: MatDialog) {
   }
@@ -56,11 +67,11 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
         description: ['']
       }
     )
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.selection = new SelectionModel<NgoDTO>(true, []);
+    this.NGOComponentForm = this.formBuilder.group({
+      name: [''],
+      description: [''],
+      lead: ['']
+    })
   }
 
   public get operationType() {
@@ -68,13 +79,12 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
   }
 
   private load() {
-    this.dataSource.paginator = this.paginator;
     this.persistState = false;
     this.selection.clear();
     this.applicationService.emmitLoading(true);
-    this.NGOService.findNGOsCount().subscribe((number) => {
+    this.NGOService.findManagedNGOsCount().subscribe((number) => {
       this.length = number;
-      this.NGOService.findNGOs(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
+      this.NGOService.findManagedNGOs(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
         this.applicationService.emmitLoading(false);
         this.dataSource.data = result;
       }, error => {
@@ -93,13 +103,6 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
       return;
     } else {
       const ngo: NgoDTO = this.currentNGO;
-      ngo.name = this.NGOForm.controls.name.value;
-      ngo.foundingDate = this.NGOForm.controls.foundingDate.value;
-      ngo.acronym = this.NGOForm.controls.acronym.value;
-      ngo.facebookLink = this.NGOForm.controls.facebookLink.value;
-      ngo.twitterLink = this.NGOForm.controls.twitterLink.value;
-      ngo.linkedinLink = this.NGOForm.controls.linkedinLink.value;
-      ngo.description = this.NGOForm.controls.description.value;
       if (ngo.id) {
         this.applicationService.emmitLoading(true);
         this.NGOService.update(ngo).subscribe((result) => {
@@ -123,12 +126,20 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
     }
   }
 
+  public formatDate(date: Date) {
+    if (date) {
+      return formatDate(date, 'yyyy-MM-dd', 'en-US');
+    }
+  }
+
   handleOperation(operation: OperationType, payload?: NgoDTO[]) {
 
     switch (operation) {
       case OperationType.ADD:
         this.persistState = true;
         this.currentNGO = new NgoDTO();
+        this.currentNGO.id = 0;
+        this.currentNGO.componentList = [];
         break;
       case OperationType.MODIFY:
         this.persistState = true;
@@ -148,6 +159,29 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
     }
   }
 
+
+  handleOperationForComponents(operation: OperationType, payload?: OrganizationalComponentDTO[]) {
+
+    switch (operation) {
+      case OperationType.ADD:
+        this.persistStateForComponent = true;
+        this.currentNGOComponent = new OrganizationalComponentDTO();
+        break;
+      case OperationType.MODIFY:
+        this.persistStateForComponent = true;
+        this.currentNGOComponent = payload[0];
+        this.componentEdit = true;
+        break;
+      case OperationType.DELETE:
+        this.applicationService.emmitLoading(true);
+        payload?.forEach(e => {
+          this.currentNGO.componentList = this.currentNGO.componentList.filter(component => component !== e)
+        });
+        this.applicationService.emmitLoading(false);
+        break;
+    }
+  }
+
   cancelAction() {
     this.load();
   }
@@ -157,6 +191,35 @@ export class NgoManageComponent implements OnInit, AfterViewInit {
       width: '750px',
       data: {ngo: this.currentNGO}
     });
+  }
+
+  cancelPersistComponent() {
+    this.persistStateForComponent = false;
+  }
+
+  onSubmitComponent() {
+    if (this.NGOComponentForm.invalid) {
+      return;
+    } else {
+      const ngoComponent: OrganizationalComponentDTO = this.currentNGOComponent;
+      if (ngoComponent.id || this.componentEdit) {
+        this.persistStateForComponent = false;
+        this.componentEdit = false;
+        this.selectionComponents.clear();
+        this.applicationService.emmitLoading(false);
+        this.currentNGO.componentList.forEach(e => {
+          if (e === this.currentNGOComponent) {
+            e = this.currentNGOComponent
+          }
+        })
+      } else {
+        this.persistStateForComponent = false;
+        this.selectionComponents.clear();
+        this.applicationService.emmitLoading(true);
+        this.currentNGO.componentList.push(ngoComponent);
+        this.applicationService.emmitLoading(false);
+      }
+    }
   }
 }
 
@@ -193,7 +256,8 @@ export class NgoMemberJoin implements OnInit, AfterViewInit {
     private userService: UserService,
     private applicationService: ApplicationService,
     private notificationService: NotificationService,
-    private ngoService: NGOService) {
+    private ngoService: NGOService,
+    private memberService: MemberService) {
   }
 
   onNoClick(): void {
@@ -201,7 +265,6 @@ export class NgoMemberJoin implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    console.log(this.data);
     this.applicationService.emmitLoading(true);
     this.userService.findUsers().subscribe((result) => {
       this.applicationService.emmitLoading(false);
@@ -265,7 +328,7 @@ export class NgoMemberJoin implements OnInit, AfterViewInit {
 
   conclude() {
     this.applicationService.emmitLoading(true);
-    this.ngoService.addNgoMembers(this.data.ngo, this.selectedValues).subscribe((result2) => {
+    this.memberService.addNgoMembers(this.data.ngo, this.selectedValues).subscribe((result2) => {
       this.applicationService.emmitLoading(false);
       result2.forEach(e => {
         this.notificationService.warning(e);

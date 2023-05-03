@@ -3,7 +3,6 @@ import {NgoDTO} from '../../dto/NgoDTO';
 import {MainServiceService} from '../main/main-service.service';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
-import {UserDTO} from '../../dto/UserDTO';
 import {MemberDTO} from '../../dto/MemberDTO';
 import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
 import {FunctionDTO} from '../../dto/FunctionDTO';
@@ -12,21 +11,18 @@ import {FunctionDTO} from '../../dto/FunctionDTO';
   providedIn: 'root'
 })
 export class NGOService {
-  private rootURL = 'api'
-  private createURL = '/createNGO'
-  private updateURL = '/updateNGO'
-  private deleteURL = '/deleteNGO'
-  private getNGOsURL = '/findNGOs'
-  private getNGOsCountURL = '/findNGOs/count'
+  private rootURL = 'api/ngo'
+  private updateURL = '/:ngoId'
+  private deleteURL = '/ids'
+  private getManagedNGOsURL = '/findManagedNGOs'
+  private getManagedNGOsCountURL = '/findManagedNGOs/count'
   private uploadImageURL = '/uploadImage'
-  private assignMemberToNGOURRL = '/addMembers';
   private getNgoRequestsURL = '/getNgoRequests/:ngoId';
   private getNgoRequestsNumberURL = '/getNgoRequests/number/:ngoId';
   private saveNgoRequestStatusURL = '/saveNgoRequestStatus/:status';
   private getNGOsNotMemberOfCountURL = '/findNGOsNotMemberOf/count';
   private getNGOsNotMemberOfURL = '/findNGOsNotMemberOf';
   private getMyNGOsURL = '/findMyNGOs';
-  private getNGOMembersURL ='/getNGOMembers/:ngoId';
   private getNGOFunctionsCountURL = '/findNgoFunctions/count/:ngoId';
   private getNGOFunctionsURL = '/findNgoFunctions/:ngoId';
   private deleteNGOFunctionsURL = '/deleteNGOFunction';
@@ -39,7 +35,7 @@ export class NGOService {
 
 
   create(ngo: NgoDTO) {
-    return this.mainService.post(this.rootURL + this.createURL,
+    return this.mainService.post(this.rootURL,
       ngo).pipe(map((result: NgoDTO) => {
       return result;
     }), catchError(err => {
@@ -49,7 +45,7 @@ export class NGOService {
 
   update(ngo: NgoDTO) {
 
-    return this.mainService.post(this.rootURL + this.updateURL,
+    return this.mainService.put(this.rootURL + this.updateURL.replace(':ngoId', ngo.id.toString()),
       ngo).pipe(map((result: NgoDTO) => {
       return result;
     }), catchError(err => {
@@ -58,8 +54,12 @@ export class NGOService {
   }
 
   delete(ngos: NgoDTO[]) {
-    return this.mainService.post(this.rootURL + this.deleteURL,
-      ngos).pipe(map((result: string[]) => {
+    let ids = '?ids=';
+    ngos.forEach(e => {
+      ids += e.id + ','
+    });
+    ids = ids.substring(0, ids.length - 1)
+    return this.mainService.delete(this.rootURL + this.deleteURL + ids).pipe(map((result: string[]) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -75,8 +75,8 @@ export class NGOService {
     }));
   }
 
-  public findNGOsCount() {
-    return this.mainService.get(this.rootURL + this.getNGOsCountURL).pipe(map((result: number) => {
+  public findManagedNGOsCount() {
+    return this.mainService.get(this.rootURL + this.getManagedNGOsCountURL).pipe(map((result: number) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -85,15 +85,15 @@ export class NGOService {
   }
 
 
-  public findNGOs(page?: number, pageSize?: number, filter?: any) {
+  public findManagedNGOs(page?: number, pageSize?: number, filter?: any) {
     let queryString: string = '';
-    if (page && pageSize) {
-      queryString += '?page=' + page + '&pageSize=' + pageSize;
+    if (page !== undefined && pageSize) {
+      queryString += '?page=' + page + '&pageNo=' + pageSize;
     }
     if (filter) {
       queryString += queryString ? '&deimplementat' : '?deimplementat';
     }
-    return this.mainService.get(this.rootURL + this.getNGOsURL + queryString).pipe(map((result: NgoDTO[]) => {
+    return this.mainService.get(this.rootURL + this.getManagedNGOsURL + queryString).pipe(map((result: NgoDTO[]) => {
       return plainToClass(NgoDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -120,22 +120,6 @@ export class NGOService {
     }
     return this.mainService.get(this.rootURL + this.getNGOsNotMemberOfURL + queryString).pipe(map((result: NgoDTO[]) => {
       return plainToClass(NgoDTO, result, {enableCircularCheck: false});
-    }), catchError(err => {
-      this.mainService.httpError(err);
-      throw new Error(err.error.message);
-    }));
-  }
-
-  public addNgoMembers(ngo: NgoDTO, members: UserDTO[]) {
-    let ngoMembers: MemberDTO[] = [];
-    members.forEach(e => {
-      let ngoMember: MemberDTO = new MemberDTO();
-      ngoMember.user = e;
-      ngoMember.ngo = ngo;
-      ngoMembers.push(ngoMember);
-    })
-    return this.mainService.post(this.rootURL + this.assignMemberToNGOURRL, ngoMembers).pipe(map((result: string[]) => {
-      return result;
     }), catchError(err => {
       this.mainService.httpError(err);
       throw new Error(err.error.message);
@@ -227,14 +211,6 @@ export class NGOService {
 
   public updateFunction(ngoFunction:FunctionDTO){
     return this.mainService.post(this.rootURL + this.updateNGOFunctionURL, ngoFunction).pipe(map((result: FunctionDTO) => {
-      return result;
-    }), catchError(err => {
-      throw new Error(err.error.message);
-    }));
-  }
-
-  public getNGOMembers(ngo: NgoDTO){
-    return this.mainService.get(this.rootURL + this.getNGOMembersURL.replace(":ngoId", ngo.id.toString())).pipe(map((result: MemberDTO[]) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
