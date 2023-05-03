@@ -1,14 +1,20 @@
 package ro.fii.licenta.api.dao;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
@@ -32,7 +38,11 @@ public class Ngo extends NameDescriptionEntity {
 
 	private byte[] logo;
 
+	@JsonBackReference
 	private User admin;
+
+	@JsonManagedReference
+	private List<OrganizationalComponent> componentList;
 
 	@Column(name = "acronym")
 	public String getAcronym() {
@@ -108,4 +118,17 @@ public class Ngo extends NameDescriptionEntity {
 		this.admin = admin;
 	}
 
+	@OneToMany(mappedBy = "parentNgo", cascade = CascadeType.ALL, orphanRemoval = true)
+	public List<OrganizationalComponent> getComponentList() {
+		return componentList;
+	}
+
+	public void setComponentList(List<OrganizationalComponent> componentList) {
+//		if (this.componentList != null) {
+//			this.componentList.clear();
+//			this.componentList.addAll(componentList);
+//		} else {
+			this.componentList = componentList;
+//		}
+	}
 }

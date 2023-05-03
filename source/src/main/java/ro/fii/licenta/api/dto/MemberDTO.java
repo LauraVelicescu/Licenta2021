@@ -1,8 +1,5 @@
 package ro.fii.licenta.api.dto;
 
-import ro.fii.licenta.api.dao.Ngo;
-import ro.fii.licenta.api.dao.User;
-
 public class MemberDTO {
 	private Long id;
 

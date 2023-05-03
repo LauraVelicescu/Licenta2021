@@ -22,6 +22,8 @@ import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
+import ro.fii.licenta.api.exception.EntityConflictException;
+import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.repository.MemberRepository;
 import ro.fii.licenta.api.repository.MemberRequestRepository;
 import ro.fii.licenta.api.repository.NGORepository;
@@ -41,7 +43,7 @@ public class NGOServiceImpl implements NGOService {
 
 	@Autowired
 	private MemberRequestRepository memberRequestRepository;
-	
+
 	@Autowired
 	private NgoFunctionRepository ngoFunctionRepository;
 
@@ -57,6 +59,10 @@ public class NGOServiceImpl implements NGOService {
 
 	@Override
 	public Ngo save(Ngo ngo) {
+		Ngo existingNgo = this.ngoRepository.findByName(ngo.getName());
+		if (existingNgo != null && !existingNgo.getId().equals(ngo.getId())) {
+			throw new EntityConflictException("NGO with name " + ngo.getName() + " already exists");
+		}
 		return ngoRepository.save(ngo);
 	}
 
@@ -95,7 +101,7 @@ public class NGOServiceImpl implements NGOService {
 		for (MemberDTO memberDTO : members) {
 			Member member = memberRepository.findByUserAndNgo(memberDTO.getUser().getId(), memberDTO.getNgo().getId());
 			if (member != null) {
-				errors.add("Userul " + memberDTO.getUser().getEmailAddress() + " este deja in ONG ul "
+				errors.add("The user " + memberDTO.getUser().getEmailAddress() + " is already in the NGO "
 						+ memberDTO.getNgo().getName());
 			} else {
 				member = modelMapper.map(memberDTO, Member.class);
@@ -149,14 +155,23 @@ public class NGOServiceImpl implements NGOService {
 		long userId = user.getId();
 		List<Long> ngoIds = memberRepository.findNgoIdsForUser(userId);
 		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
-		List<Ngo> ngosNotMemberOf = ngoRepository.findByIdNotIn(ngoIds, page).getContent();
+		return page != null
+				? ngoIds.size() > 0 ? ngoRepository.findByIdNotIn(ngoIds, page).getContent()
+						: ngoRepository.findAll(page).getContent()
+				: ngoIds.size() > 0 ? ngoRepository.findAll(new Specification<Ngo>() {
+					private static final long serialVersionUID = 1L;
 
-		return ngosNotMemberOf;
+					@Override
+					public Predicate toPredicate(Root<Ngo> root, CriteriaQuery<?> query,
+							CriteriaBuilder criteriaBuilder) {
+						return criteriaBuilder.not(root.get("id").in(ngoIds));
+					}
+				}) : ngoRepository.findAll();
 	}
 
 	@Override
-	public List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId ) {
-		
+	public List<NgoFunction> findAllNgoFunctions(Integer pageNo, Integer pageSize, Long ngoId) {
+
 		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
 		List<NgoFunction> ngoFunctions = ngoFunctionRepository.findAllByNgoId(ngoId, page).getContent();
 
@@ -167,7 +182,12 @@ public class NGOServiceImpl implements NGOService {
 	public List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions) {
 		List<String> list = new ArrayList<String>();
 		for (NgoFunction n : ngoFunctions) {
-			ngoFunctionRepository.delete(n);
+			List<Member> members = memberRepository.findByFunction(n);
+			if (members.size() != 0) {
+				list.add("There are members with function " + n.name + ". Cannot delete it");
+			} else {
+				ngoFunctionRepository.delete(n);
+			}
 		}
 		return list;
 	}
@@ -182,9 +202,14 @@ public class NGOServiceImpl implements NGOService {
 		return ngoFunctionRepository.findById(id).get();
 	}
 
+	@Override
+	public void deleteById(Long id) {
 
-	
-	
-	
+		if (this.ngoRepository.existsById(id)) {
+			this.ngoRepository.deleteById(id);
+		} else {
+			throw new NotFoundException("Ngo with id " + id + " does not exist");
+		}
+	}
 
 }

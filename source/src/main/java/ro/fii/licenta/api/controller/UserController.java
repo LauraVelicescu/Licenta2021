@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javassist.NotFoundException;
-import ro.fii.licenta.api.config.JWTTokenUtil;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.EmailPayloadDTO;
@@ -39,16 +38,11 @@ import ro.fii.licenta.api.service.UserService;
 @RequestMapping(path = "/user")
 public class UserController {
 
-	// TODO DE MUTAT TOT IN SERVICE gen de mut
-
 	@Autowired
 	private UserService userService;
 
 	@Autowired
 	private ModelMapper modelMapper;
-
-	@Autowired
-	private JWTTokenUtil jwtTokenUtil;
 
 	@Autowired
 	private MailingService mailingService;

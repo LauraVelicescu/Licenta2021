@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 public class UserDTO {
 
@@ -36,8 +36,6 @@ public class UserDTO {
 	protected boolean blocked;
 
 	protected int failAttemtps;
-
-	private List<NgoDTO> administeredNGOs;
 
 	public Long getId() {
 		return id;
@@ -163,13 +161,4 @@ public class UserDTO {
 		return outputStream.toByteArray();
 
 	}
-
-	public List<NgoDTO> getAdministeredNGOs() {
-		return administeredNGOs;
-	}
-
-	public void setAdministeredNGOs(List<NgoDTO> administeredNGOs) {
-		this.administeredNGOs = administeredNGOs;
-	}
-
 }

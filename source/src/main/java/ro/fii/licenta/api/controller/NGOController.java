@@ -10,94 +10,106 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javassist.NotFoundException;
-import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.User;
-import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.NgoFunctionDTO;
-import ro.fii.licenta.api.dto.UserDTO;
+import ro.fii.licenta.api.exception.EntityConflictException;
+import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
 
 @RestController
 @CrossOrigin
+@RequestMapping("/ngo")
 public class NGOController {
 
-	@Autowired
 	private NGOService ngoService;
 
-	@Autowired
 	private ModelMapper modelMapper;
 
-	@Autowired
 	private UserService userService;
 
-	@Autowired
 	private MemberService memberService;
 
-	@PostMapping(value = "/createNGO")
-	public ResponseEntity<?> createNGO(@RequestBody NgoDTO ngoDTO, HttpServletRequest request) throws Exception {
+	@Autowired
+	public NGOController(NGOService ngoService, ModelMapper modelMapper, UserService userService,
+			MemberService memberService) {
+		super();
+		this.ngoService = ngoService;
+		this.modelMapper = modelMapper;
+		this.userService = userService;
+		this.memberService = memberService;
+	}
+
+	@PostMapping
+	public ResponseEntity<NgoDTO> create(@RequestBody NgoDTO ngoDTO, HttpServletRequest request) {
 
 		User user = userService.getCurrentUser(request);
 
 		Ngo ngo = ngoService.findByName(ngoDTO.getName());
 
 		if (ngo != null) {
-			throw new Exception(String.format("This name is already used by another NGO"));
+			throw new EntityConflictException(String.format("This name is already used by another NGO"));
 		}
 
 		ngo = this.modelMapper.map(ngoDTO, Ngo.class);
 		ngo.setAdmin(user);
 		ngo = this.ngoService.save(ngo);
-//		modelMapper.getConfiguration().setSkipNullEnabled(true);
-//		modelMapper.map(ngoDTO, ngo);
-//		modelMapper.getConfiguration().setSkipNullEnabled(false);
 
-		return new ResponseEntity<>(modelMapper.map(ngo, NgoDTO.class), HttpStatus.OK);
+		return new ResponseEntity<NgoDTO>(modelMapper.map(ngo, NgoDTO.class), HttpStatus.OK);
 
 	}
 
-	@PostMapping(value = "/updateNGO")
-	public ResponseEntity<?> updateNGO(@RequestBody NgoDTO ngoDTO, HttpServletRequest request) throws Exception {
-		Ngo ngo = ngoService.findByName(ngoDTO.getName());
+	@PutMapping("/{id}")
+	public ResponseEntity<NgoDTO> updateNGO(@PathVariable Long id, @RequestBody NgoDTO ngoDTO,
+			HttpServletRequest request) throws Exception {
+		Ngo secondNgo = modelMapper.map(ngoDTO, Ngo.class);
 
-		if (ngo != null) {
-			new NotFoundException(String.format("NGO with name %s was not found", ngoDTO.getName()));
+		return new ResponseEntity<NgoDTO>(modelMapper.map(ngoService.save(secondNgo), NgoDTO.class), HttpStatus.OK);
+
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		ngoService.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping(value = "/ids")
+	public ResponseEntity<Void> deleteNGOs(@RequestParam List<Long> ids) throws Exception {
+		for (Long id : ids) {
+			this.ngoService.deleteById(id);
 		}
-
-		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		modelMapper.map(ngoDTO, ngo);
-		modelMapper.getConfiguration().setSkipNullEnabled(false);
-		return new ResponseEntity<>(modelMapper.map(ngoService.save(ngo), NgoDTO.class), HttpStatus.OK);
-
+		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping(value = "/deleteNGO")
-	public void deleteNGO(@RequestBody List<NgoDTO> ngoDTO, HttpServletRequest request) throws Exception {
-		ngoService.deleteNGOs(ngoDTO);
-	}
-
-	@GetMapping(value = "/getNGO")
-	public ResponseEntity<?> getNGO(HttpServletRequest request) {
+	@GetMapping("/{id}")
+	public ResponseEntity<NgoDTO> getById(@PathVariable Long id) {
+		Ngo ngo = this.ngoService.findById(id);
+		if (ngo != null) {
+			new ResponseEntity<>(modelMapper.map(ngo, NgoDTO.class), HttpStatus.OK);
+		}
 		return null;
 
 	}
 
-	@GetMapping(value = "/findNGOs")
-	public ResponseEntity<List<NgoDTO>> findNGOs(@RequestParam(name = "page", required = false) Integer page,
+	@GetMapping(value = "/findManagedNGOs")
+	public ResponseEntity<List<NgoDTO>> findManagedNGOs(@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "pageNo", required = false) Integer pageNo, HttpServletRequest request) {
 		List<NgoDTO> ngos = new ArrayList<NgoDTO>();
 		User currentUser = userService.getCurrentUser(request);
@@ -107,15 +119,10 @@ public class NGOController {
 		return ResponseEntity.ok(ngos);
 	}
 
-	@GetMapping(value = "/findNGOs/count")
-	public ResponseEntity<Integer> findNGOsCount(HttpServletRequest request) {
+	@GetMapping(value = "/findManagedNGOs/count")
+	public ResponseEntity<Integer> findManagedNGOsCount(HttpServletRequest request) {
 		User currentUser = userService.getCurrentUser(request);
 		return ResponseEntity.ok(ngoService.findAllNgosByAdmin(null, null, currentUser).size());
-	}
-
-	@PostMapping(value = "/addMembers")
-	public ResponseEntity<List<String>> addMembers(@RequestBody List<MemberDTO> members) {
-		return ResponseEntity.ok(ngoService.addMembers(members));
 	}
 
 	@GetMapping(value = "/getNgoRequests/number/{ngoId}")
@@ -133,12 +140,6 @@ public class NGOController {
 			memberRequestDTOs.add(modelMapper.map(mr, MemberRequestDTO.class));
 		}
 		return ResponseEntity.ok(memberRequestDTOs);
-	}
-
-	@PostMapping(value = "/saveNgoRequestStatus/{status}")
-	public void getNgoRequests(@PathVariable(value = "status") Integer status,
-			@RequestBody List<MemberRequestDTO> memberRequestDTOs) {
-		ngoService.saveMember(memberRequestDTOs, status);
 	}
 
 	@GetMapping(value = "/findNGOsNotMemberOf")
@@ -190,61 +191,39 @@ public class NGOController {
 
 		return ResponseEntity.ok(ngoFunctions.size());
 	}
-	
+
 	@PostMapping(value = "/addNGOFunction/{ngoId}")
-	public ResponseEntity<NgoFunctionDTO> addNgoFunction(@RequestBody NgoFunctionDTO ngoFunctionDto, @PathVariable(value = "ngoId") Long ngoId){
-	ngoFunctionDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
-	return ResponseEntity.ok(modelMapper.map(ngoService.save(modelMapper.map(ngoFunctionDto, NgoFunction.class)), NgoFunctionDTO.class));	
-	}
-	
-	@PostMapping(value = "/updateNGOFunction")
-	public ResponseEntity<NgoFunctionDTO> updateNgoFunction(@RequestBody NgoFunctionDTO ngoFunctionDto){
-	
-	NgoFunction dbFunction = ngoService.findNgoFunctionById(ngoFunctionDto.getId());
-	
-	if (dbFunction != null) {
-		new NotFoundException(String.format("Function with name %s was not found", ngoFunctionDto.getName()));
+	public ResponseEntity<NgoFunctionDTO> addNgoFunction(@RequestBody NgoFunctionDTO ngoFunctionDto,
+			@PathVariable(value = "ngoId") Long ngoId) {
+		ngoFunctionDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+		return ResponseEntity.ok(modelMapper.map(ngoService.save(modelMapper.map(ngoFunctionDto, NgoFunction.class)),
+				NgoFunctionDTO.class));
 	}
 
-	modelMapper.getConfiguration().setSkipNullEnabled(true);
-	modelMapper.map(ngoFunctionDto, dbFunction);
-	modelMapper.getConfiguration().setSkipNullEnabled(false);
-	
-	return ResponseEntity.ok(modelMapper.map(ngoService.save(dbFunction), NgoFunctionDTO.class));	
+	@PostMapping(value = "/updateNGOFunction")
+	public ResponseEntity<NgoFunctionDTO> updateNgoFunction(@RequestBody NgoFunctionDTO ngoFunctionDto) {
+
+		NgoFunction dbFunction = ngoService.findNgoFunctionById(ngoFunctionDto.getId());
+
+		if (dbFunction != null) {
+			new NotFoundException(String.format("Function with name %s was not found", ngoFunctionDto.getName()));
+		}
+
+		modelMapper.getConfiguration().setSkipNullEnabled(true);
+		modelMapper.map(ngoFunctionDto, dbFunction);
+		modelMapper.getConfiguration().setSkipNullEnabled(false);
+
+		return ResponseEntity.ok(modelMapper.map(ngoService.save(dbFunction), NgoFunctionDTO.class));
 	}
-	
 
 	@PostMapping(value = "/deleteNGOFunction")
-	public void deleteNGOFunction(@RequestBody List<NgoFunctionDTO> ngoFunctionsDTO, HttpServletRequest request)
-			throws Exception {
+	public ResponseEntity<List<String>> deleteNGOFunction(@RequestBody List<NgoFunctionDTO> ngoFunctionsDTO,
+			HttpServletRequest request) throws Exception {
 
 		List<NgoFunction> ngoFunctions = new ArrayList<NgoFunction>();
 		for (NgoFunctionDTO function : ngoFunctionsDTO)
 			ngoFunctions.add(modelMapper.map(function, NgoFunction.class));
 
-		List<String> errs = ngoService.deleteNGOFunctions(ngoFunctions);
+		return ResponseEntity.ok(ngoService.deleteNGOFunctions(ngoFunctions));
 	}
-	
-	@GetMapping(value ="/getNGOMembers/{ngoId}")
-	public ResponseEntity<List<MemberDTO>> getNGOMembers(@PathVariable(value = "ngoId") Long ngoId){
-		Ngo ngo = ngoService.findById(ngoId);
-		List<Member> members = memberService.findAllMembersByNgo(ngo);
-		List<MemberDTO> membersDto = new ArrayList<MemberDTO>();
-		for(Member m : members) {
-			membersDto.add(modelMapper.map(m, MemberDTO.class));
-		}
-		return ResponseEntity.ok(membersDto);
-		
-	}
-	
-	@PostMapping(value = "/setMemberFunction/{functionId}")
-	public ResponseEntity<MemberDTO> setMemberFunction(@RequestBody MemberDTO memberDto, @PathVariable(value = "functionId") Long functionId){
-		
-		memberDto.setFunction(modelMapper.map(ngoService.findNgoFunctionById(functionId), NgoFunctionDTO.class));
-		return ResponseEntity.ok(modelMapper.map(memberService.save(modelMapper.map(memberDto, Member.class)), MemberDTO.class));
-		
-	}
-	
-	
-
 }
