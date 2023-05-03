@@ -1,1 +1,4 @@
 /.metadata/
+.DS_Store
+frotend/.vscode/
+frontend/node_modules
