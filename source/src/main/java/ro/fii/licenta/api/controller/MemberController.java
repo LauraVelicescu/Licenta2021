@@ -1,5 +1,6 @@
 package ro.fii.licenta.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dto.MemberDTO;
+import ro.fii.licenta.api.dto.MemberRequestDTO;
+import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.service.MemberService;
 
@@ -46,6 +49,25 @@ public class MemberController {
 		Member member = this.memberService.save(this.modelMapper.map(memberDto, Member.class));
 
 		return ResponseEntity.ok(this.modelMapper.map(member, MemberDTO.class));
+	}
+
+	@PostMapping(value = "/addMembers")
+	public ResponseEntity<List<String>> addMembers(@RequestBody List<MemberDTO> members) {
+		List<String> errors = new ArrayList<String>();
+		try {
+			for (MemberDTO memberDTO : members) {
+				this.memberService.save(this.modelMapper.map(memberDTO, Member.class));
+			}
+		} catch (EntityConflictException e) {
+			errors.add(e.getMessage());
+		}
+		return ResponseEntity.ok(errors);
+	}
+
+	@PostMapping(value = "/saveNgoRequestStatus/{status}")
+	public void saveNgoRequest(@PathVariable(value = "status") Integer status,
+			@RequestBody List<MemberRequestDTO> memberRequestDTOs) {
+		memberService.saveMember(memberRequestDTOs, status);
 	}
 
 	@PutMapping("/{id}")
@@ -75,13 +97,21 @@ public class MemberController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping(value = "/{ngoId}")
+	@GetMapping(value = "ngo/{ngoId}")
 	public ResponseEntity<List<MemberDTO>> getMembersByNgo(@PathVariable(value = "ngoId") Long ngoId) {
 		List<Member> members = memberService.findMembersByNgoId(ngoId);
 		return ResponseEntity.ok(members.stream().map(m -> {
 			return this.modelMapper.map(m, MemberDTO.class);
 		}).collect(Collectors.toList()));
 
+	}
+
+	@GetMapping(value = "ngo/count/{ngoId}")
+	public ResponseEntity<Integer> getMembersCountByNgo(@PathVariable(value = "ngoId") Long ngoId) {
+		List<Member> members = memberService.findMembersByNgoId(ngoId);
+		return ResponseEntity.ok(members.stream().map(m -> {
+			return this.modelMapper.map(m, MemberDTO.class);
+		}).collect(Collectors.toList()).size());
 	}
 
 }

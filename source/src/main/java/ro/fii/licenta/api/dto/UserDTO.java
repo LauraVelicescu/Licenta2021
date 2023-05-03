@@ -36,11 +36,6 @@ public class UserDTO {
 	protected boolean blocked;
 
 	protected int failAttemtps;
-//	@JsonManagedReference
-//	@JsonBackReference
-	@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-	@JsonIdentityReference(alwaysAsId = true)
-	private List<NgoDTO> administeredNGOs;
 
 	public Long getId() {
 		return id;
@@ -166,13 +161,4 @@ public class UserDTO {
 		return outputStream.toByteArray();
 
 	}
-
-	public List<NgoDTO> getAdministeredNGOs() {
-		return administeredNGOs;
-	}
-
-	public void setAdministeredNGOs(List<NgoDTO> administeredNGOs) {
-		this.administeredNGOs = administeredNGOs;
-	}
-
 }

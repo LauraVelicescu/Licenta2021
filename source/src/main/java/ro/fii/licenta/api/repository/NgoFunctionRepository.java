@@ -11,5 +11,4 @@ public interface NgoFunctionRepository extends PersistableEntityRepository<NgoFu
 	
 	@Query("SELECT nf FROM NgoFunction nf WHERE nf.ngo.id=?1")
 	public Page<NgoFunction> findAllByNgoId(Long ngoId, Pageable page);
-
 }

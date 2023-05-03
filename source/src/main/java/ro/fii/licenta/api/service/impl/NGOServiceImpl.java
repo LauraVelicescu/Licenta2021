@@ -159,6 +159,8 @@ public class NGOServiceImpl implements NGOService {
 				? ngoIds.size() > 0 ? ngoRepository.findByIdNotIn(ngoIds, page).getContent()
 						: ngoRepository.findAll(page).getContent()
 				: ngoIds.size() > 0 ? ngoRepository.findAll(new Specification<Ngo>() {
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public Predicate toPredicate(Root<Ngo> root, CriteriaQuery<?> query,
 							CriteriaBuilder criteriaBuilder) {
@@ -180,7 +182,12 @@ public class NGOServiceImpl implements NGOService {
 	public List<String> deleteNGOFunctions(List<NgoFunction> ngoFunctions) {
 		List<String> list = new ArrayList<String>();
 		for (NgoFunction n : ngoFunctions) {
-			ngoFunctionRepository.delete(n);
+			List<Member> members = memberRepository.findByFunction(n);
+			if (members.size() != 0) {
+				list.add("There are members with function " + n.name + ". Cannot delete it");
+			} else {
+				ngoFunctionRepository.delete(n);
+			}
 		}
 		return list;
 	}

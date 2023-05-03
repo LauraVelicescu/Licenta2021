@@ -20,12 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ro.fii.licenta.api.dao.Member;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.User;
-import ro.fii.licenta.api.dto.MemberDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.NgoFunctionDTO;
@@ -81,7 +79,7 @@ public class NGOController {
 	public ResponseEntity<NgoDTO> updateNGO(@PathVariable Long id, @RequestBody NgoDTO ngoDTO,
 			HttpServletRequest request) throws Exception {
 		Ngo secondNgo = modelMapper.map(ngoDTO, Ngo.class);
-		
+
 		return new ResponseEntity<NgoDTO>(modelMapper.map(ngoService.save(secondNgo), NgoDTO.class), HttpStatus.OK);
 
 	}
@@ -110,7 +108,7 @@ public class NGOController {
 
 	}
 
-	@GetMapping(value = "/findNGOs")
+	@GetMapping(value = "/findManagedNGOs")
 	public ResponseEntity<List<NgoDTO>> findManagedNGOs(@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "pageNo", required = false) Integer pageNo, HttpServletRequest request) {
 		List<NgoDTO> ngos = new ArrayList<NgoDTO>();
@@ -121,16 +119,10 @@ public class NGOController {
 		return ResponseEntity.ok(ngos);
 	}
 
-	@GetMapping(value = "/findNGOs/count")
+	@GetMapping(value = "/findManagedNGOs/count")
 	public ResponseEntity<Integer> findManagedNGOsCount(HttpServletRequest request) {
 		User currentUser = userService.getCurrentUser(request);
 		return ResponseEntity.ok(ngoService.findAllNgosByAdmin(null, null, currentUser).size());
-	}
-
-	// TODO logic moved to member controller to remove when validated with frontend
-	@PostMapping(value = "/addMembers")
-	public ResponseEntity<List<String>> addMembers(@RequestBody List<MemberDTO> members) {
-		return ResponseEntity.ok(ngoService.addMembers(members));
 	}
 
 	@GetMapping(value = "/getNgoRequests/number/{ngoId}")
@@ -148,12 +140,6 @@ public class NGOController {
 			memberRequestDTOs.add(modelMapper.map(mr, MemberRequestDTO.class));
 		}
 		return ResponseEntity.ok(memberRequestDTOs);
-	}
-
-	@PostMapping(value = "/saveNgoRequestStatus/{status}")
-	public void getNgoRequests(@PathVariable(value = "status") Integer status,
-			@RequestBody List<MemberRequestDTO> memberRequestDTOs) {
-		ngoService.saveMember(memberRequestDTOs, status);
 	}
 
 	@GetMapping(value = "/findNGOsNotMemberOf")
@@ -231,36 +217,13 @@ public class NGOController {
 	}
 
 	@PostMapping(value = "/deleteNGOFunction")
-	public void deleteNGOFunction(@RequestBody List<NgoFunctionDTO> ngoFunctionsDTO, HttpServletRequest request)
-			throws Exception {
+	public ResponseEntity<List<String>> deleteNGOFunction(@RequestBody List<NgoFunctionDTO> ngoFunctionsDTO,
+			HttpServletRequest request) throws Exception {
 
 		List<NgoFunction> ngoFunctions = new ArrayList<NgoFunction>();
 		for (NgoFunctionDTO function : ngoFunctionsDTO)
 			ngoFunctions.add(modelMapper.map(function, NgoFunction.class));
 
-	}
-
-	// TODO to be deleted once the logic is moved
-//	@GetMapping(value = "/getNGOMembers/{ngoId}")
-//	public ResponseEntity<List<MemberDTO>> getNGOMembers(@PathVariable(value = "ngoId") Long ngoId) {
-//		Ngo ngo = ngoService.findById(ngoId);
-//		List<Member> members = memberService.findAllMembersByNgo(ngo);
-//		List<MemberDTO> membersDto = new ArrayList<MemberDTO>();
-//		for (Member m : members) {
-//			membersDto.add(modelMapper.map(m, MemberDTO.class));
-//		}
-//		return ResponseEntity.ok(membersDto);
-//
-//	}
-
-	// TODO moved to controller member
-	@PostMapping(value = "/setMemberFunction/{functionId}")
-	public ResponseEntity<MemberDTO> setMemberFunction(@RequestBody MemberDTO memberDto,
-			@PathVariable(value = "functionId") Long functionId) {
-
-		memberDto.setFunction(modelMapper.map(ngoService.findNgoFunctionById(functionId), NgoFunctionDTO.class));
-		return ResponseEntity
-				.ok(modelMapper.map(memberService.save(modelMapper.map(memberDto, Member.class)), MemberDTO.class));
-
+		return ResponseEntity.ok(ngoService.deleteNGOFunctions(ngoFunctions));
 	}
 }

@@ -7,7 +7,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import ro.fii.licenta.framework.NameDescriptionEntity;
-import ro.fii.licenta.framework.PersistableEntity;
 
 @Entity
 @Table(name = "ngo_function")

@@ -5,8 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 
 import ro.fii.licenta.api.dao.Member;
-import ro.fii.licenta.api.dao.Ngo;
-import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.framework.PersistableEntityRepository;
 
 public interface MemberRepository extends PersistableEntityRepository<Member, Long> {
@@ -19,5 +18,7 @@ public interface MemberRepository extends PersistableEntityRepository<Member, Lo
 	
 	@Query("SELECT m.ngo.id FROM Member m WHERE m.user.id = ?1")
 	public List<Long> findNgoIdsForUser(Long userId);
+	
+	public List<Member> findByFunction(NgoFunction ngoFunction);
 
 }
