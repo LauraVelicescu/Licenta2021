@@ -14,12 +14,15 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatInputModule} from '@angular/material/input';
+import { ProjectHubComponent } from './subcomponents/project-hub/project-hub.component';
+import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
   declarations: [
     ProjectLayoutComponent,
-    ProjectManageComponent
+    ProjectManageComponent,
+    ProjectHubComponent
   ],
   imports: [
     CommonModule,
@@ -33,7 +36,8 @@ import {MatInputModule} from '@angular/material/input';
     MatToolbarModule,
     MatTableModule,
     MatPaginatorModule,
-    MatInputModule
+    MatInputModule,
+    NgbDropdownModule
   ]
 })
 export class ProjectLayoutModule { }

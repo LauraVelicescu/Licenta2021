@@ -6,7 +6,7 @@ import {ApplicationService} from './shared/services/application/application.serv
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit{
+export class AppComponent implements AfterViewInit {
   title = 'MANGO';
 
   constructor(private applicationService: ApplicationService, private cdref: ChangeDetectorRef) {
