@@ -12,14 +12,17 @@ import {ProjectDTO} from '../../dto/ProjectDTO';
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectServiceService {
+export class ProjectService {
   private rootURL = 'api'
   private createURL = '/createProject/:ngoId'
   private updateURL = '/updateProject'
-  private deleteURL = '/deleteProjects'
+  private deleteURL = '/:projectId'
   private getProjectsURL = '/findProjects/:ngoId'
   private getProjectsCountURL = '/findProjects/count/:ngoId'
 
+
+  // TODO CHANGE THIS FROM POST TO DELETE
+  // TODO REFACTOR ALL THIS SERVICE
   constructor(private mainService: MainServiceService) {
   }
 
@@ -42,9 +45,8 @@ export class ProjectServiceService {
     }));
   }
 
-  delete(projects: ProjectDTO[]) {
-    return this.mainService.post(this.rootURL + this.deleteURL,
-      projects).pipe(map((result: string[]) => {
+  delete(project: ProjectDTO) {
+    return this.mainService.delete(this.rootURL + this.deleteURL.replace(":projectId", project.id.toString())).pipe(map((result) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);

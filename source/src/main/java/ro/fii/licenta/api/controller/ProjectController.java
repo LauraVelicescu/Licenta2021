@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,16 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javassist.NotFoundException;
-import ro.fii.licenta.api.dao.Ngo;
-import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dto.NgoDTO;
-import ro.fii.licenta.api.dto.NgoFunctionDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
-import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
-import ro.fii.licenta.api.service.UserService;
 
 @RestController
 @CrossOrigin
@@ -46,7 +41,7 @@ public class ProjectController {
 	
 	@PostMapping(value = "/createProject/{ngoId}")
 	public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto, @PathVariable(value = "ngoId") Long ngoId) {
-		projectDto.setNgo(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+		projectDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
 		return ResponseEntity.ok(modelMapper.map(projectService.save(modelMapper.map(projectDto, Project.class)), ProjectDTO.class));
 		
 	}
@@ -64,6 +59,13 @@ public class ProjectController {
 		modelMapper.getConfiguration().setSkipNullEnabled(false);
 		return new ResponseEntity<>(modelMapper.map(projectService.save(project), ProjectDTO.class), HttpStatus.OK);
 		
+	}
+	
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		projectService.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@PostMapping(value = "/deleteProjects")

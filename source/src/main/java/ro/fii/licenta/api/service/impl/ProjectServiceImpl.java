@@ -6,15 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import ro.fii.licenta.api.dao.Ngo;
-import ro.fii.licenta.api.dao.NgoFunction;
 import ro.fii.licenta.api.dao.Project;
-import ro.fii.licenta.api.dto.NgoDTO;
+import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.repository.ProjectRepository;
 import ro.fii.licenta.api.service.ProjectService;
 
-public class ProjectServiceImpl implements ProjectService{
-	
+public class ProjectServiceImpl implements ProjectService {
+
 	@Autowired
 	ProjectRepository projectRepository;
 
@@ -35,14 +33,23 @@ public class ProjectServiceImpl implements ProjectService{
 	public Project findById(Long projectId) {
 		return projectRepository.findById(projectId).get();
 	}
-	
+
 	@Override
 	public void deleteProjects(List<Project> projects) {
 		for (Project p : projects) {
 			projectRepository.delete(p);
 		}
-		
+
 	}
 
-	
+	@Override
+	public void deleteById(Long id) {
+
+		if (this.projectRepository.existsById(id)) {
+			this.projectRepository.deleteById(id);
+		} else {
+			throw new NotFoundException("Project" + id + " does not exist");
+		}
+	}
+
 }

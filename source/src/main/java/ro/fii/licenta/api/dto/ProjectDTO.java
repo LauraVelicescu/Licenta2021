@@ -2,22 +2,19 @@ package ro.fii.licenta.api.dto;
 
 import java.util.Date;
 
-import ro.fii.licenta.api.dao.Ngo;
-
 public class ProjectDTO {
-	
+
 	private Long id;
 
 	private String name;
-	
+
 	private String description;
-	
+
 	private Date startDate;
-	
+
 	private Date endDate;
 
-	private NgoDTO ngo;
-	
+	private NgoDTO ngoDTO;
 
 	public Long getId() {
 		return id;
@@ -59,13 +56,12 @@ public class ProjectDTO {
 		this.endDate = endDate;
 	}
 
-	public NgoDTO getNgo() {
-		return ngo;
+	public NgoDTO getNgoDTO() {
+		return ngoDTO;
 	}
 
-	public void setNgo(NgoDTO ngo) {
-		this.ngo = ngo;
+	public void setNgoDTO(NgoDTO ngoDTO) {
+		this.ngoDTO = ngoDTO;
 	}
 
-	
 }

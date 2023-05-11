@@ -3,7 +3,6 @@ import {Observable} from 'rxjs';
 import {NgoDTO} from '../../../../../../../shared/dto/NgoDTO';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {map, startWith} from 'rxjs/operators';
-import {UserService} from '../../../../../../../shared/services/user-service/user.service';
 import {ApplicationService} from '../../../../../../../shared/services/application/application.service';
 import {NotificationService} from '../../../../../../../shared/services/notification-service/notification.service';
 import {NGOService} from '../../../../../../../shared/services/ngo-service/ngo.service';
@@ -12,10 +11,8 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {FunctionDTO} from '../../../../../../../shared/dto/FunctionDTO';
-import {UserDTO} from "../../../../../../../shared/dto/UserDTO";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {AssignUserComponent} from "../ngo-manage-modals/assign-user/assign-user.component";
-import {NgoMemberJoin} from "../ngo-manage/ngo-manage.component";
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {AssignUserComponent} from '../ngo-manage-modals/assign-user/assign-user.component';
 
 @Component({
   selector: 'app-ngo-manage-functions',
@@ -56,11 +53,8 @@ export class NgoManageFunctionsComponent implements OnInit {
 
   ngOnInit(): void {
 
-
-
     this.applicationService.emmitLoading(true);
     this.ngoService.findMyNGOs().subscribe((result) => {
-      // console.log(result);
       this.applicationService.emmitLoading(false);
       this.comboData = result;
       this.filteredOptions = this.searchTextboxControl.valueChanges

@@ -14,7 +14,7 @@ import {NGOService} from '../../../../../../shared/services/ngo-service/ngo.serv
 import {map, startWith} from 'rxjs/operators';
 import {OperationType} from '../../../../../../shared/util/OperationType';
 import {ProjectDTO} from '../../../../../../shared/dto/ProjectDTO';
-import {ProjectServiceService} from '../../../../../../shared/services/project-service/project-service.service';
+import {ProjectService} from '../../../../../../shared/services/project-service/project.service';
 
 @Component({
   selector: 'app-project-manage',
@@ -50,7 +50,7 @@ export class ProjectManageComponent implements OnInit {
     public dialogRef: MatDialogRef<AssignUserComponent>,
     private matDialog: MatDialog,
     private ngoService: NGOService,
-    private projectService: ProjectServiceService)
+    private projectService: ProjectService)
   {}
 
   ngOnInit(): void {
@@ -127,10 +127,10 @@ export class ProjectManageComponent implements OnInit {
         break;
       case OperationType.DELETE:
         this.applicationService.emmitLoading(true);
-        this.projectService.delete(payload).subscribe((result) => {
-          this.applicationService.emmitLoading(false);
-          this.load();
-        })
+        // this.projectService.delete(payload).subscribe((result) => {
+        //   this.applicationService.emmitLoading(false);
+        //   this.load();
+        // })
         break;
       case OperationType.ASSIGN_PEOPLE:
         this.currentProject = payload[0];
@@ -160,16 +160,6 @@ export class ProjectManageComponent implements OnInit {
       this.notificationService.error(error);
     })
   }
-
-  // private openDialog() {
-  //   console.log(this.selectedOption)
-  //   this.dialogRef = this.matDialog.open(AssignUserComponent, {
-  //     width: '750px',
-  //     data: {ngo: this.selectedOption,
-  //       ngoFunction: this.currentFunction
-  //     }
-  //   });
-  // }
 
   cancelAction() {
     this.load();

@@ -5,6 +5,4 @@ export class FunctionDTO{
   public id;
   public name: string;
   public description: string;
-  public ngo: NgoDTO;
-
 }

@@ -1,7 +1,5 @@
 package ro.fii.licenta.api.dto;
 
-import ro.fii.licenta.api.dao.Ngo;
-
 public class NgoFunctionDTO {
 	
 	private Long id;
