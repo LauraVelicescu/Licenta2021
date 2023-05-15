@@ -16,13 +16,17 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatInputModule} from '@angular/material/input';
 import { ProjectHubComponent } from './subcomponents/project-hub/project-hub.component';
 import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
+import { ProjectTeamComponent } from './subcomponents/project-hub/components/project-team/project-team.component';
+import { ProjectPositionsComponent } from './subcomponents/project-hub/components/project-positions/project-positions.component';
 
 
 @NgModule({
   declarations: [
     ProjectLayoutComponent,
     ProjectManageComponent,
-    ProjectHubComponent
+    ProjectHubComponent,
+    ProjectTeamComponent,
+    ProjectPositionsComponent
   ],
   imports: [
     CommonModule,

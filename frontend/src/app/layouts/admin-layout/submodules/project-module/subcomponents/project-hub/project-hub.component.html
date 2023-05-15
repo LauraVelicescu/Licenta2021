@@ -256,95 +256,16 @@
               </div>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.TEAM">
-              <div class="text-right">
-                <button mat-icon-button class="example-icon favorite-icon"
-                        aria-label="Example icon-button with heart icon"
-                >
-                  <mat-icon>add</mat-icon>
-                </button>
-                <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-              <table class="table">
-                <thead>
-                <tr>
-                  <th class="text-center">#</th>
-                  <th>Name</th>
-                  <th>Position</th>
-                  <th>Organizational Unit</th>
-                  <th class="text-right">Since</th>
-                  <th class="text-right">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <td class="text-center">1</td>
-                  <td>Andrei Birleanu</td>
-                  <td>Organizing</td>
-                  <td>Executive Board</td>
-                  <td class="text-right">2022-03-10</td>
-                  <td class="td-actions text-right">
-                    <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-single-02"></i>
-                    </button>
-                    <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-settings"></i>
-                    </button>
-                    <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-simple-remove"></i>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-center">2</td>
-                  <td>Laura Velicescu</td>
-                  <td>Marketing</td>
-                  <td>PR&Marketing</td>
-                  <td class="text-right">2022-05-10</td>
-                  <td class="td-actions text-right">
-                    <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-single-02"></i>
-                    </button>
-                    <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-settings"></i>
-                    </button>
-                    <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-simple-remove"></i>
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-center">3</td>
-                  <td>Mike Cocsmall</td>
-                  <td>-NONE-</td>
-                  <td>Internal Stuff</td>
-                  <td class="text-right">2022-12-03</td>
-                  <td class="td-actions text-right">
-                    <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-single-02"></i>
-                    </button>
-                    <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-settings"></i>
-                    </button>
-                    <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm">
-                      <i class="tim-icons icon-simple-remove"></i>
-                    </button>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
+              <app-project-team></app-project-team>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.BOARD">
               boarduim proiecte
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.REPORTS">
               emitem rapoarte
+            </ng-container>
+            <ng-container *ngSwitchCase="projectAction.POSITIONS">
+              <app-project-positions [selectedProject]="selectedProject"></app-project-positions>
             </ng-container>
           </div>
         </container-element>
@@ -384,7 +305,10 @@
                    (click)="emitAction(projectAction.BOARD)"> Board </a>
                 <a href="javascript:void(0)" ngbDropdownItem
                    [ngClass]="{'highlighted-action':currentAction===projectAction.REPORTS}"
-                   (click)="emitAction(projectAction.BOARD)"> Reports </a>
+                   (click)="emitAction(projectAction.REPORTS)"> Reports </a>
+                <a href="javascript:void(0)" ngbDropdownItem
+                   [ngClass]="{'highlighted-action':currentAction===projectAction.POSITIONS}"
+                   (click)="emitAction(projectAction.POSITIONS)"> Positions </a>
               </div>
             </div>
             <a href="javascript:void(0)">

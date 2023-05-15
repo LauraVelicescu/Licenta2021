@@ -7,7 +7,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import ro.fii.licenta.api.dao.Project;
+import ro.fii.licenta.api.dao.ProjectPosition;
 import ro.fii.licenta.api.exception.NotFoundException;
+import ro.fii.licenta.api.exception.ValidationException;
+import ro.fii.licenta.api.repository.ProjectPositionRepository;
 import ro.fii.licenta.api.repository.ProjectRepository;
 import ro.fii.licenta.api.service.ProjectService;
 
@@ -16,8 +19,14 @@ public class ProjectServiceImpl implements ProjectService {
 	@Autowired
 	ProjectRepository projectRepository;
 
+	@Autowired
+	ProjectPositionRepository projectPositionRepository;
+
 	@Override
-	public Project save(Project project) {
+	public Project save(Project project) throws ValidationException {
+		if(project.getStartDate().after(project.getEndDate())) {
+			throw new ValidationException("Start date must be before end date");
+		}
 		return projectRepository.save(project);
 	}
 
@@ -50,6 +59,11 @@ public class ProjectServiceImpl implements ProjectService {
 		} else {
 			throw new NotFoundException("Project" + id + " does not exist");
 		}
+	}
+
+	@Override
+	public List<ProjectPosition> getProjectPositions(Long projectId) {
+		return this.projectPositionRepository.findByProject_Id(projectId);
 	}
 
 }

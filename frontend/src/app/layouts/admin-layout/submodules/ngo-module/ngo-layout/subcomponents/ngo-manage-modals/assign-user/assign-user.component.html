@@ -1,29 +1,88 @@
-<div class="content" style="width: 60%; margin: auto;">
-  <mat-form-field style="width: 100%">
-    <mat-select (openedChange)="openedChange($event)" placeholder="Select">
-      {{getPrint(selectedOption)}}
-      <div class="select-container">
-        <mat-optgroup>
-          <mat-form-field style="width:100%;">
-            <input #search autocomplete="off" placeholder="Search" aria-label="Search" matInput
-                   [formControl]="searchTextboxControl">
-            <button [disableRipple]="true" *ngIf="search.value" matSuffix mat-icon-button aria-label="Clear"
-                    (click)="clearSearch($event)">
-              <mat-icon>close</mat-icon>
-            </button>
-          </mat-form-field>
-        </mat-optgroup>
-        <mat-optgroup *ngIf="(filteredOptions | async)?.length == 0">
-          <div>No results found!</div>
-        </mat-optgroup>
-        <mat-option (onSelectionChange)="selectionChange($event)" *ngFor="let option of filteredOptions | async"
-                    [value]="option">
-          {{getPrint(option)}}
-        </mat-option>
-      </div>
-    </mat-select>
-  </mat-form-field>
-</div>
+<mat-dialog-content>
+  <div class="content" style="width: 60%; margin: auto;">
+    <container-element [ngSwitch]="assignType">
+      <ng-container *ngSwitchCase="assignTypes.USER">
+        <mat-form-field style="width: 100%">
+          <mat-select (openedChange)="openedChange($event)" placeholder="Select">
+            {{getPrint(selectedOption)}}
+            <div class="select-container">
+              <mat-optgroup>
+                <mat-form-field style="width:100%;">
+                  <input #search autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                         [formControl]="searchTextBoxControl">
+                  <button [disableRipple]="true" *ngIf="search.value" matSuffix mat-icon-button aria-label="Clear"
+                          (click)="clearSearch($event)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-form-field>
+              </mat-optgroup>
+              <mat-optgroup *ngIf="(filteredOptions | async)?.length == 0">
+                <div>No results found!</div>
+              </mat-optgroup>
+              <mat-option (onSelectionChange)="selectionChange($event)" *ngFor="let option of filteredOptions | async"
+                          [value]="option">
+                {{getPrint(option)}}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngSwitchCase="assignTypes.FUNCTION">
+        <mat-form-field style="width: 100%">
+          <mat-select (openedChange)="openedChange($event)" placeholder="Select">
+            {{getPrint(selectedOptionFunction)}}
+            <div class="select-container">
+              <mat-optgroup>
+                <mat-form-field style="width:100%;">
+                  <input #search autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                         [formControl]="searchTextBoxControl">
+                  <button [disableRipple]="true" *ngIf="search.value" matSuffix mat-icon-button aria-label="Clear"
+                          (click)="clearSearch($event)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-form-field>
+              </mat-optgroup>
+              <mat-optgroup *ngIf="(filteredOptions | async)?.length == 0">
+                <div>No results found!</div>
+              </mat-optgroup>
+              <mat-option (onSelectionChange)="selectionChange($event)" *ngFor="let option of filteredOptions | async"
+                          [value]="option">
+                {{getPrint(option)}}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+      <ng-container *ngSwitchCase="assignTypes.ORGANIZATIONAL_UNIT">
+        <mat-form-field style="width: 100%">
+          <mat-select (openedChange)="openedChange($event)" placeholder="Select">
+            {{getPrint(selectedOptionOrganizationalComponent)}}
+            <div class="select-container">
+              <mat-optgroup>
+                <mat-form-field style="width:100%;">
+                  <input #search autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                         [formControl]="searchTextBoxControl">
+                  <button [disableRipple]="true" *ngIf="search.value" matSuffix mat-icon-button aria-label="Clear"
+                          (click)="clearSearch($event)">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </mat-form-field>
+              </mat-optgroup>
+              <mat-optgroup *ngIf="(filteredOptions | async)?.length == 0">
+                <div>No results found!</div>
+              </mat-optgroup>
+              <mat-option (onSelectionChange)="selectionChange($event)" *ngFor="let option of filteredOptions | async"
+                          [value]="option">
+                {{getPrint(option)}}
+              </mat-option>
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+    </container-element>
+  </div>
+
+</mat-dialog-content>
 
 <mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Cancel</button>

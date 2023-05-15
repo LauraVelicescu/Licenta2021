@@ -12,14 +12,17 @@ import {ProjectService} from '../../../../../../shared/services/project-service/
 import {SelectionModel} from '@angular/cdk/collections';
 import {formatDate} from '@angular/common';
 
-enum ProjectAction {
+export enum ProjectAction {
   ADD = 'Add',
   EDIT = 'Edit',
   DELETE = 'Delete',
   TEAM = 'Team',
   BOARD = 'Board',
   REPORTS = 'Reports',
-
+  POSITIONS = 'Positions',
+  POSITIONS_ADD = 'Add position',
+  POSITIONS_EDIT = 'Edit position',
+  POSITIONS_DELETE = 'Delete position'
 }
 
 @Component({
@@ -103,7 +106,7 @@ export class ProjectHubComponent implements OnInit {
   }
 
   getPrint(option: NgoDTO) {
-    return ((option?.name ?? '') + ' ' + (option?.acronym ?? ''));
+    return ((option?.name ?? '') + ' ' + (option?.acronym ? '[' + option?.acronym + ']' : ''));
   }
 
   clearSearch(event) {
@@ -163,10 +166,10 @@ export class ProjectHubComponent implements OnInit {
 
     if (currentAction === ProjectAction.ADD || currentAction === ProjectAction.EDIT || currentAction === ProjectAction.DELETE) {
       this.currentAction = undefined;
-      if(currentAction === ProjectAction.ADD) {
+      if (currentAction === ProjectAction.ADD) {
         this.selectedProject = undefined;
       } else if (currentAction === ProjectAction.EDIT) {
-        this.selectedProject =  this.projectEditCopy;
+        this.selectedProject = this.projectEditCopy;
       }
       this.projectEditCopy = undefined;
     }

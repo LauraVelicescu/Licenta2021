@@ -152,7 +152,7 @@ export class NgoManageComponent implements OnInit {
           this.load();
         })
         break;
-      case OperationType.ASSIGN_PEOPLE:
+      case OperationType.ASSIGN_FUNCTION_FOR_PEOPLE:
         this.currentNGO = payload[0];
         this.openDialog();
         break;

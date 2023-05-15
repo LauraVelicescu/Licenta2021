@@ -22,6 +22,7 @@ import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
+import ro.fii.licenta.api.dto.ProjectPositionDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
 
@@ -97,6 +98,15 @@ public class ProjectController {
 		List<Project> ngoProjects = projectService.findAllNgoProjects(null, null, ngoId);
 
 		return ResponseEntity.ok(ngoProjects.size());
+	}
+
+	@GetMapping(value = "/project/{projectId}/positions")
+	public ResponseEntity<List<ProjectPositionDTO>> getPositions(@PathVariable(value = "projectId") Long projectId) {
+		List<ProjectPositionDTO> projectPositionDTOS = new ArrayList<>();
+		this.projectService.getProjectPositions(projectId).forEach( projectPosition -> {
+			projectPositionDTOS.add(modelMapper.map(projectPosition, ProjectPositionDTO.class));
+		});
+		return ResponseEntity.ok(projectPositionDTOS);
 	}
 	
 }

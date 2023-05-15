@@ -9,6 +9,8 @@ public class MemberDTO {
 
 	private NgoFunctionDTO function;
 
+	private OrganizationalComponentDTO organizationalComponent;
+
 	public Long getId() {
 		return id;
 	}
@@ -41,5 +43,11 @@ public class MemberDTO {
 		this.function = function;
 	}
 
-	
+	public OrganizationalComponentDTO getOrganizationalComponent() {
+		return organizationalComponent;
+	}
+
+	public void setOrganizationalComponent(OrganizationalComponentDTO organizationalComponent) {
+		this.organizationalComponent = organizationalComponent;
+	}
 }

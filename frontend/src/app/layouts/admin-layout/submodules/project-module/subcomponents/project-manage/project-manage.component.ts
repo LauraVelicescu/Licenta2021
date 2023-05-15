@@ -3,13 +3,11 @@ import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {NgoDTO} from '../../../../../../shared/dto/NgoDTO';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FunctionDTO} from '../../../../../../shared/dto/FunctionDTO';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {ApplicationService} from '../../../../../../shared/services/application/application.service';
 import {NotificationService} from '../../../../../../shared/services/notification-service/notification.service';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AssignUserComponent} from '../../../ngo-module/ngo-layout/subcomponents/ngo-manage-modals/assign-user/assign-user.component';
+import {MatDialog} from '@angular/material/dialog';
 import {NGOService} from '../../../../../../shared/services/ngo-service/ngo.service';
 import {map, startWith} from 'rxjs/operators';
 import {OperationType} from '../../../../../../shared/util/OperationType';
@@ -47,7 +45,6 @@ export class ProjectManageComponent implements OnInit {
     private applicationService: ApplicationService,
     private notificationService: NotificationService,
     private formBuilder: FormBuilder,
-    public dialogRef: MatDialogRef<AssignUserComponent>,
     private matDialog: MatDialog,
     private ngoService: NGOService,
     private projectService: ProjectService)
@@ -132,7 +129,7 @@ export class ProjectManageComponent implements OnInit {
         //   this.load();
         // })
         break;
-      case OperationType.ASSIGN_PEOPLE:
+      case OperationType.ASSIGN_FUNCTION_FOR_PEOPLE:
         this.currentProject = payload[0];
         console.log(this.selectedOption );
         // this.openDialog();

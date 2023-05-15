@@ -8,6 +8,7 @@ import {MemberDTO} from '../../dto/MemberDTO';
 import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
 import {FunctionDTO} from '../../dto/FunctionDTO';
 import {ProjectDTO} from '../../dto/ProjectDTO';
+import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class ProjectService {
   private deleteURL = '/:projectId'
   private getProjectsURL = '/findProjects/:ngoId'
   private getProjectsCountURL = '/findProjects/count/:ngoId'
+  private getProjectPositionsURL = '/project/:projectId/positions'
 
 
   // TODO CHANGE THIS FROM POST TO DELETE
@@ -79,4 +81,12 @@ export class ProjectService {
     }));
   }
 
+  public findProjectPositions(project: ProjectDTO) {
+    return this.mainService.get(this.rootURL + this.getProjectPositionsURL.replace(":projectId", project.id.toString()) ).pipe(map((result: ProjectPositionDTO[]) => {
+      return plainToClass(ProjectPositionDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
 }

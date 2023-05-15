@@ -17,7 +17,9 @@ public class Member extends PersistableEntity {
 	private User user;
 
 	private Ngo ngo;
-	
+
+	private OrganizationalComponent organizationalComponent;
+
 	private NgoFunction function;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -50,5 +52,14 @@ public class Member extends PersistableEntity {
 		this.function = function;
 	}
 
-	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "organizational_component_id")
+	public OrganizationalComponent getOrganizationalComponent() {
+		return organizationalComponent;
+	}
+
+	public void setOrganizationalComponent(OrganizationalComponent organizationalComponent) {
+		this.organizationalComponent = organizationalComponent;
+	}
 }

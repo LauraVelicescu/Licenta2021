@@ -12,7 +12,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
 import {FunctionDTO} from '../../../../../../../shared/dto/FunctionDTO';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AssignUserComponent} from '../ngo-manage-modals/assign-user/assign-user.component';
+import {AssignType, AssignUserComponent} from '../ngo-manage-modals/assign-user/assign-user.component';
 
 @Component({
   selector: 'app-ngo-manage-functions',
@@ -39,7 +39,6 @@ export class NgoManageFunctionsComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'description'];
   dataSource = new MatTableDataSource<FunctionDTO>([]);
   selectedOption: NgoDTO;
-  currentNGO: NgoDTO;
   private currentFunction: FunctionDTO;
 
   constructor(
@@ -128,11 +127,12 @@ export class NgoManageFunctionsComponent implements OnInit {
           this.load();
         })
         break;
-      case OperationType.ASSIGN_PEOPLE:
+      case OperationType.ASSIGN_FUNCTION_FOR_PEOPLE:
         this.currentFunction = payload[0];
-        console.log(this.selectedOption );
         this.openDialog();
-        this.load()
+        this.dialogRef.afterClosed().subscribe(() => {
+          this.load()
+        })
         break;
     }
   }
@@ -158,11 +158,11 @@ export class NgoManageFunctionsComponent implements OnInit {
   }
 
   private openDialog() {
-    console.log(this.selectedOption)
    this.dialogRef = this.matDialog.open(AssignUserComponent, {
       width: '750px',
       data: {ngo: this.selectedOption,
-             ngoFunction: this.currentFunction
+             ngoFunction: this.currentFunction,
+             assignType: AssignType.USER
       }
     });
   }
