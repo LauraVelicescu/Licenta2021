@@ -256,7 +256,7 @@
               </div>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.TEAM">
-              <app-project-team></app-project-team>
+              <app-project-team [selectedProject]="selectedProject" [selectedNGO]="selectedNgo"></app-project-team>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.BOARD">
               boarduim proiecte

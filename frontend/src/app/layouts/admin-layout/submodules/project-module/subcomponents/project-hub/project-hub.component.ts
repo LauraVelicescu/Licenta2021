@@ -22,7 +22,10 @@ export enum ProjectAction {
   POSITIONS = 'Positions',
   POSITIONS_ADD = 'Add position',
   POSITIONS_EDIT = 'Edit position',
-  POSITIONS_DELETE = 'Delete position'
+  POSITIONS_DELETE = 'Delete position',
+  MEMBER_ADD = 'Add member',
+  MEMBER_EDIT = 'Edit member',
+  MEMBER_DELETE = 'Delete member'
 }
 
 @Component({

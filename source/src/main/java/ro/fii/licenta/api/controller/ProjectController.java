@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.Project;
+import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
+import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPositionDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
@@ -24,100 +26,139 @@ import ro.fii.licenta.api.service.ProjectService;
 @CrossOrigin
 public class ProjectController {
 
+	@Autowired
+	private ModelMapper modelMapper;
 
-    @Autowired
-    private ModelMapper modelMapper;
+	@Autowired
+	private ProjectService projectService;
 
-    @Autowired
-    private ProjectService projectService;
+	@Autowired
+	private NGOService ngoService;
 
-    @Autowired
-    private NGOService ngoService;
+	@PostMapping(value = "/createProject/{ngoId}")
+	public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto,
+			@PathVariable(value = "ngoId") Long ngoId) {
+		projectDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+		return ResponseEntity
+				.ok(modelMapper.map(projectService.save(modelMapper.map(projectDto, Project.class)), ProjectDTO.class));
 
-    @PostMapping(value = "/createProject/{ngoId}")
-    public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto, @PathVariable(value = "ngoId") Long ngoId) {
-        projectDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
-        return ResponseEntity.ok(modelMapper.map(projectService.save(modelMapper.map(projectDto, Project.class)), ProjectDTO.class));
+	}
 
-    }
+	@PostMapping(value = "/updateProject")
+	public ResponseEntity<ProjectDTO> updateProject(@RequestBody ProjectDTO projectDto) {
+		Project project = projectService.findById(projectDto.getId());
 
-    @PostMapping(value = "/updateProject")
-    public ResponseEntity<ProjectDTO> updateProject(@RequestBody ProjectDTO projectDto) {
-        Project project = projectService.findById(projectDto.getId());
+		if (project != null) {
+			new NotFoundException(String.format("Project with name %s was not found", projectDto.getName()));
+		}
 
-        if (project != null) {
-            new NotFoundException(String.format("Project with name %s was not found", projectDto.getName()));
-        }
+		modelMapper.getConfiguration().setSkipNullEnabled(true);
+		modelMapper.map(projectDto, project);
+		modelMapper.getConfiguration().setSkipNullEnabled(false);
+		return new ResponseEntity<>(modelMapper.map(projectService.save(project), ProjectDTO.class), HttpStatus.OK);
 
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.map(projectDto, project);
-        modelMapper.getConfiguration().setSkipNullEnabled(false);
-        return new ResponseEntity<>(modelMapper.map(projectService.save(project), ProjectDTO.class), HttpStatus.OK);
+	}
 
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		projectService.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 
+	@PostMapping(value = "/deleteProjects")
+	public void deleteProject(@RequestBody List<ProjectDTO> projectDtos, HttpServletRequest request) throws Exception {
+		List<Project> projects = new ArrayList<Project>();
+		for (ProjectDTO p : projectDtos) {
+			projects.add(modelMapper.map(p, Project.class));
+		}
+		projectService.deleteProjects(projects);
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        projectService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+	@GetMapping(value = "/findProjects/{ngoId}")
+	public ResponseEntity<List<ProjectDTO>> findNGOProjects(@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "pageNo", required = false) Integer pageNo,
+			@PathVariable(value = "ngoId") Long ngoId) {
 
-    @PostMapping(value = "/deleteProjects")
-    public void deleteProject(@RequestBody List<ProjectDTO> projectDtos, HttpServletRequest request) throws Exception {
-        List<Project> projects = new ArrayList<Project>();
-        for (ProjectDTO p : projectDtos) {
-            projects.add(modelMapper.map(p, Project.class));
-        }
-        projectService.deleteProjects(projects);
-    }
+		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
+		List<Project> ngoProjects = projectService.findAllNgoProjects(page, pageNo, ngoId);
+		for (Project project : ngoProjects) {
+			ngoProjectDtos.add(modelMapper.map(project, ProjectDTO.class));
+		}
 
-    @GetMapping(value = "/findProjects/{ngoId}")
-    public ResponseEntity<List<ProjectDTO>> findNGOProjects(
-            @RequestParam(name = "page", required = false) Integer page,
-            @RequestParam(name = "pageNo", required = false) Integer pageNo,
-            @PathVariable(value = "ngoId") Long ngoId) {
+		return ResponseEntity.ok(ngoProjectDtos);
+	}
 
-        List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
-        List<Project> ngoProjects = projectService.findAllNgoProjects(page, pageNo, ngoId);
-        for (Project project : ngoProjects) {
-            ngoProjectDtos.add(modelMapper.map(project, ProjectDTO.class));
-        }
+	@GetMapping(value = "/findProjects/count/{ngoId}")
+	public ResponseEntity<Integer> findProjectCount(@PathVariable(value = "ngoId") Long ngoId) {
+		List<Project> ngoProjects = projectService.findAllNgoProjects(null, null, ngoId);
 
-        return ResponseEntity.ok(ngoProjectDtos);
-    }
+		return ResponseEntity.ok(ngoProjects.size());
+	}
 
-    @GetMapping(value = "/findProjects/count/{ngoId}")
-    public ResponseEntity<Integer> findProjectCount(@PathVariable(value = "ngoId") Long ngoId) {
-        List<Project> ngoProjects = projectService.findAllNgoProjects(null, null, ngoId);
+	@GetMapping(value = "/project/{projectId}/position")
+	public ResponseEntity<List<ProjectPositionDTO>> getPositions(@PathVariable(value = "projectId") Long projectId) {
+		List<ProjectPositionDTO> projectPositionDTOS = new ArrayList<>();
+		this.projectService.getProjectPositions(projectId).forEach(projectPosition -> {
+			projectPositionDTOS.add(modelMapper.map(projectPosition, ProjectPositionDTO.class));
+		});
+		return ResponseEntity.ok(projectPositionDTOS);
+	}
 
-        return ResponseEntity.ok(ngoProjects.size());
-    }
-
-    @GetMapping(value = "/project/{projectId}/position")
-    public ResponseEntity<List<ProjectPositionDTO>> getPositions(@PathVariable(value = "projectId") Long projectId) {
-        List<ProjectPositionDTO> projectPositionDTOS = new ArrayList<>();
-        this.projectService.getProjectPositions(projectId).forEach(projectPosition -> {
-            projectPositionDTOS.add(modelMapper.map(projectPosition, ProjectPositionDTO.class));
-        });
-        return ResponseEntity.ok(projectPositionDTOS);
-    }
-
-    @PostMapping(value = "/project/{projectId}/position")
-    public ResponseEntity<ProjectPositionDTO> createPosition(@PathVariable(value = "projectId") Long projectId, @RequestBody ProjectPositionDTO projectPositionDTO) {
-        projectPositionDTO.setProject(this.modelMapper.map(this.projectService.findById(projectId), ProjectDTO.class));
-		return ResponseEntity.ok(this.modelMapper.map(this.projectService.saveProjectPosition(this.modelMapper.map(projectPositionDTO, ProjectPosition.class)), ProjectPositionDTO.class));
-    }
+	@PostMapping(value = "/project/{projectId}/position")
+	public ResponseEntity<ProjectPositionDTO> createPosition(@PathVariable(value = "projectId") Long projectId,
+			@RequestBody ProjectPositionDTO projectPositionDTO) {
+		projectPositionDTO.setProject(this.modelMapper.map(this.projectService.findById(projectId), ProjectDTO.class));
+		return ResponseEntity
+				.ok(this.modelMapper.map(
+						this.projectService
+								.saveProjectPosition(this.modelMapper.map(projectPositionDTO, ProjectPosition.class)),
+						ProjectPositionDTO.class));
+	}
 
 	@PutMapping(value = "/project/{projectId}/position")
-	public ResponseEntity<ProjectPositionDTO> updatePosition(@PathVariable(value = "projectId") Long projectId, @RequestBody ProjectPositionDTO projectPositionDTO) {
+	public ResponseEntity<ProjectPositionDTO> updatePosition(@PathVariable(value = "projectId") Long projectId,
+			@RequestBody ProjectPositionDTO projectPositionDTO) {
 		projectPositionDTO.setProject(this.modelMapper.map(this.projectService.findById(projectId), ProjectDTO.class));
-		return ResponseEntity.ok(this.modelMapper.map(this.projectService.saveProjectPosition(this.modelMapper.map(projectPositionDTO, ProjectPosition.class)), ProjectPositionDTO.class));
+		return ResponseEntity
+				.ok(this.modelMapper.map(
+						this.projectService
+								.saveProjectPosition(this.modelMapper.map(projectPositionDTO, ProjectPosition.class)),
+						ProjectPositionDTO.class));
 	}
 
 	@DeleteMapping("/project/{projectPositionId}/position")
 	public void deleteProjectPosition(@PathVariable(value = "projectPositionId") Long projectPositionId) {
-        this.projectService.deleteProjectPosition(projectPositionId);
+		this.projectService.deleteProjectPosition(projectPositionId);
+	}
+
+	@GetMapping("/project/{projectId}/member")
+	public ResponseEntity<List<ProjectMemberDTO>> getMembers(@PathVariable(value = "projectId") Long projectId) {
+
+		List<ProjectMemberDTO> list = new ArrayList<>();
+
+		this.projectService.findProjectMembers(projectId).forEach(m -> {
+			list.add(this.modelMapper.map(m, ProjectMemberDTO.class));
+		});
+
+		return ResponseEntity.ok(list);
+	}
+
+	@PostMapping(value = "/project/{projectId}/member")
+	public void createProjectMember(@PathVariable(value = "projectId") Long projectId,
+			@RequestBody ProjectMemberDTO projectMemberDTO) {
+		projectMemberDTO.setProject(this.modelMapper.map(this.projectService.findById(projectId), ProjectDTO.class));
+		this.projectService.saveProjectMember(this.modelMapper.map(projectMemberDTO, ProjectMember.class));
+	}
+
+	@PutMapping(value = "/project/{projectId}/member")
+	public void updateProjectMember(@PathVariable(value = "projectId") Long projectId,
+			@RequestBody ProjectMemberDTO projectMemberDTO) {
+		projectMemberDTO.setProject(this.modelMapper.map(this.projectService.findById(projectId), ProjectDTO.class));
+		this.projectService.saveProjectMember(this.modelMapper.map(projectMemberDTO, ProjectMember.class));
+	}
+
+	@DeleteMapping("/project/{projectMemberId}/member")
+	public void deleteMember(@PathVariable(value = "projectMemberId") Long projectMemberId) {
+		this.projectService.deleteProjectMember(projectMemberId);
 	}
 }
-

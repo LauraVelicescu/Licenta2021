@@ -10,6 +10,7 @@ import {FunctionDTO} from '../../dto/FunctionDTO';
 import {ProjectDTO} from '../../dto/ProjectDTO';
 import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
 import {pipe} from 'rxjs';
+import {ProjectMemberDTO} from '../../dto/ProjectMemberDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,9 @@ export class ProjectService {
   private getProjectPositionsURL = '/project/:projectId/position'
   private createProjectPositionURL = '/project/:projectId/position'
   private deleteProjectPositionURL = '/project/:projectPositionId/position'
+  private getProjectMembersURL = '/project/:projectId/member'
+  private createProjectMembersURL = '/project/:projectId/member'
+  private deleteProjectMembersURL = '/project/:projectMemberId/member'
 
 
   // TODO CHANGE THIS FROM POST TO DELETE
@@ -113,6 +117,43 @@ export class ProjectService {
       return plainToClass(ProjectPositionDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+  public findProjectMembers(project: ProjectDTO) {
+    return this.mainService.get(this.rootURL + this.getProjectMembersURL.replace(":projectId", project.id.toString()) ).pipe(map((result: ProjectMemberDTO[]) => {
+      return plainToClass(ProjectMemberDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+  createMember(member: ProjectMemberDTO, project: ProjectDTO) {
+    return this.mainService.post(this.rootURL + this.createProjectMembersURL.replace(":projectId", project.id.toString()), member).pipe(map((result: ProjectMemberDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  updateMember(member: ProjectMemberDTO, project: ProjectDTO) {
+    return this.mainService.put(this.rootURL + this.createProjectMembersURL.replace(":projectId", project.id.toString()), member).pipe(map((result: ProjectMemberDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+
+  deleteMember(member: ProjectMemberDTO) {
+    return this.mainService.delete(this.rootURL + this.deleteProjectMembersURL.replace(":projectMemberId", member.id.toString())).pipe(map((result) => {
+      return result;
+    }), catchError(err => {
       throw new Error(err.error.message);
     }));
   }

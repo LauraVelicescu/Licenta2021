@@ -1,83 +1,184 @@
 <div class="text-right">
   <button mat-icon-button class="example-icon favorite-icon"
           aria-label="Example icon-button with heart icon"
+          (click)="emitAction(actions.MEMBER_ADD)"
   >
     <mat-icon>add</mat-icon>
   </button>
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-  >
-    <mat-icon>edit</mat-icon>
-  </button>
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-  >
-    <mat-icon>delete</mat-icon>
-  </button>
 </div>
-<table class="table">
-  <thead>
-  <tr>
-    <th class="text-center">#</th>
-    <th>Name</th>
-    <th>Position</th>
-    <th>Organizational Unit</th>
-    <th class="text-right">Since</th>
-    <th class="text-right">Actions</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    <td class="text-center">1</td>
-    <td>Andrei Birleanu</td>
-    <td>Organizing</td>
-    <td>Executive Board</td>
-    <td class="text-right">2022-03-10</td>
-    <td class="td-actions text-right">
-      <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-single-02"></i>
-      </button>
-      <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-settings"></i>
-      </button>
-      <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-simple-remove"></i>
-      </button>
-    </td>
-  </tr>
-  <tr>
-    <td class="text-center">2</td>
-    <td>Laura Velicescu</td>
-    <td>Marketing</td>
-    <td>PR&Marketing</td>
-    <td class="text-right">2022-05-10</td>
-    <td class="td-actions text-right">
-      <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-single-02"></i>
-      </button>
-      <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-settings"></i>
-      </button>
-      <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-simple-remove"></i>
-      </button>
-    </td>
-  </tr>
-  <tr>
-    <td class="text-center">3</td>
-    <td>Mike Cocsmall</td>
-    <td>-NONE-</td>
-    <td>Internal Stuff</td>
-    <td class="text-right">2022-12-03</td>
-    <td class="td-actions text-right">
-      <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-single-02"></i>
-      </button>
-      <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-settings"></i>
-      </button>
-      <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm">
-        <i class="tim-icons icon-simple-remove"></i>
-      </button>
-    </td>
-  </tr>
-  </tbody>
-</table>
+<div class=" table-full-width table-responsive" style="overflow-x: hidden;" *ngIf="!persistState">
+  <table mat-table class="table" [dataSource]="dataSource">
+
+    <ng-container matColumnDef="no">
+      <th mat-header-cell *matHeaderCellDef style="width: 39px" class="text-center"> #</th>
+      <td mat-cell *matCellDef="let element" style="width: 39px" class="text-center">
+        {{element.id}}
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <td mat-cell *matCellDef="let element">
+        {{getName(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="position">
+      <th mat-header-cell *matHeaderCellDef> Position</th>
+      <td mat-cell *matCellDef="let element">
+        {{getPosition(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="organizationalUnit">
+      <th mat-header-cell *matHeaderCellDef> Organizational unit</th>
+      <td mat-cell *matCellDef="let element">
+        {{getOrganizationalUnit(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="since">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Since</th>
+      <td mat-cell *matCellDef="let element" class="text-right">
+        {{getSince(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Actions</th>
+      <td class="td-actions text-right" mat-cell *matCellDef="let element">
+        <!--        <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">-->
+        <!--          <i class="tim-icons icon-single-02"></i>-->
+        <!--        </button>-->
+        <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
+                (click)="emitAction(actions.MEMBER_EDIT, element)">
+          <i class="tim-icons icon-settings"></i>
+        </button>
+        <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                (click)="emitAction(actions.MEMBER_DELETE, element)">
+          <i class="tim-icons icon-simple-remove"></i>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns" class="text-primary"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="{hovered: row.hovered}"
+        (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"
+    ></tr>
+  </table>
+</div>
+
+
+<div *ngIf="persistState">
+  <form [formGroup]="memberForm" style="padding: 15px;" (ngSubmit)="onSubmit(currentAction)">
+    <div class=" row">
+      <div class=" col-md-4 pr-md-1">
+        <div class=" form-group">
+          <label> Member </label>
+          <div style="display: block!important;" class=" form-control" *ngIf="currentAction !== actions.MEMBER_EDIT">
+            <mat-select (openedChange)="openedChangeMember($event)" placeholder="Select">
+              {{getPrintMember(this.selectedProjectMember?.member)}}
+              <div class="select-container">
+                <mat-optgroup>
+                  <mat-form-field style="width:100%">
+                    <input #searchMember autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                           class=" form-control"
+                           [formControl]="searchTextboxControlMember">
+                    <button [disableRipple]="true" *ngIf="searchMember.value" matSuffix mat-icon-button
+                            aria-label="Clear"
+                            (click)="clearSearchMember($event)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </mat-optgroup>
+                <mat-optgroup *ngIf="(filteredOptionsMember | async)?.length == 0">
+                  <div>No results found!</div>
+                </mat-optgroup>
+                <mat-option (onSelectionChange)="selectionChangeMember($event)"
+                            *ngFor="let option of filteredOptionsMember | async"
+                            [value]="option">
+                  {{getPrintMember(option)}}
+                </mat-option>
+              </div>
+            </mat-select>
+          </div>
+          <div *ngIf="currentAction === actions.MEMBER_EDIT">
+            <input id="text"
+                   class=" form-control"
+                   placeholder=""
+                   [value]="getPrintMember(this.selectedProjectMember.member)"
+                   disabled
+            >
+          </div>
+        </div>
+      </div>
+      <div class=" col-md-4 pr-md-1">
+        <div class=" form-group">
+          <label> Position </label>
+          <div style="display: block!important;" class=" form-control">
+            <mat-select (openedChange)="openedChangePosition($event)"
+                        [placeholder]="getPrintPosition(this.selectedProjectMember?.projectPosition)"
+            >
+              <div class="select-container">
+                <mat-optgroup>
+                  <mat-form-field style="width:100%;">
+                    <input #searchPosition autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                           class=" form-control"
+                           [formControl]="searchTextboxControlPosition"
+                    >
+                    <button [disableRipple]="true" *ngIf="searchPosition.value" matSuffix mat-icon-button
+                            aria-label="Clear"
+                            (click)="clearSearchPosition($event)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </mat-optgroup>
+                <mat-optgroup *ngIf="(filteredOptionsPosition | async)?.length == 0">
+                  <div>No results found!</div>
+                </mat-optgroup>
+                <mat-option (onSelectionChange)="selectionChangePosition($event)"
+                            *ngFor="let option of filteredOptionsPosition | async"
+                            [value]="option">
+                  {{getPrintPosition(option)}}
+                </mat-option>
+              </div>
+            </mat-select>
+          </div>
+        </div>
+      </div>
+      <div class=" col-md-4 pr-md-1">
+        <div class=" form-group">
+          <label> Since </label>
+          <input id="datepicker"
+                 class=" form-control"
+                 placeholder=""
+                 formControlName="since"
+                 type="date"
+                 [ngModel]="formatDateLocal(selectedProjectMember.since)"
+                 (ngModelChange)="(selectedProjectMember.since = $event)"
+          >
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class=" col-md-12 pr-md-1">
+        <div class=" form-group">
+          <label> Description </label>
+          <input
+            class=" form-control"
+            placeholder="description"
+            formControlName="description"
+            [(ngModel)]="selectedProjectMember.description"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div class=" card-footer">
+      <button class=" btn btn-primary" type="submit">Save</button>
+      <button class=" btn btn-secondary" (click)="cancelAction(currentAction)">Back</button>
+    </div>
+  </form>
+</div>

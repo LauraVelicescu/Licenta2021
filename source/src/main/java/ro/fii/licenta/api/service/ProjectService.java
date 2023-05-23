@@ -1,10 +1,11 @@
 package ro.fii.licenta.api.service;
 
+import java.util.List;
+
 import ro.fii.licenta.api.dao.Project;
+import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
 import ro.fii.licenta.api.exception.ValidationException;
-
-import java.util.List;
 
 public interface ProjectService {
 	
@@ -21,4 +22,10 @@ public interface ProjectService {
 	ProjectPosition saveProjectPosition(ProjectPosition projectPosition);
 
 	void deleteProjectPosition(Long projectPositionId);
+	
+	List<ProjectMember> findProjectMembers(Long projectId);
+	
+	ProjectMember saveProjectMember(ProjectMember projectMember);
+	
+	void deleteProjectMember(Long projectMemberId);
 }
