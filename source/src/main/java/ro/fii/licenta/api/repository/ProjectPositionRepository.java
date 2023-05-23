@@ -8,4 +8,6 @@ import java.util.List;
 public interface ProjectPositionRepository extends PersistableEntityRepository<ProjectPosition, Long> {
 
     List<ProjectPosition> findByProject_Id(Long project);
+
+    ProjectPosition findByName(String name);
 }

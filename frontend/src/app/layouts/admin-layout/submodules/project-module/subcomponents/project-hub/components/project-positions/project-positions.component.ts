@@ -70,12 +70,47 @@ export class ProjectPositionsComponent implements OnInit {
     } else if (this.currentAction === ProjectAction.POSITIONS_EDIT){
       this.persistState = true;
       this.positionEditCopy = {...this.selectedPosition};
-      console.log(this.selectedPosition)
+    } else if (this.currentAction === ProjectAction.POSITIONS_DELETE) {
+      this.onSubmit(ProjectAction.POSITIONS_DELETE)
     }
   }
 
   onSubmit(currentAction: ProjectAction) {
-    this.persistState = false;
+    if (currentAction === ProjectAction.POSITIONS_ADD || currentAction === ProjectAction.POSITIONS_EDIT) {
+      if (this.positionForm.invalid) {
+        return;
+      } else {
+        const positionDTO: ProjectPositionDTO = this.selectedPosition;
+        positionDTO.name = this.positionForm.controls.name.value;
+        positionDTO.description = this.positionForm.controls.description.value;
+        if(positionDTO.id) {
+          this.applicationService.emmitLoading(true);
+          this.projectService.updatePosition(positionDTO, this.selectedProject).subscribe((result) => {
+              this.applicationService.emmitLoading(false);
+              this.load();
+            }, error => {
+              this.applicationService.emmitLoading(false);
+              this.notificationService.error(error);
+            }
+          )
+        } else {
+          this.projectService.createPosition(positionDTO, this.selectedProject).subscribe((result) => {
+              this.applicationService.emmitLoading(false);
+              this.load();
+            }, error => {
+              this.applicationService.emmitLoading(false);
+              this.notificationService.error(error);
+            }
+          )
+        }
+      }
+    } else if (currentAction === ProjectAction.POSITIONS_DELETE) {
+      this.applicationService.emmitLoading(true);
+      this.projectService.deletePosition(this.selectedPosition).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.load();
+      })
+    }
   }
 
   cancelAction(currentAction: ProjectAction) {
@@ -90,6 +125,8 @@ export class ProjectPositionsComponent implements OnInit {
   }
 
   private load() {
+    this.persistState = false;
+    this.selectedPosition = undefined;
     this.applicationService.emmitLoading(true);
     this.projectService.findProjectPositions(this.selectedProject).subscribe((result) => {
       this.dataSource.data = result;

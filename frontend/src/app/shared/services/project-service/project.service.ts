@@ -9,6 +9,7 @@ import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO'
 import {FunctionDTO} from '../../dto/FunctionDTO';
 import {ProjectDTO} from '../../dto/ProjectDTO';
 import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
+import {pipe} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,9 @@ export class ProjectService {
   private deleteURL = '/:projectId'
   private getProjectsURL = '/findProjects/:ngoId'
   private getProjectsCountURL = '/findProjects/count/:ngoId'
-  private getProjectPositionsURL = '/project/:projectId/positions'
+  private getProjectPositionsURL = '/project/:projectId/position'
+  private createProjectPositionURL = '/project/:projectId/position'
+  private deleteProjectPositionURL = '/project/:projectPositionId/position'
 
 
   // TODO CHANGE THIS FROM POST TO DELETE
@@ -31,6 +34,30 @@ export class ProjectService {
   create(project: ProjectDTO, ngo: NgoDTO) {
     return this.mainService.post(this.rootURL + this.createURL.replace(":ngoId", ngo.id.toString()),
       project).pipe(map((result: ProjectDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  createPosition(projectPosition: ProjectPositionDTO, project: ProjectDTO) {
+    return this.mainService.post(this.rootURL + this.createProjectPositionURL.replace(":projectId", project.id.toString()), projectPosition).pipe(map((result: ProjectPositionDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  updatePosition(projectPosition: ProjectPositionDTO, project: ProjectDTO) {
+    return this.mainService.put(this.rootURL + this.createProjectPositionURL.replace(":projectId", project.id.toString()), projectPosition).pipe(map((result: ProjectPositionDTO) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
+  }
+
+  deletePosition(projectPosition: ProjectPositionDTO) {
+    return this.mainService.delete(this.rootURL + this.deleteProjectPositionURL.replace(":projectPositionId", projectPosition.id.toString())).pipe(map((result) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);

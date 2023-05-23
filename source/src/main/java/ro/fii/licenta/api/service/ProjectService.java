@@ -18,4 +18,7 @@ public interface ProjectService {
 	
 	void deleteById(Long id);
 	List<ProjectPosition> getProjectPositions(Long projectId);
+	ProjectPosition saveProjectPosition(ProjectPosition projectPosition);
+
+	void deleteProjectPosition(Long projectPositionId);
 }

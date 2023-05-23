@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectPosition;
+import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.exception.ValidationException;
 import ro.fii.licenta.api.repository.ProjectPositionRepository;
@@ -64,6 +65,25 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public List<ProjectPosition> getProjectPositions(Long projectId) {
 		return this.projectPositionRepository.findByProject_Id(projectId);
+	}
+	@Override
+	public ProjectPosition saveProjectPosition(ProjectPosition projectPosition) {
+		ProjectPosition existingProjectPosition = this.projectPositionRepository.findByName(projectPosition.name);
+		if(existingProjectPosition != null && (existingProjectPosition.getName().equals(projectPosition.getName()) && existingProjectPosition.getProject().getId().equals(projectPosition.getProject().getId()))) {
+			throw new EntityConflictException("This project position already exists for this project");
+		} else {
+			return this.projectPositionRepository.save(projectPosition);
+		}
+	}
+
+	@Override
+	public void deleteProjectPosition(Long projectPositionId) {
+
+		if (this.projectPositionRepository.existsById(projectPositionId)) {
+			this.projectPositionRepository.deleteById(projectPositionId);
+		} else {
+			throw new NotFoundException("Project position with id " + projectPositionId + " does not exist");
+		}
 	}
 
 }
