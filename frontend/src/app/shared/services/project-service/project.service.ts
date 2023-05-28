@@ -3,13 +3,8 @@ import {NgoDTO} from '../../dto/NgoDTO';
 import {MainServiceService} from '../main/main-service.service';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
-import {UserDTO} from '../../dto/UserDTO';
-import {MemberDTO} from '../../dto/MemberDTO';
-import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
-import {FunctionDTO} from '../../dto/FunctionDTO';
 import {ProjectDTO} from '../../dto/ProjectDTO';
 import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
-import {pipe} from 'rxjs';
 import {ProjectMemberDTO} from '../../dto/ProjectMemberDTO';
 
 @Injectable({
@@ -21,6 +16,7 @@ export class ProjectService {
   private updateURL = '/updateProject'
   private deleteURL = '/:projectId'
   private getProjectsURL = '/findProjects/:ngoId'
+  private getMyProjectsURL = '/findMyProjects'
   private getProjectsCountURL = '/findProjects/count/:ngoId'
   private getProjectPositionsURL = '/project/:projectId/position'
   private createProjectPositionURL = '/project/:projectId/position'
@@ -105,6 +101,15 @@ export class ProjectService {
       queryString += queryString ? '&deimplementat' : '?deimplementat';
     }
     return this.mainService.get(this.rootURL + this.getProjectsURL.replace(":ngoId", ngo.id.toString()) + queryString).pipe(map((result: ProjectDTO[]) => {
+      return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findMyProjects() {
+    return this.mainService.get(this.rootURL + this.getMyProjectsURL).pipe(map((result: ProjectDTO[]) => {
       return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);

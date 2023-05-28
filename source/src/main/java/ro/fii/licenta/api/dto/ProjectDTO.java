@@ -14,7 +14,7 @@ public class ProjectDTO {
 
 	private Date endDate;
 
-	private NgoDTO ngoDTO;
+	private NgoDTO ngo;
 
 	public Long getId() {
 		return id;
@@ -56,12 +56,12 @@ public class ProjectDTO {
 		this.endDate = endDate;
 	}
 
-	public NgoDTO getNgoDTO() {
-		return ngoDTO;
+	public NgoDTO getNgo() {
+		return ngo;
 	}
 
-	public void setNgoDTO(NgoDTO ngoDTO) {
-		this.ngoDTO = ngoDTO;
+	public void setNgo(NgoDTO ngoDTO) {
+		this.ngo = ngoDTO;
 	}
 
 }

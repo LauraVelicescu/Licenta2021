@@ -36,12 +36,6 @@ export class ApplicationRoutesInfo {
       privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
       parentPath: 'user'
     }, {
-      path: 'nomenclature',
-      title: 'Nomenclatoare',
-      icon: 'collections',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
-      parentPath: 'user'
-    }, {
       path: 'apply',
       title: 'Become a member',
       icon: 'loupe',
@@ -85,6 +79,12 @@ export class ApplicationRoutesInfo {
       path: 'manage',
       title: 'Manage projects',
       icon: 'manage_search',
+      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      parentPath: 'project'
+    }, {
+      path: 'board',
+      title: 'Projects boards',
+      icon: 'dashboard',
       privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
       parentPath: 'project'
     }]

@@ -14,12 +14,14 @@ import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
 import ro.fii.licenta.api.service.SecurityService;
+import ro.fii.licenta.api.service.TaskService;
 import ro.fii.licenta.api.service.UserService;
 import ro.fii.licenta.api.service.impl.MailingServiceImpl;
 import ro.fii.licenta.api.service.impl.MemberServiceImpl;
 import ro.fii.licenta.api.service.impl.NGOServiceImpl;
 import ro.fii.licenta.api.service.impl.ProjectServiceImpl;
 import ro.fii.licenta.api.service.impl.SecurityServiceImpl;
+import ro.fii.licenta.api.service.impl.TaskServiceImpl;
 import ro.fii.licenta.api.service.impl.UserServiceImpl;
 
 @Configuration
@@ -56,6 +58,11 @@ public class BusinessConfig {
 	@Bean
 	ProjectService projectService() {
 		return new ProjectServiceImpl();
+	}
+	
+	@Bean
+	TaskService taskService() {
+		return new TaskServiceImpl();
 	}
 	
 	@Bean

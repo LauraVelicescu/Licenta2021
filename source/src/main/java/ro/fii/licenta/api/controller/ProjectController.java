@@ -9,18 +9,28 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
+import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPositionDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
+import ro.fii.licenta.api.service.UserService;
 
 @RestController
 @CrossOrigin
@@ -35,10 +45,13 @@ public class ProjectController {
 	@Autowired
 	private NGOService ngoService;
 
+	@Autowired
+	private UserService userService;
+
 	@PostMapping(value = "/createProject/{ngoId}")
 	public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto,
 			@PathVariable(value = "ngoId") Long ngoId) {
-		projectDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+		projectDto.setNgo(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
 		return ResponseEntity
 				.ok(modelMapper.map(projectService.save(modelMapper.map(projectDto, Project.class)), ProjectDTO.class));
 
@@ -93,6 +106,18 @@ public class ProjectController {
 		List<Project> ngoProjects = projectService.findAllNgoProjects(null, null, ngoId);
 
 		return ResponseEntity.ok(ngoProjects.size());
+	}
+
+	@GetMapping(value = "/findMyProjects")
+	public ResponseEntity<List<ProjectDTO>> findMyProjects(HttpServletRequest request) {
+		User currentUser = userService.getCurrentUser(request);
+		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
+		List<Project> ngoProjects = projectService.findAllProjectsByUser(currentUser);
+		for (Project project : ngoProjects) {
+			ngoProjectDtos.add(modelMapper.map(project, ProjectDTO.class));
+		}
+
+		return ResponseEntity.ok(ngoProjectDtos);
 	}
 
 	@GetMapping(value = "/project/{projectId}/position")
