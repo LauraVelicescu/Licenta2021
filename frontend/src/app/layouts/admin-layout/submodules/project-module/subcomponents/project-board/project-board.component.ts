@@ -1,5 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FormBuilder, FormControl} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {ProjectDTO} from '../../../../../../shared/dto/ProjectDTO';
 import {ProjectService} from '../../../../../../shared/services/project-service/project.service';
@@ -11,12 +11,22 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 import {TaskService} from '../../../../../../shared/services/task-service/task.service';
 import {formatDate} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
+import {MemberDTO} from '../../../../../../shared/dto/MemberDTO';
+import {ProjectMemberDTO} from '../../../../../../shared/dto/ProjectMemberDTO';
+import {ProjectAction} from '../project-hub/project-hub.component';
+import {MatOptionSelectionChange} from '@angular/material/core';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
   IN_PROGRESS = 'IN_PROGRESS',
   BLOCKED = 'BLOCKED',
   DONE = 'DONE'
+}
+
+export enum TaskAction {
+  ADD,
+  EDIT,
+  DELETE
 }
 
 @Component({
@@ -36,10 +46,22 @@ export class ProjectBoardComponent implements OnInit {
   comboData: ProjectDTO[] = [];
 
   selectedProject: ProjectDTO;
+  taskForm: FormGroup;
 
   displayedStatusColumns: TaskStatus[] = [TaskStatus.TO_DO, TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED, TaskStatus.DONE]
 
   statusTaskMap: Map<TaskStatus, ProjectTaskDTO[]> = new Map<TaskStatus, ProjectTaskDTO[]>();
+  persistState: boolean = false;
+  private currentAction: TaskAction;
+  private selectedTask: ProjectTaskDTO;
+
+  @ViewChild('searchMember') searchTextBoxMember: ElementRef;
+  selectFormControlMember = new FormControl();
+  searchTextboxControlMember = new FormControl();
+  private selectedMember: ProjectMemberDTO;
+  comboDataMember: ProjectMemberDTO[] = [];
+  selectedValuesMember: ProjectMemberDTO[] = [];
+  filteredOptionsMember: Observable<any[]>;
 
   constructor(private projectService: ProjectService,
               private applicationService: ApplicationService,
@@ -50,10 +72,6 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
-    this.displayedStatusColumns.forEach(s => {
-      this.statusTaskMap.set(s, []);
-    })
 
     this.applicationService.emmitLoading(true);
     this.projectService.findMyProjects().subscribe((result) => {
@@ -67,6 +85,13 @@ export class ProjectBoardComponent implements OnInit {
     }, error => {
       this.applicationService.emmitLoading(false);
     });
+
+
+    this.taskForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      deadline: ['', Validators.required]
+    })
   }
 
   openedChange(e) {
@@ -100,7 +125,16 @@ export class ProjectBoardComponent implements OnInit {
 
   private load() {
 
+    this.persistState = false;
+    this.currentAction = undefined;
+    this.selectedTask = undefined;
+    this.selectedMember = undefined;
     this.applicationService.emmitLoading(true);
+    this.statusTaskMap.clear()
+
+    this.displayedStatusColumns.forEach(s => {
+      this.statusTaskMap.set(s, []);
+    })
     this.taskService.findTasksByProject(this.selectedProject).subscribe((result) => {
       result.forEach(pt => {
         this.statusTaskMap.get(pt.taskStatus).push(pt);
@@ -110,6 +144,8 @@ export class ProjectBoardComponent implements OnInit {
       this.applicationService.emmitLoading(false);
       this.notificationService.error(error);
     });
+
+    this.loadDropDowns();
   }
 
   changeStatus(event: CdkDragDrop<ProjectTaskDTO[]>, newStatus: TaskStatus) {
@@ -153,6 +189,140 @@ export class ProjectBoardComponent implements OnInit {
       return this.sanitized.bypassSecurityTrustHtml('<img  src=\'' + retrievedImage + '\' style=\'max-width: 50px!important;border-radius: 50%;\' / > ');
     } else {
       return this.sanitized.bypassSecurityTrustHtml('<button disabled style=\'border-radius: 50%\'>' + item.projectMember.member.user.firstName.substring(0, 1) + item.projectMember.member.user.lastName.substring(0, 1) + '</button>')
+    }
+  }
+
+  get taskActions() {
+    return TaskAction;
+  }
+
+  emmitAction(action: TaskAction, payload?: ProjectTaskDTO) {
+
+    this.currentAction = action;
+    if (action === TaskAction.ADD) {
+      this.persistState = true;
+      this.selectedTask = new ProjectTaskDTO();
+    } else if (action === TaskAction.EDIT) {
+      this.persistState = true;
+      this.selectedTask = payload;
+      this.selectedMember = payload.projectMember
+    } else if (action === TaskAction.DELETE) {
+      this.selectedTask = payload;
+      this.onSubmit(TaskAction.DELETE);
+    }
+  }
+
+  onSubmit(currentAction: TaskAction) {
+    if (currentAction === TaskAction.ADD || currentAction === TaskAction.EDIT) {
+      if (this.taskForm.invalid) {
+        return
+      } else {
+        let task: ProjectTaskDTO = this.selectedTask;
+        if (this.selectedMember) {
+          task.projectMember = this.selectedMember;
+        }
+
+        if (task.id) {
+          this.applicationService.emmitLoading(true);
+          this.taskService.updateTask(this.selectedProject, task).subscribe((result) => {
+              this.applicationService.emmitLoading(false);
+              this.load();
+            }, error => {
+              this.applicationService.emmitLoading(false);
+              this.notificationService.error(error);
+            }
+          )
+        } else {
+          task.createdDate = new Date();
+          task.taskStatus = TaskStatus.TO_DO;
+          this.taskService.createTask(this.selectedProject, task).subscribe((result) => {
+              this.applicationService.emmitLoading(false);
+              this.load();
+            }, error => {
+              this.applicationService.emmitLoading(false);
+              this.notificationService.error(error);
+            }
+          )
+        }
+      }
+    } else if (currentAction === TaskAction.DELETE) {
+      this.taskService.deleteTask(this.selectedTask).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.load();
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        }
+      )
+    }
+  }
+
+  cancelAction(currentAction: TaskAction) {
+    this.load();
+  }
+
+
+  openedChangeMember(e) {
+    this.searchTextboxControlMember.patchValue('');
+    if (e === true) {
+      this.searchTextBoxMember?.nativeElement.focus();
+    }
+  }
+
+
+  clearSearchMember(event) {
+    event.stopPropagation();
+    this.searchTextboxControlMember.patchValue('');
+    this.selectedMember = undefined;
+  }
+
+  selectionChangeMember(event) {
+    if (event.isUserInput) {
+      this.selectedMember = event.source.value;
+    }
+  }
+
+  private _filterMember(name: string): ProjectMemberDTO[] {
+    const filterValue = name.toLowerCase();
+    this.selectFormControlMember.patchValue(this.selectedValuesMember);
+    return this.comboDataMember.filter(option => ((option.member.user.firstName ?? '') + ' ' + (option.member.user.lastName ?? '') + ' ' + (option.projectPosition?.name ?? '')).toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  getPrintMember(option: ProjectMemberDTO) {
+    if (option) {
+      return option.member.user.firstName + ' ' + option.member.user.lastName;
+    } else {
+      return ''
+    }
+  }
+
+  private loadDropDowns() {
+    this.applicationService.emmitLoading(true);
+    this.projectService.findProjectMembers(this.selectedProject).subscribe((result) => {
+      this.applicationService.emmitLoading(false);
+      this.comboDataMember = result;
+      this.filteredOptionsMember = this.searchTextboxControlMember.valueChanges
+        .pipe(
+          startWith<string>(''),
+          map(name => this._filterMember(name))
+        );
+    }, error => {
+      this.applicationService.emmitLoading(false);
+    });
+  }
+
+  selectionChangeMemberFromBoard(event: MatOptionSelectionChange, item: ProjectTaskDTO) {
+    if (event.isUserInput) {
+      item.projectMember = event.source.value;
+      this.applicationService.emmitLoading(true);
+      this.taskService.updateTask(this.selectedProject, item).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.load();
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        }
+      )
     }
   }
 }

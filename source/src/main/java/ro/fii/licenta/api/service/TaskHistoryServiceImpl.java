@@ -49,43 +49,53 @@ public class TaskHistoryServiceImpl {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Update task " + newProjectTask.getName() + " with the following updates: ");
 		if (!newProjectTask.getName().equals(oldProjectTask.getName())) {
-			sb.append("name from ").append(oldProjectTask.getName()).append(" to ").append(newProjectTask.getName())
-					.append(" ");
+			sb.append("Name from ").append(oldProjectTask.getName()).append(" to ").append(newProjectTask.getName())
+					.append("; ");
 		}
 
 		if (!newProjectTask.getDescription().equals(oldProjectTask.getDescription())) {
-			sb.append("description from ").append(oldProjectTask.getDescription()).append(" to ")
-					.append(newProjectTask.getDescription()).append(" ");
+			sb.append("Description from ").append(oldProjectTask.getDescription()).append(" to ")
+					.append(newProjectTask.getDescription()).append("; ");
 		}
 
 		if (!newProjectTask.getDeadline().equals(oldProjectTask.getDeadline())) {
-			sb.append("deadline from ").append(oldProjectTask.getDeadline()).append(" to ")
-					.append(newProjectTask.getDeadline()).append(" ");
+			sb.append("Deadline from ").append(oldProjectTask.getDeadline()).append(" to ")
+					.append(newProjectTask.getDeadline()).append("; ");
 		}
 
 		if (!newProjectTask.getCreatedDate().equals(oldProjectTask.getCreatedDate())) {
-			sb.append("created date from ").append(oldProjectTask.getCreatedDate()).append(" to ")
-					.append(newProjectTask.getCreatedDate()).append(" ");
+			sb.append("Created date from ").append(oldProjectTask.getCreatedDate()).append(" to ")
+					.append(newProjectTask.getCreatedDate()).append("; ");
 		}
 
 		if (!newProjectTask.getTaskStatus().equals(oldProjectTask.getTaskStatus())) {
-			sb.append("status from ").append(oldProjectTask.getTaskStatus()).append(" to ")
-					.append(newProjectTask.getTaskStatus()).append(" ");
+			sb.append("Status from ").append(oldProjectTask.getTaskStatus()).append(" to ")
+					.append(newProjectTask.getTaskStatus()).append("; ");
 			taskHistory.setPreviousStatus(oldProjectTask.getTaskStatus());
 			taskHistory.setCurrentStatus(newProjectTask.getTaskStatus());
 		}
 
-		if (!newProjectTask.getProjectMember().getId().equals(oldProjectTask.getProjectMember().getId())) {
-			sb.append("project member from ").append(this.getNameFromProjectMember(oldProjectTask.getProjectMember()))
+		if (newProjectTask.getProjectMember() != null && oldProjectTask.getProjectMember() != null
+				&& !newProjectTask.getProjectMember().getId().equals(oldProjectTask.getProjectMember().getId())) {
+			sb.append("Project member from ").append(this.getNameFromProjectMember(oldProjectTask.getProjectMember()))
 					.append(" to ").append(this.getNameFromProjectMember(newProjectTask.getProjectMember()))
-					.append(" ");
+					.append("; ");
 		}
+		
+		if(newProjectTask.getProjectMember() == null && oldProjectTask.getProjectMember() != null) {
+			sb.append("Project member from ").append(this.getNameFromProjectMember(oldProjectTask.getProjectMember()))
+			.append(" to ").append("none")
+			.append("; ");
+		}
+
+		if(newProjectTask.getProjectMember() != null && oldProjectTask.getProjectMember() == null) {
+			sb.append("Project member from ").append("none")
+			.append(" to ").append(this.getNameFromProjectMember(newProjectTask.getProjectMember()))
+			.append("; ");
+		}
+		
 		taskHistory.setDescription(sb.toString());
 		taskHistoryRepository.save(taskHistory);
-	}
-
-	public void deleteHistoryForTaskId(Long taskId) {
-		this.taskHistoryRepository.deleteByProjectTask_Id(taskId);
 	}
 
 	private String getNameFromProjectMember(ProjectMember projectMember) {

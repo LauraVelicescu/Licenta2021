@@ -114,10 +114,8 @@ export class MainServiceService {
         // nothing here, managed by caller
       } else if (err.status === 404) {
       } else if (err.status === 400) {
-        this.notificationService.error(err.error);
       } else {
         console.error(err);
-        this.notificationService.error('error');
       }
     }
   }

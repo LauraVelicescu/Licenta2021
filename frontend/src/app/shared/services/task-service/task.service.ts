@@ -48,7 +48,7 @@ export class TaskService {
   }
 
   public deleteTask(task: ProjectTaskDTO) {
-    return this.mainService.delete(this.rootURL + this.findTasksByProjectURL.replace(':taskId', task.id.toString())).pipe(map((result) => {
+    return this.mainService.delete(this.rootURL + this.deleteTaskURL.replace(':taskId', task.id.toString())).pipe(map((result) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);
