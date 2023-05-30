@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectTask;
+import ro.fii.licenta.api.dao.TaskAttachment;
 import ro.fii.licenta.api.dao.TaskHistory;
 import ro.fii.licenta.api.dao.TaskStatus;
 import ro.fii.licenta.api.dao.User;
@@ -24,6 +25,7 @@ public class TaskHistoryServiceImpl {
 
 	private static final String CREATE = "CREATE_TASK_HISTORY";
 	private static final String UPDATE = "UPDATE_TASK_HISTORY";
+	private static final String UPLOAD_ATTACHMENT = "UPLOAD_ATTACHMENT";
 
 	public void createTask(ProjectTask projectTask, User user) {
 		TaskHistory taskHistory = new TaskHistory();
@@ -81,19 +83,17 @@ public class TaskHistoryServiceImpl {
 					.append(" to ").append(this.getNameFromProjectMember(newProjectTask.getProjectMember()))
 					.append("; ");
 		}
-		
-		if(newProjectTask.getProjectMember() == null && oldProjectTask.getProjectMember() != null) {
+
+		if (newProjectTask.getProjectMember() == null && oldProjectTask.getProjectMember() != null) {
 			sb.append("Project member from ").append(this.getNameFromProjectMember(oldProjectTask.getProjectMember()))
-			.append(" to ").append("none")
-			.append("; ");
+					.append(" to ").append("none").append("; ");
 		}
 
-		if(newProjectTask.getProjectMember() != null && oldProjectTask.getProjectMember() == null) {
-			sb.append("Project member from ").append("none")
-			.append(" to ").append(this.getNameFromProjectMember(newProjectTask.getProjectMember()))
-			.append("; ");
+		if (newProjectTask.getProjectMember() != null && oldProjectTask.getProjectMember() == null) {
+			sb.append("Project member from ").append("none").append(" to ")
+					.append(this.getNameFromProjectMember(newProjectTask.getProjectMember())).append("; ");
 		}
-		
+
 		taskHistory.setDescription(sb.toString());
 		taskHistoryRepository.save(taskHistory);
 	}
@@ -105,5 +105,16 @@ public class TaskHistoryServiceImpl {
 			return projectMember.getMember().getUser().getFirstName() + " "
 					+ projectMember.getMember().getUser().getLastName();
 		}
+	}
+
+	public void attachFile(TaskAttachment taskAttachment, User user) {
+		TaskHistory taskHistory = new TaskHistory();
+		taskHistory.setName(UPLOAD_ATTACHMENT);
+		taskHistory.setProjectTask(taskAttachment.getProjectTask());
+		taskHistory.setProjectMember(this.projectMemberRepository
+				.findByProject_IdAndMember_User_Id(taskAttachment.getProjectTask().getProject().getId(), user.getId()));
+		taskHistory.setDate(new Date());
+		taskHistory.setDescription("Uploaded file " + taskAttachment.getName());
+		this.taskHistoryRepository.save(taskHistory);
 	}
 }

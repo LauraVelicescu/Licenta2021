@@ -4,6 +4,8 @@ import {ProjectDTO} from '../../dto/ProjectDTO';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
 import {ProjectTaskDTO} from '../../dto/ProjectTaskDTO';
+import {UserDTO} from '../../dto/UserDTO';
+import {TaskAttachmentDTO} from '../../dto/TaskAttachmentDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,9 @@ export class TaskService {
   private createTaskURL = '/:projectId'
   private updateTaskURL = '/:projectId'
   private deleteTaskURL = '/:taskId'
+  private uploadFileURL = '/upload/:taskId'
+  private findAllUploadsURL = '/upload/:taskId'
+  private deleteUploadURL = '/upload/:attachmentId'
 
   constructor(private mainService: MainServiceService) {
 
@@ -55,4 +60,33 @@ export class TaskService {
       throw new Error(err.error.message);
     }));
   }
+
+  public uploadFile(fileFormData: any, task: ProjectTaskDTO) {
+    return this.mainService.postFile(this.rootURL + this.uploadFileURL.replace(':taskId', task.id.toString()), fileFormData).pipe(map((result) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+  public findUploadsByTask(task: ProjectTaskDTO) {
+    return this.mainService.get(this.rootURL + this.findAllUploadsURL.replace(':taskId', task.id.toString())).pipe(map((result: TaskAttachmentDTO[]) => {
+      return plainToClass(TaskAttachmentDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public deleteAttachment(attachmentDTO: TaskAttachmentDTO) {
+    return this.mainService.delete(this.rootURL + this.deleteUploadURL.replace(':attachment', attachmentDTO.id.toString())).pipe(map((result) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
 }

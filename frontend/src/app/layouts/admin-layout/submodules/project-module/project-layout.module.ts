@@ -19,6 +19,7 @@ import { ProjectTeamComponent } from './subcomponents/project-hub/components/pro
 import { ProjectPositionsComponent } from './subcomponents/project-hub/components/project-positions/project-positions.component';
 import { ProjectBoardComponent } from './subcomponents/project-board/project-board.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatListModule} from '@angular/material/list';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     MatPaginatorModule,
     MatInputModule,
     NgbDropdownModule,
-    DragDropModule
+    DragDropModule,
+    MatListModule
   ]
 })
 export class ProjectLayoutModule { }

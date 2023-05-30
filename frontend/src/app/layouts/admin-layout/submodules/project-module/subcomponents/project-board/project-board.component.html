@@ -50,7 +50,8 @@
                 <div [innerHTML]="getUserLogo(item)" *ngIf="item.projectMember"></div>
                 <div *ngIf="!item.projectMember">
                   <div style="border-radius: 50%;" class=" form-control">
-                    <mat-select (openedChange)="openedChangeMember($event)" [placeholder]="getPrintMember(this.selectedMember)" >
+                    <mat-select (openedChange)="openedChangeMember($event)"
+                                [placeholder]="getPrintMember(this.selectedMember)">
                       <div class="select-container">
                         <mat-optgroup *ngIf="(filteredOptionsMember | async)?.length == 0">
                           <div>No results found!</div>
@@ -67,13 +68,26 @@
               </div>
               <div class="col-md-2">
                 <div class="text-right">
-                  <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm" (click)="emmitAction(taskActions.EDIT, item)"
+                  <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
+                          (click)="emmitAction(taskActions.EDIT, item)"
                   >
                     <i class="tim-icons icon-settings"></i>
                   </button>
-                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm" (click)="emmitAction(taskActions.DELETE, item)"
+                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                          (click)="emmitAction(taskActions.DELETE, item)"
                   >
                     <i class="tim-icons icon-simple-remove"></i>
+                  </button>
+                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                          (click)="fileInput.click()"
+                  >
+                    <i class="tim-icons icon-attach-87"></i>
+                    <input #fileInput type=file (change)="onFileUploaded($event, item)" style="display: none" multiple>
+                  </button>
+                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                          (click)="emmitAction(taskActions.VIEW, item)"
+                  >
+                    <i class="tim-icons icon-vector"></i>
                   </button>
                 </div>
               </div>
@@ -82,92 +96,141 @@
         </div>
       </div>
     </div>
-    <div *ngIf="persistState" class="card" style="width: 60%; margin: auto;">
-      <div class="card-title" style="padding: 25px;">
-        <h2 *ngIf="currentAction === taskActions.ADD">Create a new task</h2>
-        <h2 *ngIf="currentAction === taskActions.EDIT">Update task</h2>
-      </div>
-      <form [formGroup]="taskForm" style="padding: 15px;" (ngSubmit)="onSubmit(currentAction)" class="card-body">
-        <div class=" row">
-          <div class=" col-md-4 pr-md-1">
-            <div class=" form-group">
-              <label> Name </label>
-              <input
-                class=" form-control"
-                placeholder="name"
-                formControlName="name"
-                type="text"
-                [(ngModel)]="selectedTask.name"
-              />
-            </div>
+    <div *ngIf="persistState" class="row">
+      <div class="col-md-2">
+        <div class="card" *ngIf="viewState" style="padding-top: 24px">
+          <div class="card-title">
+            <h6 style="text-align: center">
+              Attachments
+            </h6>
           </div>
-          <div class=" col-md-4 pr-md-1">
-            <div class=" form-group">
-              <label> Member </label>
-              <div style="display: block!important;" class=" form-control">
-                <mat-select (openedChange)="openedChangeMember($event)" [placeholder]="getPrintMember(this.selectedMember)">
-                  {{getPrintMember(this.selectedMember)}}
-                  <div class="select-container">
-                    <mat-optgroup>
-                      <mat-form-field style="width:100%">
-                        <input #searchMember autocomplete="off" placeholder="Search" aria-label="Search" matInput
-                               class=" form-control"
-                               [formControl]="searchTextboxControlMember">
-                        <button [disableRipple]="true" *ngIf="searchMember.value" matSuffix mat-icon-button
-                                aria-label="Clear"
-                                (click)="clearSearchMember($event)">
-                          <mat-icon>close</mat-icon>
-                        </button>
-                      </mat-form-field>
-                    </mat-optgroup>
-                    <mat-optgroup *ngIf="(filteredOptionsMember | async)?.length == 0">
-                      <div>No results found!</div>
-                    </mat-optgroup>
-                    <mat-option (onSelectionChange)="selectionChangeMember($event)"
-                                *ngFor="let option of filteredOptionsMember | async"
-                                [value]="option">
-                      {{getPrintMember(option)}}
-                    </mat-option>
+          <div class="card-body">
+            <mat-list role="list">
+              <mat-list-item *ngFor="let item of attachments" class="row" style="height: 100%;!important;">
+                <div class="col-md-8">
+                  <div class="row">
+                    <h5>
+                      {{item.name + " " + item.extension}}
+                    </h5>
                   </div>
-                </mat-select>
+                  <div class="row">
+                    <p>{{item.description}}</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-title" style="padding: 25px;">
+            <h2 *ngIf="currentAction === taskActions.ADD">Create a new task</h2>
+            <h2 *ngIf="currentAction === taskActions.EDIT">Update task</h2>
+          </div>
+          <form [formGroup]="taskForm" style="padding: 15px;" (ngSubmit)="onSubmit(currentAction)" class="card-body">
+            <div class=" row">
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label> Name </label>
+                  <input
+                    class=" form-control"
+                    placeholder="name"
+                    formControlName="name"
+                    type="text"
+                    [(ngModel)]="selectedTask.name"
+                    *ngIf="!viewState"
+                  />
+                  <h6 *ngIf="viewState">{{selectedTask.name}}</h6>
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label> Member </label>
+                  <h6 *ngIf="viewState">{{getPrintMember(this.selectedMember)}}</h6>
+                  <div style="display: block!important;" class=" form-control" *ngIf="!viewState">
+                    <mat-select (openedChange)="openedChangeMember($event)"
+                                [placeholder]="getPrintMember(this.selectedMember)">
+                      {{getPrintMember(this.selectedMember)}}
+                      <div class="select-container">
+                        <mat-optgroup>
+                          <mat-form-field style="width:100%">
+                            <input #searchMember autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                                   class=" form-control"
+                                   [formControl]="searchTextboxControlMember">
+                            <button [disableRipple]="true" *ngIf="searchMember.value" matSuffix mat-icon-button
+                                    aria-label="Clear"
+                                    (click)="clearSearchMember($event)">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </mat-form-field>
+                        </mat-optgroup>
+                        <mat-optgroup *ngIf="(filteredOptionsMember | async)?.length == 0">
+                          <div>No results found!</div>
+                        </mat-optgroup>
+                        <mat-option (onSelectionChange)="selectionChangeMember($event)"
+                                    *ngFor="let option of filteredOptionsMember | async"
+                                    [value]="option">
+                          {{getPrintMember(option)}}
+                        </mat-option>
+                      </div>
+                    </mat-select>
+                  </div>
+                </div>
+              </div>
+              <div class=" col-md-4 pr-md-1">
+                <div class=" form-group">
+                  <label> Deadline </label>
+                  <input id="datepicker"
+                         class=" form-control"
+                         placeholder=""
+                         formControlName="deadline"
+                         type="date"
+                         [ngModel]="formatDateLocal(selectedTask.deadline)"
+                         (ngModelChange)="(selectedTask.deadline = $event)"
+                         *ngIf="!viewState"
+                  >
+                  <h6 *ngIf="viewState">{{formatDateLocal(selectedTask.deadline)}}</h6>
+                </div>
               </div>
             </div>
-          </div>
-          <div class=" col-md-4 pr-md-1">
-            <div class=" form-group">
-              <label> Deadline </label>
-              <input id="datepicker"
-                     class=" form-control"
-                     placeholder=""
-                     formControlName="deadline"
-                     type="date"
-                     [ngModel]="formatDateLocal(selectedTask.deadline)"
-                     (ngModelChange)="(selectedTask.deadline = $event)"
-              >
-            </div>
-          </div>
-        </div>
-        <div class=" row">
-          <div class=" col-md-12">
-            <div class=" form-group">
-              <label> Description </label>
-              <textarea
-                class=" form-control"
-                cols="80"
-                placeholder="Here can be your description"
-                formControlName="description"
-                rows="4"
-                [(ngModel)]="selectedTask.description"
-              >
+            <div class=" row">
+              <div class=" col-md-12">
+                <div class=" form-group">
+                  <label> Description </label>
+                  <textarea
+                    class=" form-control"
+                    cols="80"
+                    placeholder="Here can be your description"
+                    formControlName="description"
+                    rows="4"
+                    [(ngModel)]="selectedTask.description"
+                    *ngIf="!viewState"
+                  >
                   </textarea>
+                  <h6 *ngIf="viewState">{{selectedTask.description}}</h6>
+                </div>
+              </div>
             </div>
+            <div class=" card-footer">
+              <button class=" btn btn-primary" type="submit" *ngIf="!viewState">Save</button>
+              <button class=" btn btn-secondary" (click)="cancelAction(currentAction)">Back</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card" *ngIf="viewState" style="padding-top: 24px">
+          <div class="card-title">
+            <h6 style="text-align: center">
+              History & Chat
+            </h6>
           </div>
         </div>
-        <div class=" card-footer">
-          <button class=" btn btn-primary" type="submit">Save</button>
-          <button class=" btn btn-secondary" (click)="cancelAction(currentAction)">Back</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>

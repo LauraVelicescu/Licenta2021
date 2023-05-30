@@ -11,10 +11,9 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 import {TaskService} from '../../../../../../shared/services/task-service/task.service';
 import {formatDate} from '@angular/common';
 import {DomSanitizer} from '@angular/platform-browser';
-import {MemberDTO} from '../../../../../../shared/dto/MemberDTO';
 import {ProjectMemberDTO} from '../../../../../../shared/dto/ProjectMemberDTO';
-import {ProjectAction} from '../project-hub/project-hub.component';
 import {MatOptionSelectionChange} from '@angular/material/core';
+import {TaskAttachmentDTO} from '../../../../../../shared/dto/TaskAttachmentDTO';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -26,7 +25,8 @@ export enum TaskStatus {
 export enum TaskAction {
   ADD,
   EDIT,
-  DELETE
+  DELETE,
+  VIEW
 }
 
 @Component({
@@ -62,6 +62,9 @@ export class ProjectBoardComponent implements OnInit {
   comboDataMember: ProjectMemberDTO[] = [];
   selectedValuesMember: ProjectMemberDTO[] = [];
   filteredOptionsMember: Observable<any[]>;
+  private viewState: boolean = false;
+
+  attachments: TaskAttachmentDTO[] = [];
 
   constructor(private projectService: ProjectService,
               private applicationService: ApplicationService,
@@ -125,6 +128,7 @@ export class ProjectBoardComponent implements OnInit {
 
   private load() {
 
+    this.viewState = false;
     this.persistState = false;
     this.currentAction = undefined;
     this.selectedTask = undefined;
@@ -209,6 +213,12 @@ export class ProjectBoardComponent implements OnInit {
     } else if (action === TaskAction.DELETE) {
       this.selectedTask = payload;
       this.onSubmit(TaskAction.DELETE);
+    } else if (action === TaskAction.VIEW) {
+      this.persistState = true;
+      this.viewState = true;
+      this.selectedTask = payload;
+      this.selectedMember = payload.projectMember
+      this.loadAdditionalElements();
     }
   }
 
@@ -324,5 +334,39 @@ export class ProjectBoardComponent implements OnInit {
         }
       )
     }
+  }
+
+  onFileUploaded(event, item: ProjectTaskDTO) {
+    let selectedFiles: FileList = event.target.files as FileList;
+    this.applicationService.emmitLoading(true);
+    const uploadImageData = new FormData();
+    for (let i = 0; i < selectedFiles.length; i++) {
+      let file: File = selectedFiles.item(i);
+      if (file) {
+        uploadImageData.append('imageFile', file, file.name);
+      }
+    }
+    if (uploadImageData.has('imageFile')) {
+      this.taskService.uploadFile(uploadImageData, item).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+      }, error => {
+        this.notificationService.error(error);
+        this.applicationService.emmitLoading(false);
+      })
+    } else {
+      this.applicationService.emmitLoading(false);
+    }
+  }
+
+  private loadAdditionalElements() {
+
+    this.applicationService.emmitLoading(true);
+    this.taskService.findUploadsByTask(this.selectedTask).subscribe((result) => {
+      this.attachments = result;
+      this.applicationService.emmitLoading(false);
+    }, error => {
+      this.notificationService.error(error);
+      this.applicationService.emmitLoading(false);
+    })
   }
 }

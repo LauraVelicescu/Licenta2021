@@ -80,7 +80,6 @@ export class UserProfileComponent implements OnInit {
 
   onFileChanged(event) {
     this.selectedFile = event.target.files[0];
-    console.log(this.selectedFile.type);
 
     const uploadImageData = new FormData();
     if (this.selectedFile.type.includes('image')) {
