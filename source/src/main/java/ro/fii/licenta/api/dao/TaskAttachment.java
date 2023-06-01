@@ -22,6 +22,17 @@ public class TaskAttachment extends NameDescriptionEntity {
 
 	private String fileExtension;
 
+	private String contentType;
+
+	@Column(name = "content_type")
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_task_id")
 	public ProjectTask getProjectTask() {

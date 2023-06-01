@@ -106,19 +106,30 @@
           </div>
           <div class="card-body">
             <mat-list role="list">
-              <mat-list-item *ngFor="let item of attachments" class="row" style="height: 100%;!important;">
-                <div class="col-md-8">
+              <mat-list-item *ngFor="let item of attachments" class="row"
+                             style="height: 100%;!important; border-bottom: 1px solid black; padding-top: 5px">
+                <div class="col-md-10">
                   <div class="row">
-                    <h5>
+                    <p style="font-size: 15px">
                       {{item.name + " " + item.extension}}
-                    </h5>
+                    </p>
                   </div>
                   <div class="row">
-                    <p>{{item.description}}</p>
+                    <p style="font-size: 12px;">{{item.description}}</p>
                   </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
+                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                          (click)="emmitAttachmentAction(taskActions.DELETE_ATTACHMENT, item)"
+                  >
+                    <i class="tim-icons icon-simple-remove"></i>
+                  </button>
 
+                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                          (click)="emmitAttachmentAction(taskActions.DOWNLOAD_ATTACHMENT, item)"
+                  >
+                    <i class="tim-icons icon-cloud-download-93"></i>
+                  </button>
                 </div>
               </mat-list-item>
             </mat-list>
@@ -223,11 +234,38 @@
         </div>
       </div>
       <div class="col-md-2">
-        <div class="card" *ngIf="viewState" style="padding-top: 24px">
+        <div class="card table-full-width table-responsive card-tasks" *ngIf="viewState" style="padding-top: 24px;">
           <div class="card-title">
             <h6 style="text-align: center">
-              History & Chat
+              History
             </h6>
+          </div>
+          <div class="card-body">
+            <div class="card"
+                 style="width: 90%; margin: auto; background-color: lightcyan; border-radius: 10%;">
+              <div class="card-body">
+                <p style="font-size: 10px"> {{formatDateLocal(getNow())}}</p>
+                <textarea
+                  class=" form-control"
+                  cols="80"
+                  placeholder="Here can be your update"
+                  rows="4"
+                  [(ngModel)]="newChat"
+                >
+                  </textarea>
+                <button class=" btn btn-primary" (click)="updateHistory()">
+                  Add
+                </button>
+              </div>
+            </div>
+            <div class="card" *ngFor="let historyItem of history"
+                 style="width: 90%; margin: auto; background-color: lightcyan; border-radius: 10%;">
+              <div class="card-body">
+                <p style="font-size: 10px"> {{formatDateLocal(historyItem.date)}}</p>
+                <p style="font-size: 12px">{{historyItem.description}}</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

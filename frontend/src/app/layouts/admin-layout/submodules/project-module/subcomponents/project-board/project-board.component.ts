@@ -14,6 +14,8 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {ProjectMemberDTO} from '../../../../../../shared/dto/ProjectMemberDTO';
 import {MatOptionSelectionChange} from '@angular/material/core';
 import {TaskAttachmentDTO} from '../../../../../../shared/dto/TaskAttachmentDTO';
+import {saveAs} from 'file-saver';
+import {TaskHistoryDTO} from '../../../../../../shared/dto/TaskHistoryDTO';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -26,7 +28,9 @@ export enum TaskAction {
   ADD,
   EDIT,
   DELETE,
-  VIEW
+  VIEW,
+  DELETE_ATTACHMENT,
+  DOWNLOAD_ATTACHMENT
 }
 
 @Component({
@@ -64,7 +68,11 @@ export class ProjectBoardComponent implements OnInit {
   filteredOptionsMember: Observable<any[]>;
   private viewState: boolean = false;
 
+
   attachments: TaskAttachmentDTO[] = [];
+
+  history: TaskHistoryDTO[] = [];
+  newChat: string;
 
   constructor(private projectService: ProjectService,
               private applicationService: ApplicationService,
@@ -336,7 +344,7 @@ export class ProjectBoardComponent implements OnInit {
     }
   }
 
-  onFileUploaded(event, item: ProjectTaskDTO) {
+  async onFileUploaded(event, item: ProjectTaskDTO) {
     let selectedFiles: FileList = event.target.files as FileList;
     this.applicationService.emmitLoading(true);
     const uploadImageData = new FormData();
@@ -360,6 +368,7 @@ export class ProjectBoardComponent implements OnInit {
 
   private loadAdditionalElements() {
 
+    this.newChat = undefined;
     this.applicationService.emmitLoading(true);
     this.taskService.findUploadsByTask(this.selectedTask).subscribe((result) => {
       this.attachments = result;
@@ -368,5 +377,58 @@ export class ProjectBoardComponent implements OnInit {
       this.notificationService.error(error);
       this.applicationService.emmitLoading(false);
     })
+
+    this.applicationService.emmitLoading(true);
+    this.taskService.findHistoryByTask(this.selectedTask).subscribe((result) => {
+      this.history = result;
+      this.applicationService.emmitLoading(false);
+    }, error => {
+      this.notificationService.error(error);
+      this.applicationService.emmitLoading(false);
+    })
+  }
+
+  emmitAttachmentAction(taskAction: TaskAction, item: TaskAttachmentDTO) {
+
+    if (taskAction === TaskAction.DELETE_ATTACHMENT) {
+      this.applicationService.emmitLoading(true);
+      this.taskService.deleteAttachment(item).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.loadAdditionalElements();
+      }, error => {
+        this.notificationService.error(error);
+        this.applicationService.emmitLoading(false);
+      })
+    } else if (taskAction === TaskAction.DOWNLOAD_ATTACHMENT) {
+      let content: string = item.file as string;
+      this.downloadFile(content, item.name + item.extension, item.contentType);
+    }
+  }
+
+  downloadFile(base64: any, fileName: any, contentType: string) {
+    const src = `data:${contentType};base64,${base64}`;
+    const link = document.createElement('a')
+    link.href = src
+    link.download = fileName
+    link.click()
+
+    link.remove()
+  }
+
+  getNow() {
+    return new Date();
+  }
+
+  updateHistory() {
+    if(this.newChat) {
+      this.applicationService.emmitLoading(true);
+      this.taskService.addChatHistoryByTask(this.newChat, this.selectedTask).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.loadAdditionalElements();
+      }, error => {
+        this.notificationService.error(error);
+        this.applicationService.emmitLoading(false);
+      })
+    }
   }
 }

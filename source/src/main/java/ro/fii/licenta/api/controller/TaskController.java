@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.Deflater;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +32,10 @@ import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectTaskDTO;
 import ro.fii.licenta.api.dto.TaskAttachmentDTO;
+import ro.fii.licenta.api.dto.TaskHistoryDTO;
 import ro.fii.licenta.api.repository.ProjectTaskRepository;
 import ro.fii.licenta.api.service.ProjectService;
+import ro.fii.licenta.api.service.TaskHistoryServiceImpl;
 import ro.fii.licenta.api.service.TaskService;
 import ro.fii.licenta.api.service.UserService;
 
@@ -54,6 +57,9 @@ public class TaskController {
 	private ProjectService projectService;
 
 	@Autowired
+	private TaskHistoryServiceImpl taskHistoryServiceImpl;
+
+	@Autowired
 	private UserService userService;
 
 	@GetMapping(value = "/{projectId}")
@@ -72,6 +78,22 @@ public class TaskController {
 			attachmentskDTOs.add(this.modelMapper.map(pt, TaskAttachmentDTO.class));
 		});
 		return ResponseEntity.ok(attachmentskDTOs);
+	}
+
+	@GetMapping(value = "/history/{taskId}")
+	public ResponseEntity<List<TaskHistoryDTO>> findHistoryForTask(@PathVariable(value = "taskId") Long taskId) {
+		List<TaskHistoryDTO> historyDTOs = new ArrayList<>();
+		this.taskService.findHistoryByTask(taskId).forEach(pt -> {
+			historyDTOs.add(this.modelMapper.map(pt, TaskHistoryDTO.class));
+		});
+		return ResponseEntity.ok(historyDTOs);
+	}
+
+	@PostMapping(value = "/history/{taskId}")
+	public void createChatHistoryForTask(@PathVariable(value = "taskId") Long taskId, @RequestBody Map<String, String> message,
+			HttpServletRequest request) {
+		this.taskHistoryServiceImpl.createChatter(message.get("message"), this.projectTaskRepository.findById(taskId).get(),
+				userService.getCurrentUser(request));
 	}
 
 	@PostMapping(value = "/{projectId}")
@@ -114,8 +136,9 @@ public class TaskController {
 			taskAttachment.setFileExtension(f.getOriginalFilename().substring(f.getOriginalFilename().lastIndexOf("."),
 					f.getOriginalFilename().length()));
 			taskAttachment.setProjectTask(this.projectTaskRepository.findById(taskId).get());
+			taskAttachment.setContentType(f.getContentType());
 			try {
-				taskAttachment.setFile(compressBytes(f.getBytes()));
+				taskAttachment.setFile(f.getBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

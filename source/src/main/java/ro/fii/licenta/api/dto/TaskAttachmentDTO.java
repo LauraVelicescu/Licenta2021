@@ -3,16 +3,26 @@ package ro.fii.licenta.api.dto;
 public class TaskAttachmentDTO {
 
 	private Long id;
-	
+
 	private String name;
-	
+
 	private String description;
-	
+
 	private String extension;
-	
+
 	private byte[] file;
-	
+
 	private ProjectTaskDTO projectTask;
+
+	private String contentType;
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
 	public Long getId() {
 		return id;
@@ -61,6 +71,5 @@ public class TaskAttachmentDTO {
 	public void setProjectTask(ProjectTaskDTO projectTask) {
 		this.projectTask = projectTask;
 	}
-	
-	
+
 }

@@ -24,6 +24,7 @@ public class TaskHistoryServiceImpl {
 	ProjectMemberRepository projectMemberRepository;
 
 	private static final String CREATE = "CREATE_TASK_HISTORY";
+	private static final String CREATE_CHAT = "CREATE_CHAT";
 	private static final String UPDATE = "UPDATE_TASK_HISTORY";
 	private static final String UPLOAD_ATTACHMENT = "UPLOAD_ATTACHMENT";
 
@@ -38,6 +39,17 @@ public class TaskHistoryServiceImpl {
 				.findByProject_IdAndMember_User_Id(projectTask.getProject().getId(), user.getId()));
 		taskHistory.setDescription("Create new task for project " + projectTask.getProject().getName() + " by "
 				+ user.getFirstName() + " " + user.getLastName() + " and put it in TO DO");
+		taskHistoryRepository.save(taskHistory);
+	}
+
+	public void createChatter(String chat, ProjectTask projectTask, User user) {
+		TaskHistory taskHistory = new TaskHistory();
+		taskHistory.setDate(new Date());
+		taskHistory.setName(CREATE_CHAT);
+		taskHistory.setProjectTask(projectTask);
+		taskHistory.setProjectMember(this.projectMemberRepository
+				.findByProject_IdAndMember_User_Id(projectTask.getProject().getId(), user.getId()));
+		taskHistory.setDescription(chat);
 		taskHistoryRepository.save(taskHistory);
 	}
 

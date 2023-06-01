@@ -13,4 +13,6 @@ export class TaskAttachmentDTO {
   public file: any;
 
   public projectTask: ProjectTaskDTO;
+
+  public contentType: string;
 }

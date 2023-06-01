@@ -90,4 +90,14 @@ public class TaskServiceImpl implements TaskService {
 	public void deleteAttachment(Long attachmentId) {
 		this.taskAttachmentRepository.deleteById(attachmentId);
 	}
+
+	@Override
+	public List<TaskHistory> findHistoryByTask(Long taskId) {
+		return this.taskHistoryRepository.findByProjectTask_Id(taskId);
+	}
+
+	@Override
+	public void saveChatHistory(String message, Long taskId) {
+		
+	}
 }
