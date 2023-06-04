@@ -11,6 +11,8 @@ import {NotificationService} from '../../../../../../shared/services/notificatio
 import {ProjectService} from '../../../../../../shared/services/project-service/project.service';
 import {SelectionModel} from '@angular/cdk/collections';
 import {formatDate} from '@angular/common';
+import {Router} from '@angular/router';
+import {UserService} from '../../../../../../shared/services/user-service/user.service';
 
 export enum ProjectAction {
   ADD = 'Add',
@@ -55,13 +57,18 @@ export class ProjectHubComponent implements OnInit {
   selection = new SelectionModel<ProjectDTO>(false, []);
   currentAction: ProjectAction;
   private projectEditCopy: ProjectDTO = undefined;
+  retrievedImage: any;
+  selectedFile: File;
+  base64Data: any;
 
 
   constructor(private applicationService: ApplicationService,
               private ngoService: NGOService,
               private notificationService: NotificationService,
               private formBuilder: FormBuilder,
-              private projectService: ProjectService) {
+              private projectService: ProjectService,
+              private userService: UserService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -84,6 +91,11 @@ export class ProjectHubComponent implements OnInit {
       if (value.added.length === 0) {
         this.selectedProject = undefined;
       }
+      if (this.selectedProject?.id) {
+        this.base64Data = this.selectedProject.logo;
+        this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+        console.log(this.retrievedImage)
+      }
       this.currentAction = undefined;
     });
 
@@ -92,7 +104,10 @@ export class ProjectHubComponent implements OnInit {
         name: ['', Validators.required],
         description: [''],
         startDate: ['', Validators.required],
-        endDate: ['', Validators.required]
+        endDate: ['', Validators.required],
+        facebook: [''],
+        twitter: [''],
+        linkedin: ['']
       }
     )
   }
@@ -154,7 +169,6 @@ export class ProjectHubComponent implements OnInit {
   }
 
   getCurrentOpenYear(selectedNgo: NgoDTO) {
-    // resolve curent year programatically from ngodto
     return '2023-2024'
   }
 
@@ -162,6 +176,9 @@ export class ProjectHubComponent implements OnInit {
     this.currentAction = action;
     if (this.currentAction === ProjectAction.ADD) {
       this.selectedProject = new ProjectDTO();
+    }
+    if (this.currentAction === ProjectAction.BOARD) {
+      this.router.navigate(['adm', 'project', 'board'], {state: {selectedProject: this.selectedProject}}).then();
     }
   }
 
@@ -235,6 +252,20 @@ export class ProjectHubComponent implements OnInit {
     if (date) {
       let x = formatDate(date, 'yyyy-MM-dd', 'en-US');
       return x;
+    }
+  }
+
+  onFileChanged(event) {
+    this.selectedFile = event.target.files[0];
+
+    const uploadImageData = new FormData();
+    if (this.selectedFile.type.includes('image')) {
+      uploadImageData.append('imageFile', this.selectedFile, this.selectedFile.name);
+      this.projectService.updateLogo(uploadImageData, this.selectedProject).subscribe((result) => {
+        this.base64Data = result.logo;
+        this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+        console.log(this.retrievedImage)
+      });
     }
   }
 }

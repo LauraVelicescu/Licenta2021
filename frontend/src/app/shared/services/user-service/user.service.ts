@@ -5,6 +5,7 @@ import {UserDTO} from '../../dto/UserDTO';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
 import {MemberRequestDTO} from "../../dto/MemberRequestDTO";
+import {RoleDTO} from '../../dto/RoleDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class UserService {
   private getURL = '/getUser';
   private getUsersURL = '/findUsers'
   private getUsersCountURL = '/findUsers/count';
+  private getAllRolesURL = '/roles'
   private deleteURL = '/delete';
   private blockURL = '/block';
   private uploadImageURL = '/uploadImage'
@@ -64,6 +66,15 @@ export class UserService {
     }
     return this.mainService.get(this.rootURL + this.getUsersURL + queryString).pipe(map((result: UserDTO[]) => {
       return plainToClass(UserDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findRoles() {
+    return this.mainService.get(this.rootURL + this.getAllRolesURL).pipe(map((result: RoleDTO[]) => {
+      return plainToClass(RoleDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
       throw new Error(err.error.message);

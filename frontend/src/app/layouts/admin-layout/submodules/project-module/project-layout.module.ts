@@ -20,6 +20,7 @@ import { ProjectPositionsComponent } from './subcomponents/project-hub/component
 import { ProjectBoardComponent } from './subcomponents/project-board/project-board.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatListModule} from '@angular/material/list';
+import { ProjectReportsComponent } from './subcomponents/project-hub/components/project-reports/project-reports.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import {MatListModule} from '@angular/material/list';
     ProjectHubComponent,
     ProjectTeamComponent,
     ProjectPositionsComponent,
-    ProjectBoardComponent
+    ProjectBoardComponent,
+    ProjectReportsComponent
   ],
   imports: [
     CommonModule,

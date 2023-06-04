@@ -4,16 +4,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import ro.fii.licenta.framework.PersistableEntity;
 
 @Entity
@@ -46,7 +45,7 @@ public class User extends PersistableEntity {
 
 	private int failAttemtps;
 	
-	private Set<Role> roles;
+	private Set<UserRole> roles;
 
 	private PersonType personType;
 	
@@ -171,13 +170,12 @@ public class User extends PersistableEntity {
 		this.personType = personType;
 	}
 	
-	@ManyToMany
-	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	public Set<Role> getRoles() {
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	public Set<UserRole> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(Set<Role> roles) {
+	public void setRoles(Set<UserRole> roles) {
 		this.roles = roles;
 	}
 

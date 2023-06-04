@@ -12,14 +12,15 @@ public class Role extends NameDescriptionEntity {
 
 	private static final long serialVersionUID = 1L;
 
-	private boolean valid;
+	private boolean ngoEligible;
 
-	@Column(name = "valid")
-	public boolean isValid() {
-		return valid;
+	@Column(name = "ngo_eligible")
+	public boolean isNgoEligible() {
+		return ngoEligible;
 	}
 
-	public void setValid(boolean valid) {
-		this.valid = valid;
+	public void setNgoEligible(boolean ngoEligible) {
+		this.ngoEligible = ngoEligible;
 	}
+
 }

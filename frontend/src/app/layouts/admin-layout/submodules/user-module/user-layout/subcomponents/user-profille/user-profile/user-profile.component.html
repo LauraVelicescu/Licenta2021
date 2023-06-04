@@ -1,4 +1,3 @@
-
 <div class=" content">
   <div class=" row">
     <div class=" col-md-8">
@@ -58,7 +57,7 @@
               <div class=" col-md-4 pl-md-1">
                 <div class=" form-group">
                   <label> Birthday </label>
-                  <input id = "datepicker"
+                  <input id="datepicker"
                          class=" form-control"
                          placeholder=""
                          formControlName="birthday"
@@ -136,9 +135,11 @@
             <a href="javascript:void(0)">
 
               <img alt="..." class=" avatar" [src]="retrievedImage" (click)="fileInput.click()"/>
-              <input #fileInput type = file (change)="onFileChanged($event)" style="display: none">
+              <input #fileInput type=file (change)="onFileChanged($event)" style="display: none">
 
-              <h5 class=" title"><output [value]="currentUser?.firstName + ' ' + currentUser?.lastName" ></output></h5>
+              <h5 class=" title">
+                <output [value]="currentUser?.firstName + ' ' + currentUser?.lastName"></output>
+              </h5>
             </a>
             <!--            <p class=" description">Ceo/Co-Founder</p>-->
           </div>

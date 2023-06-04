@@ -1,7 +1,10 @@
 package ro.fii.licenta.api.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Deflater;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.Project;
@@ -28,6 +32,7 @@ import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPositionDTO;
+import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
 import ro.fii.licenta.api.service.UserService;
@@ -186,4 +191,41 @@ public class ProjectController {
 	public void deleteMember(@PathVariable(value = "projectMemberId") Long projectMemberId) {
 		this.projectService.deleteProjectMember(projectMemberId);
 	}
+
+//	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file,
+//			@PathVariable(value = "projectId") Long projectId) throws IOException {
+//		Project p = this.projectService.findById(projectId);
+//		p.setLogo(compressBytes(file.getBytes()));
+//		return new ResponseEntity<>(modelMapper.map(projectService.save(p), ProjectDTO.class), HttpStatus.OK);
+//	}
+
+	@PostMapping(value = "/project/{projectId}/uploadImage")
+	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file,
+			@PathVariable(value = "projectId") Long projectId, HttpServletRequest request) throws IOException {
+		Project project = this.projectService.findById(projectId);
+
+		project.setLogo(compressBytes(file.getBytes()));
+		return new ResponseEntity<>(modelMapper.map(projectService.save(project), ProjectDTO.class), HttpStatus.OK);
+
+	}
+
+	public static byte[] compressBytes(byte[] data) {
+		Deflater deflater = new Deflater();
+		deflater.setInput(data);
+		deflater.finish();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+		byte[] buffer = new byte[1024];
+		while (!deflater.finished()) {
+			int count = deflater.deflate(buffer);
+			outputStream.write(buffer, 0, count);
+		}
+		try {
+			outputStream.close();
+		} catch (IOException e) {
+
+		}
+		return outputStream.toByteArray();
+
+	}
+
 }

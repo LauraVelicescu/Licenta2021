@@ -2,7 +2,7 @@
 
   <div class="row">
     <mat-form-field style="width: 60%; margin: auto">
-      <mat-select (openedChange)="openedChange($event)" placeholder="Select">
+      <mat-select (openedChange)="openedChange($event)" [placeholder]="getPrint(selectedProject)">
         {{getPrint(selectedProject)}}
         <div class="select-container">
           <mat-optgroup>

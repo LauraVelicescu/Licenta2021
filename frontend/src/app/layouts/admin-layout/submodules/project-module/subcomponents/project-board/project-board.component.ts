@@ -16,6 +16,7 @@ import {MatOptionSelectionChange} from '@angular/material/core';
 import {TaskAttachmentDTO} from '../../../../../../shared/dto/TaskAttachmentDTO';
 import {saveAs} from 'file-saver';
 import {TaskHistoryDTO} from '../../../../../../shared/dto/TaskHistoryDTO';
+import {Router} from '@angular/router';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -79,11 +80,16 @@ export class ProjectBoardComponent implements OnInit {
               private notificationService: NotificationService,
               private formBuilder: FormBuilder,
               private taskService: TaskService,
-              private sanitized: DomSanitizer) {
+              private sanitized: DomSanitizer,
+              private router: Router) {
+    if (this.router.getCurrentNavigation().extras?.state?.selectedProject) {
+      this.selectedProject = this.router.getCurrentNavigation().extras.state.selectedProject
+      this.load();
+    }
   }
 
-  ngOnInit(): void {
 
+  ngOnInit(): void {
     this.applicationService.emmitLoading(true);
     this.projectService.findMyProjects().subscribe((result) => {
       this.applicationService.emmitLoading(false);
@@ -113,7 +119,9 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   getPrint(option: ProjectDTO) {
-    return ((option?.name ?? '') + ' [' + (option?.ngo?.acronym ?? '')) + ']';
+    if (option) {
+      return ((option?.name ?? '') + ' [' + (option?.ngo?.acronym ?? '')) + ']';
+    }
   }
 
   clearSearch(event) {
@@ -420,7 +428,7 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   updateHistory() {
-    if(this.newChat) {
+    if (this.newChat) {
       this.applicationService.emmitLoading(true);
       this.taskService.addChatHistoryByTask(this.newChat, this.selectedTask).subscribe((result) => {
         this.applicationService.emmitLoading(false);

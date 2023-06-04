@@ -38,6 +38,7 @@ export class UserProfileComponent implements OnInit {
       this.currentUser = result;
       this.base64Data = this.currentUser.profilePicture;
       this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+      console.log(this.retrievedImage)
       this.userForm.patchValue({
           emailAddress: this.currentUser.emailAddress,
           firstName: this.currentUser.firstName,
