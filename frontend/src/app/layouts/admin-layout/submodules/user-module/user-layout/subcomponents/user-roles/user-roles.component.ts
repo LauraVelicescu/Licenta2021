@@ -14,6 +14,8 @@ import {map, startWith} from 'rxjs/operators';
 import {NGOService} from '../../../../../../../shared/services/ngo-service/ngo.service';
 import {MemberDTO} from '../../../../../../../shared/dto/MemberDTO';
 import {MatPaginator} from '@angular/material/paginator';
+import {UserRoleDTO} from '../../../../../../../shared/dto/UserRoleDTO';
+import {UserDTO} from '../../../../../../../shared/dto/UserDTO';
 
 @Component({
   selector: 'app-user-roles',
@@ -44,7 +46,13 @@ export class UserRolesComponent implements OnInit {
 
   displayedColumnsMember: string[] = ['id', 'name', 'function', 'organizationalUnit'];
   dataSourceMembers = new MatTableDataSource<MemberDTO>([]);
-  private selectedMembers: MemberDTO[];
+  dataSourceUserRoles = new MatTableDataSource<UserRoleDTO>([]);
+
+  displayedColumnsUserRoles: string[] = ['id', 'userName', 'ngoName', 'actions'];
+
+  dataSourceUser = new MatTableDataSource<UserDTO>([]);
+  displayedColumnsUser: string[] = ['id', 'userName'];
+  selectionUser = new SelectionModel<UserDTO>(true, []);
 
   constructor(private userService: UserService,
               private applicationService: ApplicationService,
@@ -63,7 +71,6 @@ export class UserRolesComponent implements OnInit {
     })
 
     this.selection.changed.asObservable().subscribe(value => {
-      console.log('here')
       this.selectedRole = {...value.added[0]};
       if (value.added.length === 0) {
         this.selectedRole = undefined;
@@ -109,32 +116,79 @@ export class UserRolesComponent implements OnInit {
 
 
   private load() {
-    this.selectionMembers.clear();
-    this.applicationService.emmitLoading(true);
-    this.memberService.getNGOMembers(this.selectedNgo).subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.dataSourceMembers.data = result;
-    }, error => {
-      this.applicationService.emmitLoading(false);
-      this.notificationService.error(error);
-    })
+    if (this.selectedRole.ngoEligible) {
+      this.selectionMembers.clear();
+      this.applicationService.emmitLoading(true);
+      this.userService.getUserRoleByRole(this.selectedRole).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.dataSourceUserRoles.data = result;
+        this.applicationService.emmitLoading(true);
+        this.memberService.getNGOMembers(this.selectedNgo).subscribe((members) => {
+          this.applicationService.emmitLoading(false);
+          members = members.filter(m => {
+            for (let r of result) {
+              if (r.user.id === m.user.id && r.ngo.id === m.ngo.id) {
+                return false;
+              }
+            }
+            return true;
+          })
+          this.dataSourceMembers.data = members;
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        })
+      }, error => {
+        this.applicationService.emmitLoading(false);
+        this.notificationService.error(error);
+      })
+    }
   }
 
   private onSelectRole() {
-    this.selectedNgo = undefined;
-    this.dataSourceMembers.data = []
-    this.applicationService.emmitLoading(true);
-    this.ngoService.findMyNGOs().subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.comboData = result;
-      this.filteredOptions = this.searchTextBoxControl.valueChanges
-        .pipe(
-          startWith<string>(''),
-          map(name => this._filter(name))
-        );
-    }, error => {
-      this.applicationService.emmitLoading(false);
-    });
+    if (this.selectedRole.ngoEligible) {
+      this.selectedNgo = undefined;
+      this.dataSourceMembers.data = []
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findMyNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextBoxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    } else {
+      this.selectedNgo = undefined;
+      this.selectionUser.clear();
+      this.applicationService.emmitLoading(true);
+      this.userService.getUserRoleByRole(this.selectedRole).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.dataSourceUserRoles.data = result;
+        this.applicationService.emmitLoading(true);
+        this.userService.findUsers().subscribe((users) => {
+          this.applicationService.emmitLoading(false);
+          users = users.filter(u => {
+            for (let r of result) {
+              if (r.user.id === u.id) {
+                return false;
+              }
+            }
+            return true;
+          })
+          this.dataSourceUser.data = users;
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        })
+      }, error => {
+        this.applicationService.emmitLoading(false);
+        this.notificationService.error(error);
+      })
+    }
   }
 
   getOrganizationalComponent(element: MemberDTO) {
@@ -146,8 +200,73 @@ export class UserRolesComponent implements OnInit {
     return element.user.firstName + ' ' + element.user.lastName;
   }
 
+  getNameForUserRole(element: UserRoleDTO) {
+    return element.user.firstName + ' ' + element.user.lastName;
+  }
+
+  geNgoNameForUserRole(element: UserRoleDTO) {
+    return element.ngo?.name;
+  }
+
   getFunction(element: MemberDTO) {
     return element.function ? element.function.name : '-';
   }
 
+  saveRolesMembers() {
+    if (this.selectedRole.ngoEligible) {
+      if (this.selectionMembers.selected.length > 0) {
+        this.applicationService.emmitLoading(true);
+        this.userService.setRolesForMember(this.selectedRole, this.selectionMembers.selected).subscribe((result) => {
+          this.selectedNgo = undefined;
+          this.dataSourceMembers.data = [];
+          this.selectedRole = undefined;
+          this.dataSourceUserRoles.data = []
+          this.applicationService.emmitLoading(false);
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        })
+      }
+    } else {
+      if (this.selectionUser.selected.length > 0) {
+        this.applicationService.emmitLoading(true);
+        this.userService.setRolesForMember(this.selectedRole, this.selectionUser.selected).subscribe((result) => {
+          this.selectedNgo = undefined;
+          this.dataSourceUser.data = [];
+          this.selectedRole = undefined;
+          this.dataSourceUserRoles.data = []
+          this.applicationService.emmitLoading(false);
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        })
+      }
+    }
+  }
+
+  cancelMember() {
+    this.selectedNgo = undefined;
+    this.dataSourceMembers.data = [];
+    this.selectedRole = undefined;
+    this.dataSourceUserRoles.data = []
+  }
+
+  deleteRoleForUser(element: UserRoleDTO) {
+    this.applicationService.emmitLoading(true);
+    this.userService.deleteUserRole(element).subscribe((result) => {
+      this.applicationService.emmitLoading(false);
+      if (this.selectedRole.ngoEligible) {
+        this.load();
+      } else {
+        this.onSelectRole()
+      }
+    }, error => {
+      this.applicationService.emmitLoading(false);
+      this.notificationService.error(error);
+    })
+  }
+
+  getUsername(element: UserDTO) {
+    return element.firstName + ' ' + element.lastName
+  }
 }

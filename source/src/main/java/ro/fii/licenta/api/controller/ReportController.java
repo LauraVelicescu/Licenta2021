@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -41,7 +42,9 @@ public class ReportController {
 			File outputFile = File.createTempFile("report", ".pdf");
 			FileOutputStream outputStream = new FileOutputStream(outputFile);
 
-			jasperService.generateAndExportReport(Report.REPORT_1, new HashMap<>(), outputStream);
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put("PROJECT_ID", Long.valueOf(14));
+			jasperService.generateAndExportReport(Report.PROJECT_TEAM, parameters, outputStream);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf");
 			headers.setContentType(MediaType.APPLICATION_PDF);

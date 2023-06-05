@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +27,15 @@ import org.springframework.web.multipart.MultipartFile;
 import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dao.UserRole;
 import ro.fii.licenta.api.dto.EmailPayloadDTO;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.RoleDTO;
 import ro.fii.licenta.api.dto.UserDTO;
+import ro.fii.licenta.api.dto.UserRoleDTO;
 import ro.fii.licenta.api.exception.BusinessException;
 import ro.fii.licenta.api.repository.RoleRepository;
+import ro.fii.licenta.api.repository.UserRoleRepoistory;
 import ro.fii.licenta.api.service.MailingService;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.UserService;
@@ -57,6 +62,9 @@ public class UserController {
 
 	@Autowired
 	private RoleRepository roleRepository;
+
+	@Autowired
+	private UserRoleRepoistory userRoleRepoistory;
 
 	@GetMapping(value = "/getUser")
 	public ResponseEntity<UserDTO> getUser(HttpServletRequest request) throws NotFoundException {
@@ -170,6 +178,34 @@ public class UserController {
 			roles.add(this.modelMapper.map(e, RoleDTO.class));
 		});
 		return ResponseEntity.ok(roles);
+	}
+
+	@GetMapping(value = "/roles/usersRole/{roleId}")
+	public ResponseEntity<List<UserRoleDTO>> getUserRolesByRole(@PathVariable(value = "roleId") Long roleId) {
+
+		List<UserRoleDTO> roles = new ArrayList<UserRoleDTO>();
+		this.userRoleRepoistory.findByRole_Id(roleId).forEach(e -> {
+			roles.add(this.modelMapper.map(e, UserRoleDTO.class));
+		});
+		return ResponseEntity.ok(roles);
+	}
+
+	@DeleteMapping(value = "/roles/usersRole/{userRoleId}")
+	public void deleteUserRoles(@PathVariable(value = "userRoleId") Long roleId) {
+
+		this.userRoleRepoistory.deleteById(roleId);
+	}
+
+	@PostMapping(value = "/roles/member")
+	public void setRolesForMember(@RequestBody List<UserRoleDTO> userRoleDTOs, HttpServletRequest request) {
+
+		userRoleDTOs.forEach(ur -> {
+			UserRole userRole = this.userRoleRepoistory.findByUser_IdAndRole_IdAndNgo_Id(ur.getUser().getId(),
+					ur.getRole().getId(), ur.getNgo() != null ? ur.getNgo().getId() : null);
+			if (userRole == null) {
+				this.userRoleRepoistory.save(this.modelMapper.map(ur, UserRole.class));
+			}
+		});
 	}
 
 }

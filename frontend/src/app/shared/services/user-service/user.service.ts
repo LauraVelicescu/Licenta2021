@@ -4,8 +4,10 @@ import {SecurityStorage} from '../../../security/SecurityStorage';
 import {UserDTO} from '../../dto/UserDTO';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
-import {MemberRequestDTO} from "../../dto/MemberRequestDTO";
+import {MemberRequestDTO} from '../../dto/MemberRequestDTO';
 import {RoleDTO} from '../../dto/RoleDTO';
+import {MemberDTO} from '../../dto/MemberDTO';
+import {UserRoleDTO} from '../../dto/UserRoleDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,9 @@ export class UserService {
   private uploadImageURL = '/uploadImage'
   private sendEmailURL = '/sendMassEmail'
   private applyURL = '/apply'
+  private setRolesForMembersURL = '/roles/member'
+  private getUserRoleByRoleURL = '/roles/usersRole/:roleId'
+  private deleteUserRoleURL = '/roles/usersRole/:userRoleId'
 
   constructor(private mainService: MainServiceService, private securityStorage: SecurityStorage) {
   }
@@ -82,7 +87,7 @@ export class UserService {
   }
 
   public findUsersCount() {
-    return this.mainService.get(this.rootURL + this.getUsersCountURL ).pipe(map((result: number) => {
+    return this.mainService.get(this.rootURL + this.getUsersCountURL).pipe(map((result: number) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -108,11 +113,11 @@ export class UserService {
     }));
   }
 
-  public sendEmail(users: UserDTO[], emailSubject: string, emailBody: string){
+  public sendEmail(users: UserDTO[], emailSubject: string, emailBody: string) {
     return this.mainService.post(this.rootURL + this.sendEmailURL, {
-     users,
-     subject: emailSubject,
-     body: emailBody
+      users,
+      subject: emailSubject,
+      body: emailBody
     }).pipe(map((result: string[]) => {
       return result;
     }), catchError(err => {
@@ -121,14 +126,56 @@ export class UserService {
     }));
   }
 
-  public apply(request: MemberRequestDTO){
+  public apply(request: MemberRequestDTO) {
     return this.mainService.post(this.rootURL + this.applyURL,
       request
     ).pipe(map((result: MemberRequestDTO) => {
       return result;
-    }), catchError(( err => {
+    }), catchError((err => {
       this.mainService.httpError(err);
       throw new Error(err.error.message);
     })));
   }
+
+  public setRolesForMember(role: RoleDTO, members: MemberDTO[] | UserDTO[]) {
+    let list: UserRoleDTO[] = [];
+    members.forEach(m => {
+      let userRole: UserRoleDTO = new UserRoleDTO();
+      userRole.role = role;
+      if(m instanceof MemberDTO) {
+        userRole.user = m.user;
+        userRole.ngo = m.ngo
+      } else {
+        userRole.user = m;
+      }
+      list.push(userRole);
+    })
+    return this.mainService.post(this.rootURL + this.setRolesForMembersURL,
+      list).pipe(map((result) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+  public getUserRoleByRole(role: RoleDTO) {
+    return this.mainService.get(this.rootURL + this.getUserRoleByRoleURL.replace(':roleId', role.id.toString())).pipe(map((result: UserRoleDTO[]) => {
+      return plainToClass(UserRoleDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public deleteUserRole(userRole: UserRoleDTO) {
+    return this.mainService.delete(this.rootURL + this.deleteUserRoleURL.replace(':userRoleId', userRole.id.toString())).pipe(map((result) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
 }

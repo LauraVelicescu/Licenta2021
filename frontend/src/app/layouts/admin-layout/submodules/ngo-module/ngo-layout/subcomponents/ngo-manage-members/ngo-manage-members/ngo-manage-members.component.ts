@@ -56,7 +56,7 @@ export class NgoManageMembersComponent implements OnInit {
 
 
     this.applicationService.emmitLoading(true);
-    this.ngoService.findMyNGOs().subscribe((result) => {
+    this.ngoService.findManagedNGOs().subscribe((result) => {
       this.applicationService.emmitLoading(false);
       this.comboData = result;
       this.filteredOptions = this.searchTextBoxControl.valueChanges

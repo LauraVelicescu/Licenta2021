@@ -2,7 +2,7 @@ package ro.fii.licenta.framework;
 
 public enum Report {
 
-	REPORT_1("Blank_A4");
+	PROJECT_TEAM("/project-team/Project_Team");
 
 	public String path;
 

@@ -12,6 +12,7 @@ import {FunctionDTO} from '../../dto/FunctionDTO';
 })
 export class NGOService {
   private rootURL = 'api/ngo'
+  private rootMemberURL ='api/member'
   private updateURL = '/:ngoId'
   private deleteURL = '/ids'
   private getManagedNGOsURL = '/findManagedNGOs'
@@ -150,7 +151,7 @@ export class NGOService {
   }
 
   public saveStatusMemberRequest(ngoMemberRequests: MemberRequestDTO[], status: MemberRequestStatus) {
-    return this.mainService.post(this.rootURL + this.saveNgoRequestStatusURL.replace(':status', status.toString()), ngoMemberRequests ).pipe(map((result: MemberRequestDTO[]) => {
+    return this.mainService.post(this.rootMemberURL + this.saveNgoRequestStatusURL.replace(':status', status.toString()), ngoMemberRequests ).pipe(map((result: MemberRequestDTO[]) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);

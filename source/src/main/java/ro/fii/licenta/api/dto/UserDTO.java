@@ -3,6 +3,7 @@ package ro.fii.licenta.api.dto;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Set;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -35,6 +36,8 @@ public class UserDTO {
 	protected boolean blocked;
 
 	protected int failAttemtps;
+
+	private Set<RoleDTO> roles;
 
 	public Long getId() {
 		return id;
@@ -139,6 +142,14 @@ public class UserDTO {
 
 	public void setFailAttemtps(int failAttemtps) {
 		this.failAttemtps = failAttemtps;
+	}
+
+	public Set<RoleDTO> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<RoleDTO> roles) {
+		this.roles = roles;
 	}
 
 	// decompress the image bytes before returning it to the angular app

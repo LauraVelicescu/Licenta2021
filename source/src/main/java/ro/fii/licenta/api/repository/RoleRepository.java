@@ -5,4 +5,5 @@ import ro.fii.licenta.framework.PersistableEntityRepository;
 
 public interface RoleRepository extends PersistableEntityRepository<Role, Long>{
 
+	Role findByName(String name);
 }
