@@ -89,7 +89,7 @@ export class AssignUserComponent implements OnInit {
         break;
       case AssignType.USER:
         this.memberService.getNGOMembers(this.selectedNGO).subscribe((result) => {
-          this.comboData = result.filter(m => m.function.id !== this.data.ngoFunction.id);
+          this.comboData = result.filter(m => m.function?.id !== this.data.ngoFunction?.id);
           this.filteredOptions = this.searchTextBoxControl.valueChanges
             .pipe(
               startWith<string>(''),

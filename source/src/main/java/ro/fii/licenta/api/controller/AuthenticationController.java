@@ -70,7 +70,11 @@ public class AuthenticationController {
 		User user = this.modelMapper.map(userDto, User.class);
 		User dbUser = this.userRepository.findByEmailAddress(user.getEmailAddress());
 		if (dbUser == null) {
-			user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+			if(userDto.getPassword() == null || userDto.getPassword().equals("")) {
+				user.setPassword(passwordEncoder.encode("parola"));
+			} else {
+				user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+			}
 			user.setPersonType(PersonType.NORMAL);
 			user = this.userRepository.save(user);
 			return this.modelMapper.map(user, UserDTO.class);
