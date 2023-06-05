@@ -25,8 +25,10 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.menuItems = this.applicationService.buildNavbarForUser();
-    this.dataSource.data = this.menuItems;
+    this.applicationService.buildNavbarForUser().subscribe((result) => {
+      this.dataSource.data = result
+      console.log(result);
+    });
   }
 
   hasChild = (_: number, node: RouteInfo) => !!node.subPaths && node.subPaths.length > 0;

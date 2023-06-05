@@ -1,0 +1,9 @@
+<div class="card" *ngFor="let report of reportsList"
+     style="border-radius: 10%; padding: 13px; text-align: center; width: 80%; margin: 15px auto auto;">
+  <div class="card-title">
+    {{report}}
+  </div>
+  <div class="card-footer" style="width: 100%">
+    <button class=" btn btn-primary" (click)="downloadReport(report)">Download</button>
+  </div>
+</div>

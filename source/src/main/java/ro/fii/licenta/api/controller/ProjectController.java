@@ -1,7 +1,10 @@
 package ro.fii.licenta.api.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Deflater;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,18 +12,30 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
+import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPositionDTO;
+import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
+import ro.fii.licenta.api.service.UserService;
 
 @RestController
 @CrossOrigin
@@ -35,10 +50,13 @@ public class ProjectController {
 	@Autowired
 	private NGOService ngoService;
 
+	@Autowired
+	private UserService userService;
+
 	@PostMapping(value = "/createProject/{ngoId}")
 	public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto,
 			@PathVariable(value = "ngoId") Long ngoId) {
-		projectDto.setNgoDTO(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+		projectDto.setNgo(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
 		return ResponseEntity
 				.ok(modelMapper.map(projectService.save(modelMapper.map(projectDto, Project.class)), ProjectDTO.class));
 
@@ -93,6 +111,18 @@ public class ProjectController {
 		List<Project> ngoProjects = projectService.findAllNgoProjects(null, null, ngoId);
 
 		return ResponseEntity.ok(ngoProjects.size());
+	}
+
+	@GetMapping(value = "/findMyProjects")
+	public ResponseEntity<List<ProjectDTO>> findMyProjects(HttpServletRequest request) {
+		User currentUser = userService.getCurrentUser(request);
+		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
+		List<Project> ngoProjects = projectService.findAllProjectsByUser(currentUser);
+		for (Project project : ngoProjects) {
+			ngoProjectDtos.add(modelMapper.map(project, ProjectDTO.class));
+		}
+
+		return ResponseEntity.ok(ngoProjectDtos);
 	}
 
 	@GetMapping(value = "/project/{projectId}/position")
@@ -161,4 +191,41 @@ public class ProjectController {
 	public void deleteMember(@PathVariable(value = "projectMemberId") Long projectMemberId) {
 		this.projectService.deleteProjectMember(projectMemberId);
 	}
+
+//	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file,
+//			@PathVariable(value = "projectId") Long projectId) throws IOException {
+//		Project p = this.projectService.findById(projectId);
+//		p.setLogo(compressBytes(file.getBytes()));
+//		return new ResponseEntity<>(modelMapper.map(projectService.save(p), ProjectDTO.class), HttpStatus.OK);
+//	}
+
+	@PostMapping(value = "/project/{projectId}/uploadImage")
+	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file,
+			@PathVariable(value = "projectId") Long projectId, HttpServletRequest request) throws IOException {
+		Project project = this.projectService.findById(projectId);
+
+		project.setLogo(compressBytes(file.getBytes()));
+		return new ResponseEntity<>(modelMapper.map(projectService.save(project), ProjectDTO.class), HttpStatus.OK);
+
+	}
+
+	public static byte[] compressBytes(byte[] data) {
+		Deflater deflater = new Deflater();
+		deflater.setInput(data);
+		deflater.finish();
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+		byte[] buffer = new byte[1024];
+		while (!deflater.finished()) {
+			int count = deflater.deflate(buffer);
+			outputStream.write(buffer, 0, count);
+		}
+		try {
+			outputStream.close();
+		} catch (IOException e) {
+
+		}
+		return outputStream.toByteArray();
+
+	}
+
 }

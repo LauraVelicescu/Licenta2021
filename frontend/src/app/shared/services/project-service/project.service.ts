@@ -3,14 +3,10 @@ import {NgoDTO} from '../../dto/NgoDTO';
 import {MainServiceService} from '../main/main-service.service';
 import {catchError, map} from 'rxjs/operators';
 import {plainToClass} from 'class-transformer';
-import {UserDTO} from '../../dto/UserDTO';
-import {MemberDTO} from '../../dto/MemberDTO';
-import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
-import {FunctionDTO} from '../../dto/FunctionDTO';
 import {ProjectDTO} from '../../dto/ProjectDTO';
 import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
-import {pipe} from 'rxjs';
 import {ProjectMemberDTO} from '../../dto/ProjectMemberDTO';
+import {UserDTO} from '../../dto/UserDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +17,7 @@ export class ProjectService {
   private updateURL = '/updateProject'
   private deleteURL = '/:projectId'
   private getProjectsURL = '/findProjects/:ngoId'
+  private getMyProjectsURL = '/findMyProjects'
   private getProjectsCountURL = '/findProjects/count/:ngoId'
   private getProjectPositionsURL = '/project/:projectId/position'
   private createProjectPositionURL = '/project/:projectId/position'
@@ -28,15 +25,13 @@ export class ProjectService {
   private getProjectMembersURL = '/project/:projectId/member'
   private createProjectMembersURL = '/project/:projectId/member'
   private deleteProjectMembersURL = '/project/:projectMemberId/member'
+  private uploadImageURL = '/project/:projectId/uploadImage'
 
-
-  // TODO CHANGE THIS FROM POST TO DELETE
-  // TODO REFACTOR ALL THIS SERVICE
   constructor(private mainService: MainServiceService) {
   }
 
   create(project: ProjectDTO, ngo: NgoDTO) {
-    return this.mainService.post(this.rootURL + this.createURL.replace(":ngoId", ngo.id.toString()),
+    return this.mainService.post(this.rootURL + this.createURL.replace(':ngoId', ngo.id.toString()),
       project).pipe(map((result: ProjectDTO) => {
       return result;
     }), catchError(err => {
@@ -45,7 +40,7 @@ export class ProjectService {
   }
 
   createPosition(projectPosition: ProjectPositionDTO, project: ProjectDTO) {
-    return this.mainService.post(this.rootURL + this.createProjectPositionURL.replace(":projectId", project.id.toString()), projectPosition).pipe(map((result: ProjectPositionDTO) => {
+    return this.mainService.post(this.rootURL + this.createProjectPositionURL.replace(':projectId', project.id.toString()), projectPosition).pipe(map((result: ProjectPositionDTO) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -53,7 +48,7 @@ export class ProjectService {
   }
 
   updatePosition(projectPosition: ProjectPositionDTO, project: ProjectDTO) {
-    return this.mainService.put(this.rootURL + this.createProjectPositionURL.replace(":projectId", project.id.toString()), projectPosition).pipe(map((result: ProjectPositionDTO) => {
+    return this.mainService.put(this.rootURL + this.createProjectPositionURL.replace(':projectId', project.id.toString()), projectPosition).pipe(map((result: ProjectPositionDTO) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -61,7 +56,7 @@ export class ProjectService {
   }
 
   deletePosition(projectPosition: ProjectPositionDTO) {
-    return this.mainService.delete(this.rootURL + this.deleteProjectPositionURL.replace(":projectPositionId", projectPosition.id.toString())).pipe(map((result) => {
+    return this.mainService.delete(this.rootURL + this.deleteProjectPositionURL.replace(':projectPositionId', projectPosition.id.toString())).pipe(map((result) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -79,7 +74,7 @@ export class ProjectService {
   }
 
   delete(project: ProjectDTO) {
-    return this.mainService.delete(this.rootURL + this.deleteURL.replace(":projectId", project.id.toString())).pipe(map((result) => {
+    return this.mainService.delete(this.rootURL + this.deleteURL.replace(':projectId', project.id.toString())).pipe(map((result) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -87,7 +82,7 @@ export class ProjectService {
   }
 
   public findProjectsCount(ngo: NgoDTO) {
-    return this.mainService.get(this.rootURL + this.getProjectsCountURL.replace(":ngoId", ngo.id.toString())).pipe(map((result: number) => {
+    return this.mainService.get(this.rootURL + this.getProjectsCountURL.replace(':ngoId', ngo.id.toString())).pipe(map((result: number) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -104,7 +99,16 @@ export class ProjectService {
     if (filter) {
       queryString += queryString ? '&deimplementat' : '?deimplementat';
     }
-    return this.mainService.get(this.rootURL + this.getProjectsURL.replace(":ngoId", ngo.id.toString()) + queryString).pipe(map((result: ProjectDTO[]) => {
+    return this.mainService.get(this.rootURL + this.getProjectsURL.replace(':ngoId', ngo.id.toString()) + queryString).pipe(map((result: ProjectDTO[]) => {
+      return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findMyProjects() {
+    return this.mainService.get(this.rootURL + this.getMyProjectsURL).pipe(map((result: ProjectDTO[]) => {
       return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -113,7 +117,7 @@ export class ProjectService {
   }
 
   public findProjectPositions(project: ProjectDTO) {
-    return this.mainService.get(this.rootURL + this.getProjectPositionsURL.replace(":projectId", project.id.toString()) ).pipe(map((result: ProjectPositionDTO[]) => {
+    return this.mainService.get(this.rootURL + this.getProjectPositionsURL.replace(':projectId', project.id.toString())).pipe(map((result: ProjectPositionDTO[]) => {
       return plainToClass(ProjectPositionDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -123,7 +127,7 @@ export class ProjectService {
 
 
   public findProjectMembers(project: ProjectDTO) {
-    return this.mainService.get(this.rootURL + this.getProjectMembersURL.replace(":projectId", project.id.toString()) ).pipe(map((result: ProjectMemberDTO[]) => {
+    return this.mainService.get(this.rootURL + this.getProjectMembersURL.replace(':projectId', project.id.toString())).pipe(map((result: ProjectMemberDTO[]) => {
       return plainToClass(ProjectMemberDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -133,7 +137,7 @@ export class ProjectService {
 
 
   createMember(member: ProjectMemberDTO, project: ProjectDTO) {
-    return this.mainService.post(this.rootURL + this.createProjectMembersURL.replace(":projectId", project.id.toString()), member).pipe(map((result: ProjectMemberDTO) => {
+    return this.mainService.post(this.rootURL + this.createProjectMembersURL.replace(':projectId', project.id.toString()), member).pipe(map((result: ProjectMemberDTO) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -141,7 +145,7 @@ export class ProjectService {
   }
 
   updateMember(member: ProjectMemberDTO, project: ProjectDTO) {
-    return this.mainService.put(this.rootURL + this.createProjectMembersURL.replace(":projectId", project.id.toString()), member).pipe(map((result: ProjectMemberDTO) => {
+    return this.mainService.put(this.rootURL + this.createProjectMembersURL.replace(':projectId', project.id.toString()), member).pipe(map((result: ProjectMemberDTO) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
@@ -149,12 +153,20 @@ export class ProjectService {
   }
 
 
-
   deleteMember(member: ProjectMemberDTO) {
-    return this.mainService.delete(this.rootURL + this.deleteProjectMembersURL.replace(":projectMemberId", member.id.toString())).pipe(map((result) => {
+    return this.mainService.delete(this.rootURL + this.deleteProjectMembersURL.replace(':projectMemberId', member.id.toString())).pipe(map((result) => {
       return result;
     }), catchError(err => {
       throw new Error(err.error.message);
+    }));
+  }
+
+  public updateLogo(profilePicture: any, project: ProjectDTO) {
+    return this.mainService.postFile(this.rootURL + this.uploadImageURL.replace(':projectId', project.id.toString()), profilePicture).pipe(map((result: ProjectDTO) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err);
     }));
   }
 }

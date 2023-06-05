@@ -173,7 +173,7 @@ export class UserManageComponent implements OnInit, AfterViewInit {
           }
         )
       } else {
-        user.password = '';
+        user.password = 'qwerty';
         this.authService.register(user).subscribe((result) => {
             this.applicationService.emmitLoading(false);
             this.load();

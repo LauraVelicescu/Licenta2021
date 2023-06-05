@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -23,6 +24,14 @@ public class Project extends NameDescriptionEntity {
 
 	private Ngo ngo;
 
+	private String facebookLink;
+
+	private String twitterLink;
+
+	private String linkedinLink;
+
+	private byte[] logo;
+	
 	@Column(name = "start_date")
 	public Date getStartDate() {
 		return startDate;
@@ -49,6 +58,43 @@ public class Project extends NameDescriptionEntity {
 
 	public void setNgo(Ngo ngo) {
 		this.ngo = ngo;
+	}
+
+	@Column(name = "facebook_link")
+	public String getFacebookLink() {
+		return facebookLink;
+	}
+
+	public void setFacebookLink(String facebookLink) {
+		this.facebookLink = facebookLink;
+	}
+
+	@Column(name = "twitter_link")
+	public String getTwitterLink() {
+		return twitterLink;
+	}
+
+	public void setTwitterLink(String twitterLink) {
+		this.twitterLink = twitterLink;
+	}
+
+	@Column(name = "linkedin_link")
+	public String getLinkedinLink() {
+		return linkedinLink;
+	}
+
+	public void setLinkedinLink(String linkedinLink) {
+		this.linkedinLink = linkedinLink;
+	}
+
+	@Lob
+	@Column(name = "picture")
+	public byte[] getLogo() {
+		return logo;
+	}
+
+	public void setLogo(byte[] logo) {
+		this.logo = logo;
 	}
 
 }

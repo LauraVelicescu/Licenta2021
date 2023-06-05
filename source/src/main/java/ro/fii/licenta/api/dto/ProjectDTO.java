@@ -1,6 +1,10 @@
 package ro.fii.licenta.api.dto;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 public class ProjectDTO {
 
@@ -14,7 +18,15 @@ public class ProjectDTO {
 
 	private Date endDate;
 
-	private NgoDTO ngoDTO;
+	private NgoDTO ngo;
+
+	private String facebookLink;
+
+	private String twitterLink;
+
+	private String linkedinLink;
+
+	private byte[] logo;
 
 	public Long getId() {
 		return id;
@@ -56,12 +68,61 @@ public class ProjectDTO {
 		this.endDate = endDate;
 	}
 
-	public NgoDTO getNgoDTO() {
-		return ngoDTO;
+	public NgoDTO getNgo() {
+		return ngo;
 	}
 
-	public void setNgoDTO(NgoDTO ngoDTO) {
-		this.ngoDTO = ngoDTO;
+	public void setNgo(NgoDTO ngoDTO) {
+		this.ngo = ngoDTO;
 	}
 
+	public String getFacebookLink() {
+		return facebookLink;
+	}
+
+	public void setFacebookLink(String facebookLink) {
+		this.facebookLink = facebookLink;
+	}
+
+	public String getTwitterLink() {
+		return twitterLink;
+	}
+
+	public void setTwitterLink(String twitterLink) {
+		this.twitterLink = twitterLink;
+	}
+
+	public String getLinkedinLink() {
+		return linkedinLink;
+	}
+
+	public void setLinkedinLink(String linkedinLink) {
+		this.linkedinLink = linkedinLink;
+	}
+
+	public byte[] getLogo() {
+		return logo;
+	}
+
+	public void setLogo(byte[] logo) {
+		this.logo = logo != null ? this.decompressBytes(logo) : null;
+	}
+
+	private byte[] decompressBytes(byte[] data) {
+		Inflater inflater = new Inflater();
+		inflater.setInput(data);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+		byte[] buffer = new byte[1024];
+		try {
+			while (!inflater.finished()) {
+				int count = inflater.inflate(buffer);
+				outputStream.write(buffer, 0, count);
+			}
+			outputStream.close();
+		} catch (IOException ioe) {
+		} catch (DataFormatException e) {
+		}
+		return outputStream.toByteArray();
+
+	}
 }

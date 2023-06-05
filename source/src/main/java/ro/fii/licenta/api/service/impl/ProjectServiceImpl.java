@@ -1,6 +1,7 @@
 package ro.fii.licenta.api.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
+import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.exception.ValidationException;
@@ -42,6 +44,12 @@ public class ProjectServiceImpl implements ProjectService {
 		List<Project> ngoProjects = projectRepository.findAllByNgoId(ngoId, page).getContent();
 
 		return ngoProjects;
+	}
+
+	@Override
+	public List<Project> findAllProjectsByUser(User user) {
+		List<ProjectMember> projectMembers = this.projectMemberRepository.findByMember_User_Id(user.getId());
+		return projectMembers.stream().map(pm -> pm.getProject()).collect(Collectors.toList());
 	}
 
 	@Override
@@ -115,11 +123,10 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteProjectMember(Long projectMemberId) {
 		// TODO Auto-generated method stub
 
-		if(this.projectMemberRepository.existsById(projectMemberId)) {
+		if (this.projectMemberRepository.existsById(projectMemberId)) {
 			this.projectMemberRepository.deleteById(projectMemberId);
 		} else {
 			throw new NotFoundException("Project member with id " + projectMemberId + " does not exist");
 		}
 	}
-
 }

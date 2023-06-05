@@ -1,5 +1,3 @@
-import {ApplicationRoutes} from "./ApplicationRoutes";
-
 export interface RouteInfo {
 
   path: string,
@@ -10,42 +8,44 @@ export interface RouteInfo {
   parentPath?: string
 }
 
+export enum Role {
+  ADMIN = 'ADMIN',
+  REPORTS = 'REPORTS',
+  ACTIVE_MEMBER = 'ACTIVE_MEMBER',
+  NGO_ADMIN = 'NGO_ADMIN',
+  ANY = 'ANY'
+}
+
 export class ApplicationRoutesInfo {
 
   public static USER_ROUTE_INFO: RouteInfo = {
     path: 'user',
     title: 'Manage',
     icon: 'people',
-    privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+    privileges: [Role.ANY],
     subPaths: [{
       path: 'me',
       title: 'My profile',
       icon: 'face',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      privileges: [Role.ANY],
       parentPath: 'user'
     }, {
       path: 'manage',
       title: 'Manage users',
       icon: 'engineering',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      privileges: [Role.ADMIN],
       parentPath: 'user'
     }, {
       path: 'roles',
       title: 'Roles',
       icon: 'shield',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
-      parentPath: 'user'
-    }, {
-      path: 'nomenclature',
-      title: 'Nomenclatoare',
-      icon: 'collections',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      privileges: [Role.ADMIN],
       parentPath: 'user'
     }, {
       path: 'apply',
       title: 'Become a member',
       icon: 'loupe',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      privileges: [Role.ANY],
       parentPath: 'user'
     }]
   }
@@ -54,24 +54,24 @@ export class ApplicationRoutesInfo {
     path: 'ngo',
     title: 'NGOs',
     icon: 'public',
-    privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+    privileges: [Role.ADMIN, Role.NGO_ADMIN],
     subPaths: [{
       path: 'manage',
       title: 'Manage NGO',
       icon: 'build',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
     }, {
       path: 'functions',
       title: 'Functions',
       icon: 'category',
-      privileges:['privilegiu1'],
+      privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
     }, {
       path: 'members',
       title: 'Ngo Members',
       icon: 'people',
-      privileges:['privilegiu1'],
+      privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
     }]
   }
@@ -80,12 +80,18 @@ export class ApplicationRoutesInfo {
     path: 'project',
     title: 'Projects',
     icon: 'feed',
-    privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+    privileges: [Role.ADMIN, Role.NGO_ADMIN, Role.ACTIVE_MEMBER, Role.REPORTS],
     subPaths: [{
       path: 'manage',
       title: 'Manage projects',
       icon: 'manage_search',
-      privileges: ['privilegiu1', 'privilegiu2', 'privilegiu3'],
+      privileges: [Role.ADMIN, Role.NGO_ADMIN, Role.REPORTS],
+      parentPath: 'project'
+    }, {
+      path: 'board',
+      title: 'Projects boards',
+      icon: 'dashboard',
+      privileges: [Role.ADMIN, Role.NGO_ADMIN, Role.ACTIVE_MEMBER, Role.REPORTS],
       parentPath: 'project'
     }]
   }

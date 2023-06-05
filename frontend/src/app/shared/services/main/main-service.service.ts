@@ -42,6 +42,13 @@ export class MainServiceService {
     });
   }
 
+  private downloadFileHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      Authorization: this.securityStorage.getStored() ? 'Bearer ' + this.securityStorage.getStored() : '',
+      'Content-Type': 'application/json'
+    });
+  }
+
 
   processURL(url: string): string {
     if (environment.production === true) {
@@ -74,13 +81,22 @@ export class MainServiceService {
   }
 
 
-
   postFile(url: string, body?: any) {
     url = this.processURL(url);
     const headers = this.headersFile();
     return this.http.post(url, body, {
       headers,
       withCredentials: true
+    });
+  }
+
+  downloadFile(url: string, body?: any) {
+    url = this.processURL(url);
+    const headers = this.downloadFileHeaders();
+    return this.http.post(url, body, {
+      headers,
+      withCredentials: true,
+      responseType: 'blob' as 'json'
     });
   }
 
@@ -114,10 +130,8 @@ export class MainServiceService {
         // nothing here, managed by caller
       } else if (err.status === 404) {
       } else if (err.status === 400) {
-        this.notificationService.error(err.error);
       } else {
         console.error(err);
-        this.notificationService.error('error');
       }
     }
   }

@@ -112,8 +112,6 @@
       </div>
     </div>
     <div class="col-md-7">
-      <!--    this one will be dynamically generated -->
-      <!--    TODO to move all of this in separate components when got time!!!!!!-->
       <div class="card" style="height: 100%" *ngIf="selectedProject && currentAction">
         <div class="card-header row">
           <h1 class="title text-left col-md-6">{{currentAction}}</h1>
@@ -171,6 +169,44 @@
                         formControlName="endDate"
                         type="date"
                         [(ngModel)]="selectedProject.endDate"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class=" row">
+                  <div class=" col-md-4 pr-md-1">
+                    <div class=" form-group">
+                      <label> Facebook </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="facebook"
+                        type="text"
+                        [(ngModel)]="selectedProject.facebookLink"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-4 pr-md-1">
+                    <div class=" form-group">
+                      <label> Twitter </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="twitter"
+                        type="text"
+                        [(ngModel)]="selectedProject.twitterLink"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-4 pr-md-1">
+                    <div class=" form-group">
+                      <label> Linkedin </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="linkedin"
+                        type="text"
+                        [(ngModel)]="selectedProject.linkedinLink"
                       />
                     </div>
                   </div>
@@ -237,6 +273,44 @@
                     </div>
                   </div>
                 </div>
+                <div class=" row">
+                  <div class=" col-md-4 pr-md-1">
+                    <div class=" form-group">
+                      <label> Facebook </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="facebook"
+                        type="text"
+                        [(ngModel)]="selectedProject.facebookLink"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-4 pr-md-1">
+                    <div class=" form-group">
+                      <label> Twitter </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="twitter"
+                        type="text"
+                        [(ngModel)]="selectedProject.twitterLink"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-4 pr-md-1">
+                    <div class=" form-group">
+                      <label> Linkedin </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="linkedin"
+                        type="text"
+                        [(ngModel)]="selectedProject.linkedinLink"
+                      />
+                    </div>
+                  </div>
+                </div>
                 <div class=" card-footer">
                   <button class=" btn btn-primary" type="submit">Update</button>
                   <button class=" btn btn-secondary" (click)="cancelAction(currentAction)">Back</button>
@@ -259,10 +333,9 @@
               <app-project-team [selectedProject]="selectedProject" [selectedNGO]="selectedNgo"></app-project-team>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.BOARD">
-              boarduim proiecte
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.REPORTS">
-              emitem rapoarte
+              <app-project-reports></app-project-reports>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.POSITIONS">
               <app-project-positions [selectedProject]="selectedProject"></app-project-positions>
@@ -312,14 +385,15 @@
               </div>
             </div>
             <a href="javascript:void(0)">
-              <img alt="..." class=" avatar" src="assets/img/james.jpg"/>
+              <img alt="..." class=" avatar" [src]="retrievedImage" (click)="fileInput.click()"/>
+              <input #fileInput type=file (change)="onFileChanged($event)" style="display: none">
               <h5 class=" title">
-                <output [value]="'Condu Prudent'"></output>
+                <output [value]="selectedProject?.name"></output>
               </h5>
             </a>
           </div>
           <div class="card-description col d-flex justify-content-center" style="text-align: center">
-            <output [value]="'Acest proiect este unul f smecher de pe data de 2022-2033'"></output>
+            <output [value]="selectedProject?.description ? selectedProject?.description : ''"></output>
           </div>
         </div>
         <div class=" card-footer">

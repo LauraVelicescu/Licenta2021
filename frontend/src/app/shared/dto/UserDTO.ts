@@ -1,3 +1,5 @@
+import {RoleDTO} from './RoleDTO';
+
 export class UserDTO {
   public id: number;
   public emailAddress: string;
@@ -12,4 +14,5 @@ export class UserDTO {
   public profilePicture: any;
   public blocked: boolean;
   public failAttempts: number;
+  public roles: RoleDTO[];
 }

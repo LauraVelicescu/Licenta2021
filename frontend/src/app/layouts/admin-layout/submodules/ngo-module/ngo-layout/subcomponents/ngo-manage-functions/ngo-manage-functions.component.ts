@@ -53,7 +53,7 @@ export class NgoManageFunctionsComponent implements OnInit {
   ngOnInit(): void {
 
     this.applicationService.emmitLoading(true);
-    this.ngoService.findMyNGOs().subscribe((result) => {
+    this.ngoService.findManagedNGOs().subscribe((result) => {
       this.applicationService.emmitLoading(false);
       this.comboData = result;
       this.filteredOptions = this.searchTextboxControl.valueChanges

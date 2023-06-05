@@ -16,6 +16,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {NgoMemberApply, UserApplyComponent} from './subcomponents/user-apply/user-apply.component';
+import {MatSelectModule} from '@angular/material/select';
 
 
 @NgModule({
@@ -28,19 +29,20 @@ import {NgoMemberApply, UserApplyComponent} from './subcomponents/user-apply/use
     UserApplyComponent,
     NgoMemberApply
   ],
-  imports: [
-    CommonModule,
-    UserLayoutRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatButtonModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule
-  ]
+    imports: [
+        CommonModule,
+        UserLayoutRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatButtonModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule
+    ]
 })
 export class UserLayoutModule { }
