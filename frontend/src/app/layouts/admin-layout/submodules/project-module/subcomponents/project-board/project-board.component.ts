@@ -90,6 +90,8 @@ export class ProjectBoardComponent implements OnInit {
 
 
   ngOnInit(): void {
+
+    
     this.applicationService.emmitLoading(true);
     this.projectService.findMyProjects().subscribe((result) => {
       this.applicationService.emmitLoading(false);

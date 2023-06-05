@@ -17,6 +17,8 @@ export class NGOService {
   private deleteURL = '/ids'
   private getManagedNGOsURL = '/findManagedNGOs'
   private getManagedNGOsCountURL = '/findManagedNGOs/count'
+  private getAllNGOsURL = '/findAllNgos'
+  private getAllNGOsCountURL = '/findAllNgos/count'
   private uploadImageURL = '/uploadImage'
   private getNgoRequestsURL = '/getNgoRequests/:ngoId';
   private getNgoRequestsNumberURL = '/getNgoRequests/number/:ngoId';
@@ -95,6 +97,32 @@ export class NGOService {
       queryString += queryString ? '&deimplementat' : '?deimplementat';
     }
     return this.mainService.get(this.rootURL + this.getManagedNGOsURL + queryString).pipe(map((result: NgoDTO[]) => {
+      return plainToClass(NgoDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findAllNGOsCount() {
+    return this.mainService.get(this.rootURL + this.getAllNGOsCountURL).pipe(map((result: number) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+
+  public findAllNGOs(page?: number, pageSize?: number, filter?: any) {
+    let queryString: string = '';
+    if (page !== undefined && pageSize) {
+      queryString += '?page=' + page + '&pageNo=' + pageSize;
+    }
+    if (filter) {
+      queryString += queryString ? '&deimplementat' : '?deimplementat';
+    }
+    return this.mainService.get(this.rootURL + this.getAllNGOsURL + queryString).pipe(map((result: NgoDTO[]) => {
       return plainToClass(NgoDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);

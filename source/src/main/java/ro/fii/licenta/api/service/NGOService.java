@@ -24,6 +24,8 @@ public interface NGOService {
 	Ngo save(Ngo ngo);
 
 	List<Ngo> findAllNgosByAdmin(Integer pageNo, Integer pageSize, User user);
+	
+	List<Ngo> findAllNgos(Integer pageNo, Integer pageSize);
 
 	List<String> deleteNGOs(List<NgoDTO> ngosDtos);
 

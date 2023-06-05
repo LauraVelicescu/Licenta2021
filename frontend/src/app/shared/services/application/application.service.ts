@@ -13,6 +13,7 @@ export class ApplicationService {
 
   private _loading: ReplaySubject<boolean> = new ReplaySubject<boolean>();
 
+  public globalPrivileges: string[] = [];
 
   constructor(private userService: UserService) {
     this._loading.next(false);
@@ -23,11 +24,13 @@ export class ApplicationService {
     let userPrivileges: string[] = ['ANY']
     return this.userService.getUser().pipe(map((result: UserDTO) => {
       let roles: string[] = result.roles.map(r => r.name.toUpperCase())
-      roles.forEach(r => {
-        userPrivileges.push(r)
-      })
+      for (const role of roles) {
+        userPrivileges.push(role)
+      }
+      this.globalPrivileges = userPrivileges;
+      let routesCopy: RouteInfo[]  = ApplicationRoutesInfo.ADMIN_ROUTES.map(x => Object.assign({}, x));
       let navbarLayout: RouteInfo[] =
-        ApplicationRoutesInfo.ADMIN_ROUTES.filter(ar => {
+        routesCopy.filter(ar => {
           if (ar.privileges) {
             for (let i = 0; i < ar.privileges.length; i++) {
               let arp = ar.privileges[i];

@@ -17,6 +17,7 @@ import {formatDate} from '@angular/common';
 import {MemberRequestDTO, MemberRequestStatus} from '../../../../../../../shared/dto/MemberRequestDTO';
 import {OrganizationalComponentDTO} from '../../../../../../../shared/dto/OrganizationalComponentDTO';
 import {MemberService} from '../../../../../../../shared/services/member-service/member.service';
+import {Role} from '../../../../../../../shared/util/ApplicationRoutesInfo';
 
 @Component({
   selector: 'app-ngo-manage',
@@ -82,20 +83,35 @@ export class NgoManageComponent implements OnInit {
     this.persistState = false;
     this.selection.clear();
     this.applicationService.emmitLoading(true);
-    this.NGOService.findManagedNGOsCount().subscribe((number) => {
-      this.length = number;
-      this.NGOService.findManagedNGOs(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.dataSource.data = result;
+    if(this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+      this.NGOService.findAllNGOsCount().subscribe((number) => {
+        this.length = number;
+        this.NGOService.findAllNGOs(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.dataSource.data = result;
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        })
       }, error => {
         this.applicationService.emmitLoading(false);
         this.notificationService.error(error);
       })
-    }, error => {
-      this.applicationService.emmitLoading(false);
-      this.notificationService.error(error);
-    })
-
+    } else {
+      this.NGOService.findManagedNGOsCount().subscribe((number) => {
+        this.length = number;
+        this.NGOService.findManagedNGOs(this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.dataSource.data = result;
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        })
+      }, error => {
+        this.applicationService.emmitLoading(false);
+        this.notificationService.error(error);
+      })
+    }
   }
 
   onSubmit() {

@@ -14,6 +14,7 @@ import {OperationType} from '../../../../../../../../shared/util/OperationType';
 import {MemberDTO} from '../../../../../../../../shared/dto/MemberDTO';
 import {MemberService} from '../../../../../../../../shared/services/member-service/member.service';
 import {AssignType, AssignUserComponent} from '../../ngo-manage-modals/assign-user/assign-user.component';
+import {Role} from '../../../../../../../../shared/util/ApplicationRoutesInfo';
 
 @Component({
   selector: 'app-ngo-manage-members',
@@ -30,7 +31,7 @@ export class NgoManageMembersComponent implements OnInit {
   comboData: NgoDTO[] = [];
   persistState: boolean = false;
 
-  selection= new SelectionModel<MemberDTO>(true, []);
+  selection = new SelectionModel<MemberDTO>(true, []);
 
   @ViewChild('paginator') paginator: MatPaginator;
   length: number;
@@ -48,25 +49,39 @@ export class NgoManageMembersComponent implements OnInit {
     private matDialog: MatDialog,
     private ngoService: NGOService,
     public dialogRef: MatDialogRef<AssignUserComponent>,
-    private memberService: MemberService)
-  {}
+    private memberService: MemberService) {
+  }
 
   ngOnInit(): void {
 
 
-
-    this.applicationService.emmitLoading(true);
-    this.ngoService.findManagedNGOs().subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.comboData = result;
-      this.filteredOptions = this.searchTextBoxControl.valueChanges
-        .pipe(
-          startWith<string>(''),
-          map(name => this._filter(name))
-        );
-    }, error => {
-      this.applicationService.emmitLoading(false);
-    });
+    if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findAllNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextBoxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    } else {
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findManagedNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextBoxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    }
 
 
     this.functionForm = this.formBuilder.group({
@@ -168,9 +183,10 @@ export class NgoManageMembersComponent implements OnInit {
   private openDialog(assignType: AssignType) {
     this.dialogRef = this.matDialog.open(AssignUserComponent, {
       width: '750px',
-      data: {ngo: this.selectedNgo,
-            assignType: assignType,
-            members: this.selectedMembers
+      data: {
+        ngo: this.selectedNgo,
+        assignType: assignType,
+        members: this.selectedMembers
       }
     });
   }

@@ -86,6 +86,12 @@ public class NGOServiceImpl implements NGOService {
 	}
 
 	@Override
+	public List<Ngo> findAllNgos(Integer pageNo, Integer pageSize) {
+		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
+		return page != null ? ngoRepository.findAll(page).getContent() : ngoRepository.findAll();
+	}
+
+	@Override
 	public List<String> deleteNGOs(List<NgoDTO> ngosDtos) {
 		List<String> list = new ArrayList<String>();
 		for (NgoDTO n : ngosDtos) {

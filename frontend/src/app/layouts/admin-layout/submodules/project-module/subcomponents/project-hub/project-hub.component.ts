@@ -13,6 +13,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {formatDate} from '@angular/common';
 import {Router} from '@angular/router';
 import {UserService} from '../../../../../../shared/services/user-service/user.service';
+import {Role} from '../../../../../../shared/util/ApplicationRoutesInfo';
 
 export enum ProjectAction {
   ADD = 'Add',
@@ -73,18 +74,47 @@ export class ProjectHubComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.applicationService.emmitLoading(true);
-    this.ngoService.findMyNGOs().subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.comboData = result;
-      this.filteredOptions = this.searchTextboxControl.valueChanges
-        .pipe(
-          startWith<string>(''),
-          map(name => this._filter(name))
-        );
-    }, error => {
-      this.applicationService.emmitLoading(false);
-    });
+    if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findAllNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextboxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    } else if (this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)){
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findManagedNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextboxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    } else {
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findMyNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextboxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    }
+
 
     this.selection.changed.asObservable().subscribe(value => {
       this.selectedProject = {...value.added[0]};

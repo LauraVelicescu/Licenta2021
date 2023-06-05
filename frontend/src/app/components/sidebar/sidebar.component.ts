@@ -27,7 +27,6 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.applicationService.buildNavbarForUser().subscribe((result) => {
       this.dataSource.data = result
-      console.log(result);
     });
   }
 

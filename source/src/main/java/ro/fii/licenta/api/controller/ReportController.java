@@ -43,7 +43,7 @@ public class ReportController {
 			FileOutputStream outputStream = new FileOutputStream(outputFile);
 
 			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("PROJECT_ID", Long.valueOf(14));
+			parameters.put("PROJECT_ID", Long.valueOf(2));
 			jasperService.generateAndExportReport(Report.PROJECT_TEAM, parameters, outputStream);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf");

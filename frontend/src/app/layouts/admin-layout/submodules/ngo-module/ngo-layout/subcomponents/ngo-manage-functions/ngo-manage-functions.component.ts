@@ -13,6 +13,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {FunctionDTO} from '../../../../../../../shared/dto/FunctionDTO';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AssignType, AssignUserComponent} from '../ngo-manage-modals/assign-user/assign-user.component';
+import {Role} from '../../../../../../../shared/util/ApplicationRoutesInfo';
 
 @Component({
   selector: 'app-ngo-manage-functions',
@@ -52,19 +53,33 @@ export class NgoManageFunctionsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.applicationService.emmitLoading(true);
-    this.ngoService.findManagedNGOs().subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.comboData = result;
-      this.filteredOptions = this.searchTextboxControl.valueChanges
-        .pipe(
-          startWith<string>(''),
-          map(name => this._filter(name))
-        );
-    }, error => {
-      this.applicationService.emmitLoading(false);
-    });
-
+    if(this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findAllNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextboxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    } else {
+      this.applicationService.emmitLoading(true);
+      this.ngoService.findManagedNGOs().subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboData = result;
+        this.filteredOptions = this.searchTextboxControl.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filter(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    }
 
     this.functionForm = this.formBuilder.group({
         name: [''],

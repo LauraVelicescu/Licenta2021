@@ -108,6 +108,21 @@ public class NGOController {
 
 	}
 
+	@GetMapping(value = "/findAllNgos")
+	public ResponseEntity<List<NgoDTO>> findAllNGOs(@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "pageNo", required = false) Integer pageNo, HttpServletRequest request) {
+		List<NgoDTO> ngos = new ArrayList<NgoDTO>();
+		ngoService.findAllNgos(page, pageNo).forEach(e -> {
+			ngos.add(modelMapper.map(e, NgoDTO.class));
+		});
+		return ResponseEntity.ok(ngos);
+	}
+
+	@GetMapping(value = "/findAllNgos/count")
+	public ResponseEntity<Integer> findAllNGOsCount(HttpServletRequest request) {
+		return ResponseEntity.ok(ngoService.findAllNgos(null, null).size());
+	}
+
 	@GetMapping(value = "/findManagedNGOs")
 	public ResponseEntity<List<NgoDTO>> findManagedNGOs(@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "pageNo", required = false) Integer pageNo, HttpServletRequest request) {
