@@ -32,7 +32,7 @@ import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPositionDTO;
-import ro.fii.licenta.api.dto.UserDTO;
+import ro.fii.licenta.api.repository.ProjectRepository;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
 import ro.fii.licenta.api.service.UserService;
@@ -52,6 +52,9 @@ public class ProjectController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private ProjectRepository projectRepository;
 
 	@PostMapping(value = "/createProject/{ngoId}")
 	public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto,
@@ -90,6 +93,27 @@ public class ProjectController {
 			projects.add(modelMapper.map(p, Project.class));
 		}
 		projectService.deleteProjects(projects);
+	}
+
+	@GetMapping(value = "/findAllProjects")
+	public ResponseEntity<List<ProjectDTO>> findAllProjects() {
+		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
+		this.projectRepository.findAll().forEach(p -> {
+			ngoProjectDtos.add(this.modelMapper.map(p, ProjectDTO.class));
+		});
+		return ResponseEntity.ok(ngoProjectDtos);
+	}
+
+	@GetMapping(value = "/findNgoManagedProject")
+	public ResponseEntity<List<ProjectDTO>> findNgoManagedProjects(HttpServletRequest request) {
+
+		User user = userService.getCurrentUser(request);
+
+		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
+		this.projectRepository.findByNgo_Admin_Id(user.getId()).forEach(p -> {
+			ngoProjectDtos.add(this.modelMapper.map(p, ProjectDTO.class));
+		});
+		return ResponseEntity.ok(ngoProjectDtos);
 	}
 
 	@GetMapping(value = "/findProjects/{ngoId}")

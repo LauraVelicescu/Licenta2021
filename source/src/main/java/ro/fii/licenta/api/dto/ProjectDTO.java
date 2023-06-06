@@ -28,6 +28,10 @@ public class ProjectDTO {
 
 	private byte[] logo;
 
+	private Double budgetTreasury;
+
+	private Double budgetPartners;
+
 	public Long getId() {
 		return id;
 	}
@@ -125,4 +129,21 @@ public class ProjectDTO {
 		return outputStream.toByteArray();
 
 	}
+
+	public Double getBudgetTreasury() {
+		return budgetTreasury;
+	}
+
+	public void setBudgetTreasury(Double budgetTreasury) {
+		this.budgetTreasury = budgetTreasury;
+	}
+
+	public Double getBudgetPartners() {
+		return budgetPartners;
+	}
+
+	public void setBudgetPartners(Double budgetPartners) {
+		this.budgetPartners = budgetPartners;
+	}
+
 }

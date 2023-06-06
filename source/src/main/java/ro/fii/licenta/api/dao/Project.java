@@ -17,9 +17,9 @@ import ro.fii.licenta.framework.NameDescriptionEntity;
 public class Project extends NameDescriptionEntity {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Date startDate;
-	
+
 	private Date endDate;
 
 	private Ngo ngo;
@@ -31,7 +31,11 @@ public class Project extends NameDescriptionEntity {
 	private String linkedinLink;
 
 	private byte[] logo;
-	
+
+	private Double budgetTreasury;
+
+	private Double budgetPartners;
+
 	@Column(name = "start_date")
 	public Date getStartDate() {
 		return startDate;
@@ -95,6 +99,24 @@ public class Project extends NameDescriptionEntity {
 
 	public void setLogo(byte[] logo) {
 		this.logo = logo;
+	}
+
+	@Column(name = "budget_treasury")
+	public Double getBudgetTreasury() {
+		return budgetTreasury;
+	}
+
+	public void setBudgetTreasury(Double budgetTreasury) {
+		this.budgetTreasury = budgetTreasury;
+	}
+
+	@Column(name = "budget_partners")
+	public Double getBudgetPartners() {
+		return budgetPartners;
+	}
+
+	public void setBudgetPartners(Double budgetPartners) {
+		this.budgetPartners = budgetPartners;
 	}
 
 }
