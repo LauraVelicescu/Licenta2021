@@ -9,11 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import ro.fii.licenta.framework.PersistableEntity;
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "ngo_year")
-public class NgoYear extends PersistableEntity {
+public class NgoYear extends NameDescriptionEntity {
 
 	/**
 	 * 
@@ -47,7 +47,7 @@ public class NgoYear extends PersistableEntity {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "ngo_id")
 	public Ngo getNgo() {
 		return ngo;
 	}

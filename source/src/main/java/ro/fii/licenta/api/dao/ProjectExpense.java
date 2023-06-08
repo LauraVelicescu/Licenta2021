@@ -8,11 +8,11 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import ro.fii.licenta.framework.PersistableEntity;
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "project_expense")
-public class ProjectExpense extends PersistableEntity {
+public class ProjectExpense extends NameDescriptionEntity {
 
 	/**
 	 * 

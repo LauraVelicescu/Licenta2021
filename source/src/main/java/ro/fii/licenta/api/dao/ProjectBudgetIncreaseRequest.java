@@ -7,11 +7,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import ro.fii.licenta.framework.PersistableEntity;
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "project_budget_increase_request")
-public class ProjectBudgetIncreaseRequest extends PersistableEntity {
+public class ProjectBudgetIncreaseRequest extends NameDescriptionEntity {
 
 	/**
 	 * 

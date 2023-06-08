@@ -2,17 +2,21 @@ package ro.fii.licenta.api.dao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import ro.fii.licenta.framework.PersistableEntity;
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "ngo_partners_type")
-public class NgoPartnersType extends PersistableEntity{
+public class NgoPartnersType extends NameDescriptionEntity {
 
 	private static final long serialVersionUID = 1L;
 	private Double minAmount;
 	private Double maxAmount;
+	private Ngo ngo;
 
 	@Column(name = "min_amount")
 	public Double getMinAmount() {
@@ -30,6 +34,16 @@ public class NgoPartnersType extends PersistableEntity{
 
 	public void setMaxAmount(Double maxAmount) {
 		this.maxAmount = maxAmount;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ngo_id")
+	public Ngo getNgo() {
+		return ngo;
+	}
+
+	public void setNgo(Ngo ngo) {
+		this.ngo = ngo;
 	}
 
 }

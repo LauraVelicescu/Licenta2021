@@ -5,11 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-import ro.fii.licenta.framework.PersistableEntity;
+import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
 @Table(name = "partner")
-public class Partner extends PersistableEntity{
+public class Partner extends NameDescriptionEntity {
 
 	/**
 	 * 
