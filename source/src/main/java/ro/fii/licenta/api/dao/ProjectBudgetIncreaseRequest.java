@@ -18,9 +18,10 @@ public class ProjectBudgetIncreaseRequest extends NameDescriptionEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Double amount;
-	private Member requestOwner;
+	private ProjectMember requestOwner;
 	private String motivation;
 	private ProjectBudgetIncreaseRequestStatus status;
+	private Project project;
 
 	@Column(name = "amount")
 	public Double getAmount() {
@@ -32,12 +33,12 @@ public class ProjectBudgetIncreaseRequest extends NameDescriptionEntity {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	public Member getRequestOwner() {
+	@JoinColumn(name = "project_member_id")
+	public ProjectMember getRequestOwner() {
 		return requestOwner;
 	}
 
-	public void setRequestOwner(Member requestOwner) {
+	public void setRequestOwner(ProjectMember requestOwner) {
 		this.requestOwner = requestOwner;
 	}
 
@@ -58,4 +59,16 @@ public class ProjectBudgetIncreaseRequest extends NameDescriptionEntity {
 	public void setStatus(ProjectBudgetIncreaseRequestStatus status) {
 		this.status = status;
 	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "project_id")
+	public Project getProject() {
+		return project;
+	}
+
+	public void setProject(Project project) {
+		this.project = project;
+	}
+	
+	
 }

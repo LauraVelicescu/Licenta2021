@@ -73,6 +73,18 @@ export class ApplicationRoutesInfo {
       icon: 'people',
       privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
+    }, {
+      path: 'ngo-year',
+      title: 'Ngo years',
+      icon: 'calendar_today',
+      privileges: [Role.ADMIN, Role.NGO_ADMIN],
+      parentPath: 'ngo'
+    }, {
+      path: 'ngo-partner-type',
+      title: 'Ngo partners type',
+      icon: 'attach_money',
+      privileges: [Role.ADMIN, Role.NGO_ADMIN],
+      parentPath: 'ngo'
     }]
   }
 

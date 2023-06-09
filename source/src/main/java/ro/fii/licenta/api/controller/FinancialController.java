@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import ro.fii.licenta.api.dao.NgoPartnersType;
 import ro.fii.licenta.api.dao.NgoYear;
 import ro.fii.licenta.api.dao.Partner;
@@ -48,9 +48,9 @@ public class FinancialController {
 	}
 
 	@GetMapping("/ngo-partner-types/{id}")
-	public ResponseEntity<NgoPartnersTypeDTO> getNgoPartnerTypeById(@PathVariable("id") Long id) {
-		return ResponseEntity
-				.ok(this.modelMapper.map(this.financialService.getNgoPartnersTypeById(id), NgoPartnersTypeDTO.class));
+	public ResponseEntity<List<NgoPartnersTypeDTO>> getNgoPartnerTypeById(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(this.financialService.getNgoPartnersTypeById(id).stream()
+				.map(soure -> modelMapper.map(soure, NgoPartnersTypeDTO.class)).collect(Collectors.toList()));
 	}
 
 	@PostMapping("/ngo-partner-types")
@@ -101,9 +101,10 @@ public class FinancialController {
 	}
 
 	@GetMapping("/ngoYears/{id}")
-	public ResponseEntity<NgoYearDTO> getNgoYearById(@PathVariable("id") Long id) {
+	public ResponseEntity<List<NgoYearDTO>> getNgoYearById(@PathVariable("id") Long id) {
 		// Method body
-		return ResponseEntity.ok(this.modelMapper.map(this.financialService.getNgoYearById(id), NgoYearDTO.class));
+		return ResponseEntity.ok(this.financialService.getNgoYearById(id).stream()
+				.map(soure -> modelMapper.map(soure, NgoYearDTO.class)).collect(Collectors.toList()));
 	}
 
 	@PostMapping("/ngoYears")
@@ -129,10 +130,11 @@ public class FinancialController {
 	}
 
 	@GetMapping("/projectBudgetIncreaseRequests/{id}")
-	public ResponseEntity<ProjectBudgetIncreaseRequestDTO> getProjectBudgetIncreaseRequestById(
+	public ResponseEntity<List<ProjectBudgetIncreaseRequestDTO>> getProjectBudgetIncreaseRequestById(
 			@PathVariable("id") Long id) {
-		return ResponseEntity.ok(this.modelMapper.map(this.financialService.getProjectBudgetIncreaseRequestById(id),
-				ProjectBudgetIncreaseRequestDTO.class));
+		return ResponseEntity.ok(this.financialService.getProjectBudgetIncreaseRequestById(id).stream()
+				.map(soure -> modelMapper.map(soure, ProjectBudgetIncreaseRequestDTO.class))
+				.collect(Collectors.toList()));
 	}
 
 	@PostMapping("/projectBudgetIncreaseRequests")
@@ -161,9 +163,9 @@ public class FinancialController {
 	}
 
 	@GetMapping("/projectExpenses/{id}")
-	public ResponseEntity<ProjectExpenseDTO> getProjectExpenseById(@PathVariable("id") Long id) {
-		return ResponseEntity
-				.ok(this.modelMapper.map(this.financialService.getProjectExpenseById(id), ProjectExpenseDTO.class));
+	public ResponseEntity<List<ProjectExpenseDTO>> getProjectExpenseById(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(this.financialService.getProjectExpenseById(id).stream()
+				.map(soure -> modelMapper.map(soure, ProjectExpenseDTO.class)).collect(Collectors.toList()));
 	}
 
 	@PostMapping("/projectExpenses")
@@ -188,9 +190,9 @@ public class FinancialController {
 	}
 
 	@GetMapping("/projectPartners/{id}")
-	public ResponseEntity<ProjectPartnerDTO> getProjectPartnerById(@PathVariable("id") Long id) {
-		return ResponseEntity
-				.ok(this.modelMapper.map(this.financialService.getProjectPartnerById(id), ProjectPartnerDTO.class));
+	public ResponseEntity<List<ProjectPartnerDTO>> getProjectPartnerById(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(this.financialService.getProjectPartnerById(id).stream()
+				.map(soure -> modelMapper.map(soure, ProjectPartnerDTO.class)).collect(Collectors.toList()));
 	}
 
 	@PostMapping("/projectPartners")

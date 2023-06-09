@@ -54,34 +54,35 @@ export class NgoManageMembersComponent implements OnInit {
 
   ngOnInit(): void {
 
-
-    if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
-      this.applicationService.emmitLoading(true);
-      this.ngoService.findAllNGOs().subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.comboData = result;
-        this.filteredOptions = this.searchTextBoxControl.valueChanges
-          .pipe(
-            startWith<string>(''),
-            map(name => this._filter(name))
-          );
-      }, error => {
-        this.applicationService.emmitLoading(false);
-      });
-    } else {
-      this.applicationService.emmitLoading(true);
-      this.ngoService.findManagedNGOs().subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.comboData = result;
-        this.filteredOptions = this.searchTextBoxControl.valueChanges
-          .pipe(
-            startWith<string>(''),
-            map(name => this._filter(name))
-          );
-      }, error => {
-        this.applicationService.emmitLoading(false);
-      });
-    }
+    setTimeout(() => {
+      if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+        this.applicationService.emmitLoading(true);
+        this.ngoService.findAllNGOs().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextBoxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      } else {
+        this.applicationService.emmitLoading(true);
+        this.ngoService.findManagedNGOs().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextBoxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      }
+    }, 100);
 
 
     this.functionForm = this.formBuilder.group({

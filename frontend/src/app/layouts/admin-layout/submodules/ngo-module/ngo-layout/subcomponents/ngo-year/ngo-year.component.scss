@@ -1,0 +1,38 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+
+mat-table {
+  width: 100%;
+}
+
+.hovered{
+  opacity: 0.5;
+}
+
+.highlighted {
+  background-color: #3DA69B;
+  opacity: 0.6;
+}
+
+.invalid {
+  background-color: #6d4c41;
+  opacity: 0.6;
+}
+
+.table-special {
+  width: 100%;
+  margin: auto;
+  max-height: 75vh;
+  overflow: auto;
+}
+
+
+.scrollable-table {
+  width: 100%;
+  max-width: calc(90vw - 492px);
+  @media screen and (max-width: 960px) {
+    max-width: 90vw;
+  }
+}

@@ -7,6 +7,7 @@ public class NgoPartnersTypeDTO {
 	private String description;
 	private Double minAmount;
 	private Double maxAmount;
+	private NgoDTO ngo;
 
 	public Long getId() {
 		return id;
@@ -48,4 +49,11 @@ public class NgoPartnersTypeDTO {
 		this.maxAmount = maxAmount;
 	}
 
+	public NgoDTO getNgo() {
+		return ngo;
+	}
+
+	public void setNgo(NgoDTO ngo) {
+		this.ngo = ngo;
+	}
 }

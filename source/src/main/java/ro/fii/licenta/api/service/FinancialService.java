@@ -13,6 +13,7 @@ import ro.fii.licenta.api.dao.ProjectExpense;
 import ro.fii.licenta.api.dao.ProjectPartner;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
+import ro.fii.licenta.api.exception.ValidationException;
 import ro.fii.licenta.api.repository.NgoPartnersTypeRepository;
 import ro.fii.licenta.api.repository.NgoYearRepository;
 import ro.fii.licenta.api.repository.PartnerRepository;
@@ -23,10 +24,9 @@ import ro.fii.licenta.api.repository.ProjectPartnerRepository;
 @Service
 public class FinancialService {
 
-
 	@Autowired
 	private ProjectPartnerRepository projectPartnerRepository;
-	
+
 	@Autowired
 	private NgoYearRepository ngoYearRepository;
 
@@ -46,23 +46,24 @@ public class FinancialService {
 		return ngoPartnersTypeRepository.findAll();
 	}
 
-	public NgoPartnersType getNgoPartnersTypeById(Long id) {
-		return ngoPartnersTypeRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("NgoPartnersType not found with id: " + id));
+	public List<NgoPartnersType> getNgoPartnersTypeById(Long id) {
+		return ngoPartnersTypeRepository.findByNgo_Id(id);
 	}
 
 	public void createNgoPartnersType(NgoPartnersType ngoPartnersType) {
-		validateUniqueNgoPartnersTypeName(ngoPartnersType.getName(), null);
+		validateUniqueNgoPartnersTypeName(ngoPartnersType.getName(), ngoPartnersType.getNgo().getId(), ngoPartnersType);
+		if (ngoPartnersType.getMaxAmount() < ngoPartnersType.getMinAmount()) {
+			throw new ValidationException("Max must be higher than min");
+		}
 		ngoPartnersTypeRepository.save(ngoPartnersType);
 	}
 
 	public void updateNgoPartnersType(Long id, NgoPartnersType ngoPartnersType) {
-		NgoPartnersType existingNgoPartnersType = ngoPartnersTypeRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("NgoPartnersType not found with id: " + id));
-		validateUniqueNgoPartnersTypeName(ngoPartnersType.getName(), existingNgoPartnersType.getId());
-		existingNgoPartnersType.setName(ngoPartnersType.getName());
-		// Set other properties if needed
-		ngoPartnersTypeRepository.save(existingNgoPartnersType);
+		validateUniqueNgoPartnersTypeName(ngoPartnersType.getName(), ngoPartnersType.getNgo().getId(), ngoPartnersType);
+		if (ngoPartnersType.getMaxAmount() < ngoPartnersType.getMinAmount()) {
+			throw new ValidationException("Max must be higher than min");
+		}
+		ngoPartnersTypeRepository.save(ngoPartnersType);
 	}
 
 	public void deleteNgoPartnersType(Long id) {
@@ -71,9 +72,11 @@ public class FinancialService {
 		ngoPartnersTypeRepository.delete(ngoPartnersType);
 	}
 
-	private void validateUniqueNgoPartnersTypeName(String name, Long currentId) {
-		NgoPartnersType existingNgoPartnersType = ngoPartnersTypeRepository.findByName(name);
-		if (existingNgoPartnersType != null && !existingNgoPartnersType.getId().equals(currentId)) {
+	private void validateUniqueNgoPartnersTypeName(String name, Long currentId,
+			NgoPartnersType updatedNgoPartnersType) {
+		NgoPartnersType existingNgoPartnersType = ngoPartnersTypeRepository.findByNameAndNgo_Id(name, currentId);
+		if (existingNgoPartnersType != null
+				&& (updatedNgoPartnersType.getId() == null || !existingNgoPartnersType.getId().equals(currentId))) {
 			throw new EntityConflictException("NgoPartnersType with name: " + name + " already exists.");
 		}
 	}
@@ -118,9 +121,8 @@ public class FinancialService {
 		return projectBudgetIncreaseRequestRepository.findAll();
 	}
 
-	public ProjectBudgetIncreaseRequest getProjectBudgetIncreaseRequestById(Long id) {
-		return projectBudgetIncreaseRequestRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectBudgetIncreaseRequest not found with id: " + id));
+	public List<ProjectBudgetIncreaseRequest> getProjectBudgetIncreaseRequestById(Long id) {
+		return projectBudgetIncreaseRequestRepository.findByProject_Id(id);
 	}
 
 	public void createProjectBudgetIncreaseRequest(ProjectBudgetIncreaseRequest projectBudgetIncreaseRequest) {
@@ -146,9 +148,8 @@ public class FinancialService {
 		return projectExpenseRepository.findAll();
 	}
 
-	public ProjectExpense getProjectExpenseById(Long id) {
-		return projectExpenseRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectExpense not found with id: " + id));
+	public List<ProjectExpense> getProjectExpenseById(Long id) {
+		return projectExpenseRepository.findByProject_Id(id);
 	}
 
 	public void createProjectExpense(ProjectExpense projectExpense) {
@@ -173,22 +174,37 @@ public class FinancialService {
 		return ngoYearRepository.findAll();
 	}
 
-	public NgoYear getNgoYearById(Long id) {
-		return ngoYearRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("NgoYear not found with id: " + id));
+	public List<NgoYear> getNgoYearById(Long id) {
+		return ngoYearRepository.findByNgo_Id(id);
 	}
 
 	public void createNgoYear(NgoYear ngoYear) {
-		validateUniqueNgoYearName(ngoYear.getName(), ngoYear.getNgo().getId());
+		validateUniqueNgoYearName(ngoYear.getName(), ngoYear.getNgo().getId(), ngoYear);
+		if (ngoYear.getStartDate().after(ngoYear.getEndDate())) {
+			throw new ValidationException("Start date must be before end date");
+		}
+		if (ngoYear.getStartDate().getYear() + 1 != ngoYear.getEndDate().getYear()) {
+			throw new ValidationException("Years must be different and consecutive");
+		}
+		if (ngoYear.getTreasury() < 0) {
+			throw new ValidationException("Treasury must be > 0");
+		}
 		ngoYearRepository.save(ngoYear);
 	}
 
 	public void updateNgoYear(Long id, NgoYear ngoYear) {
-		NgoYear existingNgoYear = ngoYearRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("NgoYear not found with id: " + id));
-		validateUniqueNgoYearName(ngoYear.getName(), ngoYear.getNgo().getId());
+		validateUniqueNgoYearName(ngoYear.getName(), ngoYear.getNgo().getId(), ngoYear);
+		if (ngoYear.getStartDate().after(ngoYear.getEndDate())) {
+			throw new ValidationException("Start date must be before end date");
+		}
+		if (ngoYear.getStartDate().getYear() + 1 != ngoYear.getEndDate().getYear()) {
+			throw new ValidationException("Years must be different and consecutive");
+		}
+		if (ngoYear.getTreasury() < 0) {
+			throw new ValidationException("Treasury must be > 0");
+		}
 		// Update the properties of existingNgoYear with the values from ngoYear
-		ngoYearRepository.save(existingNgoYear);
+		ngoYearRepository.save(ngoYear);
 	}
 
 	public void deleteNgoYear(Long id) {
@@ -197,9 +213,10 @@ public class FinancialService {
 		ngoYearRepository.delete(ngoYear);
 	}
 
-	private void validateUniqueNgoYearName(String name, Long ngoId) {
+	private void validateUniqueNgoYearName(String name, Long ngoId, NgoYear updatedNgoYear) {
 		NgoYear existingNgoYear = ngoYearRepository.findByNameAndNgo_Id(name, ngoId);
-		if (existingNgoYear != null) {
+		if (existingNgoYear != null
+				&& (updatedNgoYear.getId() == null || !updatedNgoYear.getId().equals(existingNgoYear.getId()))) {
 			throw new EntityConflictException(
 					"NgoYear with name: " + name + " already exists for the NGO with id: " + ngoId);
 		}
@@ -209,9 +226,8 @@ public class FinancialService {
 		return projectPartnerRepository.findAll();
 	}
 
-	public ProjectPartner getProjectPartnerById(Long id) {
-		return projectPartnerRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectPartner not found with id: " + id));
+	public List<ProjectPartner> getProjectPartnerById(Long id) {
+		return projectPartnerRepository.findByProject_Id(id);
 	}
 
 	public void createProjectPartner(ProjectPartner projectPartner) {

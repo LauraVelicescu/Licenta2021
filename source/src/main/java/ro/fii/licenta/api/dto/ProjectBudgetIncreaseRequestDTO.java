@@ -8,9 +8,10 @@ public class ProjectBudgetIncreaseRequestDTO {
 	private String name;
 	private String description;
 	private Double amount;
-	private MemberDTO requestOwner;
+	private ProjectMemberDTO requestOwner;
 	private String motivation;
 	private ProjectBudgetIncreaseRequestStatus status;
+	private ProjectDTO projectDTO;
 
 	public Long getId() {
 		return id;
@@ -44,11 +45,11 @@ public class ProjectBudgetIncreaseRequestDTO {
 		this.amount = amount;
 	}
 
-	public MemberDTO getRequestOwner() {
+	public ProjectMemberDTO getRequestOwner() {
 		return requestOwner;
 	}
 
-	public void setRequestOwner(MemberDTO requestOwner) {
+	public void setRequestOwner(ProjectMemberDTO requestOwner) {
 		this.requestOwner = requestOwner;
 	}
 
@@ -68,4 +69,11 @@ public class ProjectBudgetIncreaseRequestDTO {
 		this.status = status;
 	}
 
+	public ProjectDTO getProjectDTO() {
+		return projectDTO;
+	}
+
+	public void setProjectDTO(ProjectDTO projectDTO) {
+		this.projectDTO = projectDTO;
+	}
 }

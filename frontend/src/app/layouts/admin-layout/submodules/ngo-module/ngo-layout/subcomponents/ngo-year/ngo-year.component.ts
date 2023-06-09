@@ -1,27 +1,27 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {NgoDTO} from '../../../../../../../shared/dto/NgoDTO';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import {map, startWith} from 'rxjs/operators';
+import {SelectionModel} from '@angular/cdk/collections';
+import {NgoYearDTO} from '../../../../../../../shared/dto/NgoYearDTO';
+import {MatTableDataSource} from '@angular/material/table';
 import {ApplicationService} from '../../../../../../../shared/services/application/application.service';
 import {NotificationService} from '../../../../../../../shared/services/notification-service/notification.service';
+import {MatDialog} from '@angular/material/dialog';
 import {NGOService} from '../../../../../../../shared/services/ngo-service/ngo.service';
-import {OperationType} from '../../../../../../../shared/util/OperationType';
-import {SelectionModel} from '@angular/cdk/collections';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
-import {FunctionDTO} from '../../../../../../../shared/dto/FunctionDTO';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {AssignType, AssignUserComponent} from '../ngo-manage-modals/assign-user/assign-user.component';
 import {Role} from '../../../../../../../shared/util/ApplicationRoutesInfo';
+import {delay, map, startWith} from 'rxjs/operators';
+import {formatDate} from '@angular/common';
+import {OperationType} from '../../../../../../../shared/util/OperationType';
 import {FinancialService} from '../../../../../../../shared/services/financial/financial.service';
 
 @Component({
-  selector: 'app-ngo-manage-functions',
-  templateUrl: './ngo-manage-functions.component.html',
-  styleUrls: ['./ngo-manage-functions.component.scss']
+  selector: 'app-ngo-year',
+  templateUrl: './ngo-year.component.html',
+  styleUrls: ['./ngo-year.component.scss']
 })
-export class NgoManageFunctionsComponent implements OnInit {
+export class NgoYearComponent implements OnInit {
+
 
   @ViewChild('search') searchTextBox: ElementRef;
 
@@ -32,27 +32,25 @@ export class NgoManageFunctionsComponent implements OnInit {
   comboData: NgoDTO[] = [];
   persistState: boolean = false;
 
-  selection= new SelectionModel<FunctionDTO>(false, []);
+  selection = new SelectionModel<NgoYearDTO>(false, []);
 
-  @ViewChild('paginator') paginator: MatPaginator;
-  length: number;
-
-  functionForm: FormGroup;
-  displayedColumns: string[] = ['id', 'name', 'description'];
-  dataSource = new MatTableDataSource<FunctionDTO>([]);
+  ngoYearForm: FormGroup;
+  displayedColumns: string[] = ['id', 'name', 'startDate', 'endDate', 'treasury'];
+  dataSource = new MatTableDataSource<NgoYearDTO>([]);
   selectedOption: NgoDTO;
-  private currentFunction: FunctionDTO;
+  private currentNgoYear: NgoYearDTO;
+  ngoName: string = '';
 
   constructor(
-              private applicationService: ApplicationService,
-              private notificationService: NotificationService,
-              private formBuilder: FormBuilder,
-              public dialogRef: MatDialogRef<AssignUserComponent>,
-              private matDialog: MatDialog,
-              private ngoService: NGOService)
-  {}
+    private applicationService: ApplicationService,
+    private notificationService: NotificationService,
+    private formBuilder: FormBuilder,
+    private matDialog: MatDialog,
+    private ngoService: NGOService,
+    private financialService: FinancialService) {
+  }
 
-  ngOnInit(): void {
+  async ngOnInit() {
 
     setTimeout(() => {
       if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
@@ -84,9 +82,10 @@ export class NgoManageFunctionsComponent implements OnInit {
       }
     }, 100);
 
-    this.functionForm = this.formBuilder.group({
-        name: [''],
-        description: [''],
+    this.ngoYearForm = this.formBuilder.group({
+        startDate: ['', Validators.required],
+        endDate: ['', Validators.required],
+        treasury: ['', Validators.required],
       }
     )
   }
@@ -124,65 +123,38 @@ export class NgoManageFunctionsComponent implements OnInit {
     return OperationType;
   }
 
-  handleOperation(operation: OperationType, payload?: FunctionDTO[]) {
+  handleOperation(operation: OperationType, payload?: NgoYearDTO[]) {
 
     switch (operation) {
       case OperationType.ADD:
         this.persistState = true;
-          this.currentFunction = new FunctionDTO();
+        this.currentNgoYear = new NgoYearDTO();
         break;
       case OperationType.MODIFY:
         this.persistState = true;
-        this.currentFunction = payload[0];
+        this.currentNgoYear = payload[0];
         break;
       case OperationType.DELETE:
         this.applicationService.emmitLoading(true);
-        this.ngoService.deleteFunction(payload).subscribe((result) => {
+        this.financialService.deleteNgoYear(payload[0]).subscribe((result) => {
           this.applicationService.emmitLoading(false);
-          result.forEach(e => {
-            this.notificationService.warning(e);
-          })
           this.load();
-        })
-        break;
-      case OperationType.ASSIGN_FUNCTION_FOR_PEOPLE:
-        this.currentFunction = payload[0];
-        this.openDialog();
-        this.dialogRef.afterClosed().subscribe(() => {
-          this.load()
         })
         break;
     }
   }
 
   private load() {
-    this.dataSource.paginator = this.paginator;
     this.persistState = false;
     this.selection.clear();
     this.applicationService.emmitLoading(true);
-    this.ngoService.findNGOFunctionsCount(this.selectedOption).subscribe((number) => {
-      this.length = number;
-      this.ngoService.findNGOFunctions(this.selectedOption, this.paginator.pageIndex, this.paginator.pageSize).subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.dataSource.data = result;
-      }, error => {
-        this.applicationService.emmitLoading(false);
-        this.notificationService.error(error);
-      })
+    this.financialService.getNgoYearsByNgoId(this.selectedOption).subscribe((result) => {
+      this.applicationService.emmitLoading(false);
+      this.dataSource.data = result;
     }, error => {
       this.applicationService.emmitLoading(false);
       this.notificationService.error(error);
     })
-  }
-
-  private openDialog() {
-   this.dialogRef = this.matDialog.open(AssignUserComponent, {
-      width: '750px',
-      data: {ngo: this.selectedOption,
-             ngoFunction: this.currentFunction,
-             assignType: AssignType.USER
-      }
-    });
   }
 
   cancelAction() {
@@ -190,15 +162,15 @@ export class NgoManageFunctionsComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.functionForm.invalid) {
+    if (this.ngoYearForm.invalid) {
       return;
     } else {
-      const ngoFunction: FunctionDTO = this.currentFunction;
-      ngoFunction.name = this.functionForm.controls.name.value;
-      ngoFunction.description = this.functionForm.controls.description.value;
-      if (ngoFunction.id) {
+      const ngoNgoYear: NgoYearDTO = this.currentNgoYear;
+      ngoNgoYear.ngo = this.selectedOption;
+      ngoNgoYear.name = this.currentNgoYear.startDate.toString().split('-')[0] + '-' + this.currentNgoYear.endDate.toString().split('-')[0]
+      if (ngoNgoYear.id) {
         this.applicationService.emmitLoading(true);
-        this.ngoService.updateFunction(ngoFunction).subscribe((result) => {
+        this.financialService.updateNgoYear(ngoNgoYear).subscribe((result) => {
             this.applicationService.emmitLoading(false);
             this.load();
           }, error => {
@@ -207,7 +179,7 @@ export class NgoManageFunctionsComponent implements OnInit {
           }
         )
       } else {
-        this.ngoService.addFunction(ngoFunction, this.selectedOption).subscribe((result) => {
+        this.financialService.createNgoYear(ngoNgoYear).subscribe((result) => {
             this.applicationService.emmitLoading(false);
             this.load();
           }, error => {
@@ -216,6 +188,12 @@ export class NgoManageFunctionsComponent implements OnInit {
           }
         )
       }
+    }
+  }
+
+  public formatDate(date: Date) {
+    if (date) {
+      return formatDate(date, 'yyyy-MM-dd', 'en-US');
     }
   }
 }
