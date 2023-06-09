@@ -22,7 +22,7 @@ public class Project extends NameDescriptionEntity {
 
 	private Date endDate;
 
-	private Ngo ngo;
+	private NgoYear ngoYear;
 
 	private String facebookLink;
 
@@ -53,20 +53,21 @@ public class Project extends NameDescriptionEntity {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ngo_id")
-	public Ngo getNgo() {
-		return ngo;
-	}
-
-	public void setNgo(Ngo ngo) {
-		this.ngo = ngo;
-	}
-
+	
 	@Column(name = "facebook_link")
 	public String getFacebookLink() {
 		return facebookLink;
+	}
+
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ngo_year_id")
+	public NgoYear getNgoYear() {
+		return ngoYear;
+	}
+
+	public void setNgoYear(NgoYear ngoYear) {
+		this.ngoYear = ngoYear;
 	}
 
 	public void setFacebookLink(String facebookLink) {

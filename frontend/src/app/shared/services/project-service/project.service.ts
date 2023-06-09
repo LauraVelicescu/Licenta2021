@@ -7,6 +7,7 @@ import {ProjectDTO} from '../../dto/ProjectDTO';
 import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
 import {ProjectMemberDTO} from '../../dto/ProjectMemberDTO';
 import {UserDTO} from '../../dto/UserDTO';
+import {NgoYearDTO} from '../../dto/NgoYearDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,8 @@ export class ProjectService {
   private deleteURL = '/:projectId'
   private getProjectsURL = '/findProjects/:ngoId'
   private getMyProjectsURL = '/findMyProjects'
+  private getAllProjectsURL = '/findAllProjects'
+  private getManagedProjectsURL = '/findNgoManagedProject'
   private getProjectsCountURL = '/findProjects/count/:ngoId'
   private getProjectPositionsURL = '/project/:projectId/position'
   private createProjectPositionURL = '/project/:projectId/position'
@@ -30,7 +33,7 @@ export class ProjectService {
   constructor(private mainService: MainServiceService) {
   }
 
-  create(project: ProjectDTO, ngo: NgoDTO) {
+  create(project: ProjectDTO, ngo: NgoYearDTO) {
     return this.mainService.post(this.rootURL + this.createURL.replace(':ngoId', ngo.id.toString()),
       project).pipe(map((result: ProjectDTO) => {
       return result;
@@ -81,8 +84,8 @@ export class ProjectService {
     }));
   }
 
-  public findProjectsCount(ngo: NgoDTO) {
-    return this.mainService.get(this.rootURL + this.getProjectsCountURL.replace(':ngoId', ngo.id.toString())).pipe(map((result: number) => {
+  public findProjectsCount(ngoYear: NgoYearDTO) {
+    return this.mainService.get(this.rootURL + this.getProjectsCountURL.replace(':ngoId', ngoYear.id.toString())).pipe(map((result: number) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -91,7 +94,7 @@ export class ProjectService {
   }
 
 
-  public findProjects(ngo: NgoDTO, page?: number, pageSize?: number, filter?: any) {
+  public findProjects(ngoYear: NgoYearDTO, page?: number, pageSize?: number, filter?: any) {
     let queryString: string = '';
     if (page && pageSize) {
       queryString += '?page=' + page + '&pageSize=' + pageSize;
@@ -99,7 +102,7 @@ export class ProjectService {
     if (filter) {
       queryString += queryString ? '&deimplementat' : '?deimplementat';
     }
-    return this.mainService.get(this.rootURL + this.getProjectsURL.replace(':ngoId', ngo.id.toString()) + queryString).pipe(map((result: ProjectDTO[]) => {
+    return this.mainService.get(this.rootURL + this.getProjectsURL.replace(':ngoId', ngoYear.id.toString()) + queryString).pipe(map((result: ProjectDTO[]) => {
       return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
@@ -109,6 +112,24 @@ export class ProjectService {
 
   public findMyProjects() {
     return this.mainService.get(this.rootURL + this.getMyProjectsURL).pipe(map((result: ProjectDTO[]) => {
+      return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findNgoManagedProjects() {
+    return this.mainService.get(this.rootURL + this.getManagedProjectsURL).pipe(map((result: ProjectDTO[]) => {
+      return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findAllProjects() {
+    return this.mainService.get(this.rootURL + this.getAllProjectsURL).pipe(map((result: ProjectDTO[]) => {
       return plainToClass(ProjectDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);

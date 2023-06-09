@@ -30,12 +30,37 @@
                   </div>
                 </mat-select>
               </mat-form-field>
+              <mat-form-field style="width: 80%;">
+                <mat-select (openedChange)="openedChangeNgoYear($event)" placeholder="Select">
+                  {{getPrintNgoYear(selectedNgoYear)}}
+                  <div class="select-container">
+                    <mat-optgroup>
+                      <mat-form-field style="width:100%;">
+                        <input #searchNgoYear autocomplete="off" placeholder="Search" aria-label="Search" matInput
+                               [formControl]="searchTextboxControlNgoYear">
+                        <button [disableRipple]="true" *ngIf="searchNgoYear.value" matSuffix mat-icon-button aria-label="Clear"
+                                (click)="clearSearchNgoYear($event)">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </mat-optgroup>
+                    <mat-optgroup *ngIf="(filteredOptionsNgoYear | async)?.length == 0">
+                      <div>No results found!</div>
+                    </mat-optgroup>
+                    <mat-option (onSelectionChange)="selectionChangeNgoYear($event)"
+                                *ngFor="let option of filteredOptionsNgoYear | async"
+                                [value]="option">
+                      {{getPrintNgoYear(option)}}
+                    </mat-option>
+                  </div>
+                </mat-select>
+              </mat-form-field>
             </div>
-            <ng-container *ngIf="selectedNgo">
+            <ng-container *ngIf="selectedNgoYear">
               <div class="card-header">
-                <h6 class="title d-inline ">Projects<span *ngIf="selectedNgo">({{length}})</span></h6>
-                <p class="card-category d-inline " *ngIf="selectedNgo">{{getCurrentOpenYear(selectedNgo)}}
-                  <span>{{getPrint(selectedNgo)}}</span></p>
+                <h6 class="title d-inline ">Projects<span *ngIf="selectedNgoYear">({{length}})</span></h6>
+                <p class="card-category d-inline " *ngIf="selectedNgoYear">{{getCurrentOpenYear(selectedNgoYear)}}
+                  </p>
 
                 <div ngbDropdown style="text-align: right">
                   <button
@@ -211,6 +236,34 @@
                     </div>
                   </div>
                 </div>
+                <div class=" row">
+                  <div class=" col-md-6 pr-md-1">
+                    <div class=" form-group">
+                      <label> Budget Treasury </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="budgetTreasury"
+                        type="text"
+                        disabled
+                        [(ngModel)]="selectedProject.budgetTreasury"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-6 pr-md-1">
+                    <div class=" form-group">
+                      <label> Budget Partners </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="budgetPartners"
+                        type="text"
+                        disabled
+                        [(ngModel)]="selectedProject.budgetPartners"
+                      />
+                    </div>
+                  </div>
+                </div>
                 <div class=" card-footer">
                   <button class=" btn btn-primary" type="submit">Save</button>
                   <button class=" btn btn-secondary" (click)="cancelAction(currentAction)">Back</button>
@@ -307,6 +360,34 @@
                         formControlName="linkedin"
                         type="text"
                         [(ngModel)]="selectedProject.linkedinLink"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div class=" row">
+                  <div class=" col-md-6 pr-md-1">
+                    <div class=" form-group">
+                      <label> Budget Treasury </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="budgetTreasury"
+                        type="text"
+                        disabled
+                        [(ngModel)]="selectedProject.budgetTreasury"
+                      />
+                    </div>
+                  </div>
+                  <div class=" col-md-6 pr-md-1">
+                    <div class=" form-group">
+                      <label> Budget Partners </label>
+                      <input
+                        class=" form-control"
+                        placeholder=""
+                        formControlName="budgetPartners"
+                        type="text"
+                        disabled
+                        [(ngModel)]="selectedProject.budgetPartners"
                       />
                     </div>
                   </div>

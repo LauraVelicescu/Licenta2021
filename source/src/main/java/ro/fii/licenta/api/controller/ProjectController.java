@@ -28,12 +28,12 @@ import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
 import ro.fii.licenta.api.dao.User;
-import ro.fii.licenta.api.dto.NgoDTO;
+import ro.fii.licenta.api.dto.NgoYearDTO;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPositionDTO;
+import ro.fii.licenta.api.repository.NgoYearRepository;
 import ro.fii.licenta.api.repository.ProjectRepository;
-import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.ProjectService;
 import ro.fii.licenta.api.service.UserService;
 
@@ -48,18 +48,18 @@ public class ProjectController {
 	private ProjectService projectService;
 
 	@Autowired
-	private NGOService ngoService;
-
-	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private NgoYearRepository ngoYearRepository;
 
 	@Autowired
 	private ProjectRepository projectRepository;
 
-	@PostMapping(value = "/createProject/{ngoId}")
+	@PostMapping(value = "/createProject/{ngoYearId}")
 	public ResponseEntity<ProjectDTO> createProject(@RequestBody ProjectDTO projectDto,
-			@PathVariable(value = "ngoId") Long ngoId) {
-		projectDto.setNgo(modelMapper.map(ngoService.findById(ngoId), NgoDTO.class));
+			@PathVariable(value = "ngoYearId") Long ngoId) {
+		projectDto.setNgoYear(modelMapper.map(ngoYearRepository.findById(ngoId).get(), NgoYearDTO.class));
 		return ResponseEntity
 				.ok(modelMapper.map(projectService.save(modelMapper.map(projectDto, Project.class)), ProjectDTO.class));
 
@@ -110,7 +110,7 @@ public class ProjectController {
 		User user = userService.getCurrentUser(request);
 
 		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
-		this.projectRepository.findByNgo_Admin_Id(user.getId()).forEach(p -> {
+		this.projectRepository.findByNgoYear_Ngo_Admin_Id(user.getId()).forEach(p -> {
 			ngoProjectDtos.add(this.modelMapper.map(p, ProjectDTO.class));
 		});
 		return ResponseEntity.ok(ngoProjectDtos);

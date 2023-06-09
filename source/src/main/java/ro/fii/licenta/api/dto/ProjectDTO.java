@@ -18,7 +18,7 @@ public class ProjectDTO {
 
 	private Date endDate;
 
-	private NgoDTO ngo;
+	private NgoYearDTO ngoYear;
 
 	private String facebookLink;
 
@@ -72,12 +72,12 @@ public class ProjectDTO {
 		this.endDate = endDate;
 	}
 
-	public NgoDTO getNgo() {
-		return ngo;
+	public NgoYearDTO getNgoYear() {
+		return ngoYear;
 	}
 
-	public void setNgo(NgoDTO ngoDTO) {
-		this.ngo = ngoDTO;
+	public void setNgoYear(NgoYearDTO ngoYear) {
+		this.ngoYear = ngoYear;
 	}
 
 	public String getFacebookLink() {

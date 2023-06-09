@@ -1,6 +1,7 @@
 package ro.fii.licenta.api.service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,15 @@ public class FinancialService {
 
 	@Autowired
 	private ProjectBudgetIncreaseRequestRepository projectBudgetIncreaseRequestRepository;
+
+	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+	private static final String PHONE_NUMBER_PATTERN =  "^(?:(?:\\+|00)40\\s?|0)(?:(?:[72][236845]\\d{1}\\s?\\d{3}\\s?\\d{3})|(?:7[2-9]\\d{1}\\s?\\d{3}\\s?\\d{4})|(?:3[0-9]{2}\\s?\\d{3}\\s?\\d{3}))$";
+
+	private final Pattern patternPhone = Pattern.compile(PHONE_NUMBER_PATTERN);
+
+	private final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
 	public List<NgoPartnersType> getAllNgoPartnersTypes() {
 		return ngoPartnersTypeRepository.findAll();
@@ -92,16 +102,24 @@ public class FinancialService {
 
 	public void createPartner(Partner partner) {
 		validateUniquePartnerName(partner.getName(), null);
+		if (!this.isValidEmail(partner.getMail())) {
+			throw new ValidationException("Email is incorect");
+		}
+		if (!this.isValidPhoneNumber(partner.getPhone())) {
+			throw new ValidationException("Phone is incorect");
+		}
 		partnerRepository.save(partner);
 	}
 
 	public void updatePartner(Long id, Partner partner) {
-		Partner existingPartner = partnerRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Partner not found with id: " + id));
-		validateUniquePartnerName(partner.getName(), existingPartner.getId());
-		existingPartner.setName(partner.getName());
-		// Set other properties if needed
-		partnerRepository.save(existingPartner);
+		validateUniquePartnerName(partner.getName(), partner.getId());
+		if (!this.isValidEmail(partner.getMail())) {
+			throw new ValidationException("Email is incorect");
+		}
+		if (!this.isValidPhoneNumber(partner.getPhone())) {
+			throw new ValidationException("Phone is incorect");
+		}
+		partnerRepository.save(partner);
 	}
 
 	public void deletePartner(Long id) {
@@ -112,13 +130,31 @@ public class FinancialService {
 
 	private void validateUniquePartnerName(String name, Long currentId) {
 		Partner existingPartner = partnerRepository.findByName(name);
-		if (existingPartner != null && !existingPartner.getId().equals(currentId)) {
+		if (existingPartner != null && (currentId == null || !existingPartner.getId().equals(currentId))) {
 			throw new EntityConflictException("Partner with name: " + name + " already exists.");
 		}
 	}
 
 	public List<ProjectBudgetIncreaseRequest> getAllProjectBudgetIncreaseRequests() {
 		return projectBudgetIncreaseRequestRepository.findAll();
+	}
+
+	private boolean isValidEmail(String email) {
+		if (email == null) {
+			return false;
+		}
+		return pattern.matcher(email).matches();
+	}
+
+	public boolean isValidPhoneNumber(String phoneNumber) {
+		if (phoneNumber == null) {
+			return false;
+		}
+		patternPhone.matcher("0723678901").matches();
+		patternPhone.matcher("0753738357").matches();
+		return patternPhone.matcher(phoneNumber).matches();
+//		0723678901
+//		0753738357
 	}
 
 	public List<ProjectBudgetIncreaseRequest> getProjectBudgetIncreaseRequestById(Long id) {

@@ -14,6 +14,8 @@ import {formatDate} from '@angular/common';
 import {Router} from '@angular/router';
 import {UserService} from '../../../../../../shared/services/user-service/user.service';
 import {Role} from '../../../../../../shared/util/ApplicationRoutesInfo';
+import {NgoYearDTO} from '../../../../../../shared/dto/NgoYearDTO';
+import {FinancialService} from '../../../../../../shared/services/financial/financial.service';
 
 export enum ProjectAction {
   ADD = 'Add',
@@ -47,6 +49,16 @@ export class ProjectHubComponent implements OnInit {
   selectedNgo: NgoDTO;
   comboData: NgoDTO[] = [];
   selectedValues: NgoDTO[] = [];
+
+  @ViewChild('searchNgoYear') searchTextBoxNgoYear: ElementRef;
+
+  selectFormControlNgoYear = new FormControl();
+  searchTextboxControlNgoYear = new FormControl();
+  filteredOptionsNgoYear: Observable<any[]>;
+  selectedNgoYear: NgoYearDTO;
+  comboDataNgoYear: NgoYearDTO[] = [];
+  selectedValuesNgoYear: NgoYearDTO[] = [];
+
   length: number = 0;
   projectForm: FormGroup;
 
@@ -65,6 +77,7 @@ export class ProjectHubComponent implements OnInit {
 
   constructor(private applicationService: ApplicationService,
               private ngoService: NGOService,
+              private financialService: FinancialService,
               private notificationService: NotificationService,
               private formBuilder: FormBuilder,
               private projectService: ProjectService,
@@ -74,46 +87,48 @@ export class ProjectHubComponent implements OnInit {
 
   ngOnInit(): void {
 
-    if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
-      this.applicationService.emmitLoading(true);
-      this.ngoService.findAllNGOs().subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.comboData = result;
-        this.filteredOptions = this.searchTextboxControl.valueChanges
-          .pipe(
-            startWith<string>(''),
-            map(name => this._filter(name))
-          );
-      }, error => {
-        this.applicationService.emmitLoading(false);
-      });
-    } else if (this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)){
-      this.applicationService.emmitLoading(true);
-      this.ngoService.findManagedNGOs().subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.comboData = result;
-        this.filteredOptions = this.searchTextboxControl.valueChanges
-          .pipe(
-            startWith<string>(''),
-            map(name => this._filter(name))
-          );
-      }, error => {
-        this.applicationService.emmitLoading(false);
-      });
-    } else {
-      this.applicationService.emmitLoading(true);
-      this.ngoService.findMyNGOs().subscribe((result) => {
-        this.applicationService.emmitLoading(false);
-        this.comboData = result;
-        this.filteredOptions = this.searchTextboxControl.valueChanges
-          .pipe(
-            startWith<string>(''),
-            map(name => this._filter(name))
-          );
-      }, error => {
-        this.applicationService.emmitLoading(false);
-      });
-    }
+    setTimeout(() => {
+      if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+        this.applicationService.emmitLoading(true);
+        this.ngoService.findAllNGOs().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextboxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      } else if (this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)) {
+        this.applicationService.emmitLoading(true);
+        this.ngoService.findManagedNGOs().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextboxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      } else {
+        this.applicationService.emmitLoading(true);
+        this.ngoService.findMyNGOs().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextboxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      }
+    }, 100);
 
 
     this.selection.changed.asObservable().subscribe(value => {
@@ -137,7 +152,9 @@ export class ProjectHubComponent implements OnInit {
         endDate: ['', Validators.required],
         facebook: [''],
         twitter: [''],
-        linkedin: ['']
+        linkedin: [''],
+        budgetTreasury: [''],
+        budgetPartners: ['']
       }
     )
   }
@@ -149,6 +166,13 @@ export class ProjectHubComponent implements OnInit {
     }
   }
 
+  openedChangeNgoYear(e) {
+    this.searchTextboxControlNgoYear.patchValue('');
+    if (e === true) {
+      this.searchTextBoxNgoYear.nativeElement.focus();
+    }
+  }
+
   get projectAction() {
     return ProjectAction;
   }
@@ -157,15 +181,32 @@ export class ProjectHubComponent implements OnInit {
     return ((option?.name ?? '') + ' ' + (option?.acronym ? '[' + option?.acronym + ']' : ''));
   }
 
+  getPrintNgoYear(option: NgoYearDTO) {
+    return ((option?.name ?? ''));
+  }
+
   clearSearch(event) {
     event.stopPropagation();
     this.searchTextboxControl.patchValue('');
     this.selectedNgo = undefined;
   }
 
+  clearSearchNgoYear(event) {
+    event.stopPropagation();
+    this.searchTextboxControlNgoYear.patchValue('');
+    this.selectedNgoYear = undefined;
+  }
+
   selectionChange(event) {
     if (event.isUserInput) {
       this.selectedNgo = event.source.value;
+      this.loadNgoYears();
+    }
+  }
+
+  selectionChangeNgoYear(event) {
+    if (event.isUserInput) {
+      this.selectedNgoYear = event.source.value;
       this.load();
     }
   }
@@ -176,6 +217,12 @@ export class ProjectHubComponent implements OnInit {
     return this.comboData.filter(option => ((option.name ?? '') + ' ' + (option.acronym ?? '')).toLowerCase().indexOf(filterValue) === 0);
   }
 
+  private _filterNgoYear(name: string): NgoYearDTO[] {
+    const filterValue = name.toLowerCase();
+    this.selectFormControlNgoYear.patchValue(this.selectedValuesNgoYear);
+    return this.comboDataNgoYear.filter(option => ((option.name ?? '')).toLowerCase().indexOf(filterValue) === 0);
+  }
+
 
   private load() {
     this.persistState = false;
@@ -183,9 +230,9 @@ export class ProjectHubComponent implements OnInit {
     this.currentAction = undefined;
     this.selection.clear();
     this.applicationService.emmitLoading(true);
-    this.projectService.findProjectsCount(this.selectedNgo).subscribe((number) => {
+    this.projectService.findProjectsCount(this.selectedNgoYear).subscribe((number) => {
       this.length = number;
-      this.projectService.findProjects(this.selectedNgo).subscribe((result) => {
+      this.projectService.findProjects(this.selectedNgoYear).subscribe((result) => {
         this.applicationService.emmitLoading(false);
         this.dataSource.data = result;
       }, error => {
@@ -198,8 +245,8 @@ export class ProjectHubComponent implements OnInit {
     })
   }
 
-  getCurrentOpenYear(selectedNgo: NgoDTO) {
-    return '2023-2024'
+  getCurrentOpenYear(selectedNgo: NgoYearDTO) {
+    return selectedNgo.name
   }
 
   emitAction(action: ProjectAction) {
@@ -247,7 +294,7 @@ export class ProjectHubComponent implements OnInit {
             }
           )
         } else {
-          this.projectService.create(project, this.selectedNgo).subscribe((result) => {
+          this.projectService.create(project, this.selectedNgoYear).subscribe((result) => {
               this.applicationService.emmitLoading(false);
               this.load();
             }, error => {
@@ -297,5 +344,20 @@ export class ProjectHubComponent implements OnInit {
         console.log(this.retrievedImage)
       });
     }
+  }
+
+  private loadNgoYears() {
+    this.applicationService.emmitLoading(true);
+    this.financialService.getNgoYearsByNgoId(this.selectedNgo).subscribe((result) => {
+      this.applicationService.emmitLoading(false);
+      this.comboDataNgoYear = result;
+      this.filteredOptionsNgoYear = this.searchTextboxControlNgoYear.valueChanges
+        .pipe(
+          startWith<string>(''),
+          map(name => this._filterNgoYear(name))
+        );
+    }, error => {
+      this.applicationService.emmitLoading(false);
+    });
   }
 }

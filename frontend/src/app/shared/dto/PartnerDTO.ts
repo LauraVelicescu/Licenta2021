@@ -6,4 +6,5 @@ export class PartnerDTO {
   public phone: string;
   public mail: string;
   public representative: string;
+  public address:string;
 }

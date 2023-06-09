@@ -83,7 +83,7 @@ public class FinancialController {
 	public void createPartner(@RequestBody PartnerDTO partnerDTO) {
 		this.financialService.createPartner(this.modelMapper.map(partnerDTO, Partner.class));
 	}
-
+	
 	@PutMapping("/partners/{id}")
 	public void updatePartner(@PathVariable("id") Long id, @RequestBody PartnerDTO partnerDTO) {
 		this.financialService.updatePartner(id, this.modelMapper.map(partnerDTO, Partner.class));

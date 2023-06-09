@@ -17,6 +17,7 @@ export class ApplicationRoutes {
   public static NGO_MANAGE_MEMBERS_ROUTE: string = "members";
   public static NGO_YEAR_ROUTE: string = "ngo-year";
   public static NGO_PARTNER_TYPE_ROUTE: string = "ngo-partner-type";
+  public static PARTNERS_ROUTE: string = "partners";
   public static PROJECT_ROUTE = "project";
   public static PROJECT_MANAGE_ROUTE: string = "manage";
   public static PROJECT_BOARD_ROUTE: string = 'board';

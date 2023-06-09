@@ -11,9 +11,8 @@ import ro.fii.licenta.framework.PersistableEntityRepository;
 
 public interface ProjectRepository extends PersistableEntityRepository<Project, Long> {
 
-	@Query("SELECT p FROM Project p WHERE p.ngo.id=?1")
-	public Page<Project> findAllByNgoId(Long ngoId, Pageable page);
-	
-	public List<Project> findByNgo_Admin_Id(Long id);
+	public Page<Project> findAllByNgoYear_Id(Long ngoId, Pageable page);
+
+	public List<Project> findByNgoYear_Ngo_Admin_Id(Long id);
 
 }

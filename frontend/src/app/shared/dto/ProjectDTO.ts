@@ -1,4 +1,4 @@
-import {NgoDTO} from './NgoDTO';
+import {NgoYearDTO} from './NgoYearDTO';
 
 export class ProjectDTO{
   public id:number;
@@ -6,9 +6,11 @@ export class ProjectDTO{
   public description: string;
   public startDate: Date;
   public endDate: Date;
-  public ngo: NgoDTO;
+  public ngoYear: NgoYearDTO;
   public facebookLink: string;
   public twitterLink: string;
   public linkedinLink: string;
   public logo: any;
+  public budgetTreasury: number;
+  public budgetPartners: number;
 }

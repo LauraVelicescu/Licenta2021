@@ -35,13 +35,17 @@ public class ProjectServiceImpl implements ProjectService {
 		if (project.getStartDate().after(project.getEndDate())) {
 			throw new ValidationException("Start date must be before end date");
 		}
+		if (project.getNgoYear().getStartDate().after(project.getStartDate())
+				|| project.getNgoYear().getEndDate().before(project.getEndDate())) {
+			throw new ValidationException("Dates must be in the specified year");
+		}
 		return projectRepository.save(project);
 	}
 
 	@Override
-	public List<Project> findAllNgoProjects(Integer pageNo, Integer pageSize, Long ngoId) {
+	public List<Project> findAllNgoProjects(Integer pageNo, Integer pageSize, Long ngoYearId) {
 		Pageable page = (pageNo != null && pageSize != null) ? PageRequest.of(pageNo, pageSize) : null;
-		List<Project> ngoProjects = projectRepository.findAllByNgoId(ngoId, page).getContent();
+		List<Project> ngoProjects = projectRepository.findAllByNgoYear_Id(ngoYearId, page).getContent();
 
 		return ngoProjects;
 	}

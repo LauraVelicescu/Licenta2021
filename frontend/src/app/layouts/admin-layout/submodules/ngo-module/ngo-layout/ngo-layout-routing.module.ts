@@ -6,6 +6,7 @@ import {NgoManageFunctionsComponent} from './subcomponents/ngo-manage-functions/
 import {NgoManageMembersComponent} from './subcomponents/ngo-manage-members/ngo-manage-members/ngo-manage-members.component';
 import {NgoYearComponent} from './subcomponents/ngo-year/ngo-year.component';
 import {NgoPartnersTypeComponent} from './subcomponents/ngo-partners-type/ngo-partners-type.component';
+import {PartnersComponent} from './subcomponents/partners/partners.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,9 @@ const routes: Routes = [
   },
   {
     path: ApplicationRoutes.NGO_PARTNER_TYPE_ROUTE, component: NgoPartnersTypeComponent
+  },
+  {
+    path: ApplicationRoutes.PARTNERS_ROUTE, component: PartnersComponent
   }
 ];
 

@@ -19,6 +19,7 @@ import { AssignUserComponent } from './subcomponents/ngo-manage-modals/assign-us
 import { NgoManageMembersComponent } from './subcomponents/ngo-manage-members/ngo-manage-members/ngo-manage-members.component';
 import { NgoYearComponent } from './subcomponents/ngo-year/ngo-year.component';
 import { NgoPartnersTypeComponent } from './subcomponents/ngo-partners-type/ngo-partners-type.component';
+import { PartnersComponent } from './subcomponents/partners/partners.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { NgoPartnersTypeComponent } from './subcomponents/ngo-partners-type/ngo-
     AssignUserComponent,
     NgoManageMembersComponent,
     NgoYearComponent,
-    NgoPartnersTypeComponent
+    NgoPartnersTypeComponent,
+    PartnersComponent
   ],
   imports: [
     CommonModule,

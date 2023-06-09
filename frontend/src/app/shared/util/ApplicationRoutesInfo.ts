@@ -85,6 +85,12 @@ export class ApplicationRoutesInfo {
       icon: 'attach_money',
       privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
+    }, {
+      path: 'partners',
+      title: 'Partners',
+      icon: 'flag',
+      privileges: [Role.ADMIN, Role.NGO_ADMIN],
+      parentPath: 'ngo'
     }]
   }
 

@@ -17,6 +17,7 @@ import {TaskAttachmentDTO} from '../../../../../../shared/dto/TaskAttachmentDTO'
 import {saveAs} from 'file-saver';
 import {TaskHistoryDTO} from '../../../../../../shared/dto/TaskHistoryDTO';
 import {Router} from '@angular/router';
+import {Role} from '../../../../../../shared/util/ApplicationRoutesInfo';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -51,6 +52,7 @@ export class ProjectBoardComponent implements OnInit {
   comboData: ProjectDTO[] = [];
 
   selectedProject: ProjectDTO;
+
   taskForm: FormGroup;
 
   displayedStatusColumns: TaskStatus[] = [TaskStatus.TO_DO, TaskStatus.IN_PROGRESS, TaskStatus.BLOCKED, TaskStatus.DONE]
@@ -91,20 +93,49 @@ export class ProjectBoardComponent implements OnInit {
 
   ngOnInit(): void {
 
-    
-    this.applicationService.emmitLoading(true);
-    this.projectService.findMyProjects().subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.comboData = result;
-      this.filteredOptions = this.searchTextboxControl.valueChanges
-        .pipe(
-          startWith<string>(''),
-          map(name => this._filter(name))
-        );
-    }, error => {
-      this.applicationService.emmitLoading(false);
-    });
 
+    setTimeout(() => {
+      if (this.applicationService.globalPrivileges.includes(Role.ADMIN)) {
+        this.applicationService.emmitLoading(true);
+        this.projectService.findAllProjects().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextboxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      } else if (this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)) {
+        this.applicationService.emmitLoading(true);
+        this.projectService.findNgoManagedProjects().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextboxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      } else {
+        this.applicationService.emmitLoading(true);
+        this.projectService.findMyProjects().subscribe((result) => {
+          this.applicationService.emmitLoading(false);
+          this.comboData = result;
+          this.filteredOptions = this.searchTextboxControl.valueChanges
+            .pipe(
+              startWith<string>(''),
+              map(name => this._filter(name))
+            );
+        }, error => {
+          this.applicationService.emmitLoading(false);
+        });
+      }
+    }, 100);
 
     this.taskForm = this.formBuilder.group({
       name: ['', Validators.required],
@@ -120,9 +151,16 @@ export class ProjectBoardComponent implements OnInit {
     }
   }
 
+  openedChangeNgoYear(e) {
+    this.searchTextboxControl.patchValue('');
+    if (e === true) {
+      this.searchTextBox.nativeElement.focus();
+    }
+  }
+
   getPrint(option: ProjectDTO) {
     if (option) {
-      return ((option?.name ?? '') + ' [' + (option?.ngo?.acronym ?? '')) + ']';
+      return ((option?.name ?? '') + ' [' + (option?.ngoYear?.name ?? '') + ' ' + (option?.ngoYear.ngo?.acronym ?? '')) + ']';
     }
   }
 
