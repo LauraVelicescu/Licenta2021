@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import ro.fii.licenta.api.dao.NgoYear;
 import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
@@ -14,6 +15,7 @@ import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.exception.ValidationException;
+import ro.fii.licenta.api.repository.NgoYearRepository;
 import ro.fii.licenta.api.repository.ProjectMemberRepository;
 import ro.fii.licenta.api.repository.ProjectPositionRepository;
 import ro.fii.licenta.api.repository.ProjectRepository;
@@ -30,6 +32,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Autowired
 	ProjectMemberRepository projectMemberRepository;
 
+	@Autowired
+	NgoYearRepository ngoYearRepository;
+
 	@Override
 	public Project save(Project project) throws ValidationException {
 		if (project.getStartDate().after(project.getEndDate())) {
@@ -38,6 +43,25 @@ public class ProjectServiceImpl implements ProjectService {
 		if (project.getNgoYear().getStartDate().after(project.getStartDate())
 				|| project.getNgoYear().getEndDate().before(project.getEndDate())) {
 			throw new ValidationException("Dates must be in the specified year");
+		}
+
+		if (project.getBudgetTreasury() != null) {
+			NgoYear ngoYear = this.ngoYearRepository.findById(project.getNgoYear().getId()).get();
+			if (project.getBudgetTreasury() > ngoYear.getTreasury()) {
+				throw new ValidationException(
+						"You can't specify a budged higher than the tereasury for the seleted year");
+			}
+
+			if (project.getId() == null) {
+				ngoYear.setRemainingTreasury((ngoYear.getTreasury() - project.getBudgetTreasury()));
+			} else {
+				Project oldProject = this.projectRepository.findById(project.getId()).get();
+				ngoYear.setRemainingTreasury(ngoYear.getRemainingTreasury() - (project.getBudgetTreasury()
+						- (oldProject.getBudgetTreasury() != null ? oldProject.getBudgetTreasury() : 0)));
+			}
+			this.ngoYearRepository.save(ngoYear);
+			project.setRemainingBudget(project.getBudgetTreasury()
+					+ (project.getBudgetPartners() != null ? project.getBudgetPartners() : 0));
 		}
 		return projectRepository.save(project);
 	}
@@ -73,6 +97,10 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteById(Long id) {
 
 		if (this.projectRepository.existsById(id)) {
+			Project existingProject = this.projectRepository.findById(id).get();
+			NgoYear ngoYear = this.ngoYearRepository.findById(existingProject.getNgoYear().getId()).get();
+			ngoYear.setRemainingTreasury(ngoYear.getRemainingTreasury()
+					+ (existingProject.getBudgetTreasury() != null ? existingProject.getBudgetTreasury() : 0));
 			this.projectRepository.deleteById(id);
 		} else {
 			throw new NotFoundException("Project" + id + " does not exist");

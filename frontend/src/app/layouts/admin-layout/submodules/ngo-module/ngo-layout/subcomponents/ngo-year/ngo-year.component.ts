@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {NgoDTO} from '../../../../../../../shared/dto/NgoDTO';
@@ -10,10 +10,12 @@ import {NotificationService} from '../../../../../../../shared/services/notifica
 import {MatDialog} from '@angular/material/dialog';
 import {NGOService} from '../../../../../../../shared/services/ngo-service/ngo.service';
 import {Role} from '../../../../../../../shared/util/ApplicationRoutesInfo';
-import {delay, map, startWith} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 import {formatDate} from '@angular/common';
 import {OperationType} from '../../../../../../../shared/util/OperationType';
 import {FinancialService} from '../../../../../../../shared/services/financial/financial.service';
+import {Report} from '../../../../project-module/subcomponents/project-hub/components/project-reports/project-reports.component';
+import {ReportService} from '../../../../../../../shared/services/report/report.service';
 
 @Component({
   selector: 'app-ngo-year',
@@ -42,6 +44,7 @@ export class NgoYearComponent implements OnInit {
   ngoName: string = '';
 
   constructor(
+    private reportService: ReportService,
     private applicationService: ApplicationService,
     private notificationService: NotificationService,
     private formBuilder: FormBuilder,
@@ -86,6 +89,7 @@ export class NgoYearComponent implements OnInit {
         startDate: ['', Validators.required],
         endDate: ['', Validators.required],
         treasury: ['', Validators.required],
+        remainingTreasury: ['']
       }
     )
   }
@@ -195,5 +199,22 @@ export class NgoYearComponent implements OnInit {
     if (date) {
       return formatDate(date, 'yyyy-MM-dd', 'en-US');
     }
+  }
+
+  generateReport(selected: NgoYearDTO[]) {
+    this.downloadReport(Report.NGO_YEAR_FINANCIAL_SITUATION, selected[0])
+  }
+
+  downloadReport(report: Report, ngoYearDTO: NgoYearDTO) {
+    this.reportService.downloadReport(report).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
   }
 }

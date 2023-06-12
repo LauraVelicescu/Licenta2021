@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
@@ -18,6 +20,7 @@ public class ProjectMember extends NameDescriptionEntity {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonBackReference
     private Project project;
     
     private Member member;

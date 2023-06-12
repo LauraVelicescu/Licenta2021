@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ro.fii.licenta.api.dao.NgoPartnersType;
 import ro.fii.licenta.api.dao.NgoYear;
 import ro.fii.licenta.api.dao.Partner;
+import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectBudgetIncreaseRequest;
 import ro.fii.licenta.api.dao.ProjectExpense;
 import ro.fii.licenta.api.dao.ProjectPartner;
@@ -21,6 +22,7 @@ import ro.fii.licenta.api.repository.PartnerRepository;
 import ro.fii.licenta.api.repository.ProjectBudgetIncreaseRequestRepository;
 import ro.fii.licenta.api.repository.ProjectExpenseRepository;
 import ro.fii.licenta.api.repository.ProjectPartnerRepository;
+import ro.fii.licenta.api.repository.ProjectRepository;
 
 @Service
 public class FinancialService {
@@ -41,12 +43,15 @@ public class FinancialService {
 	private PartnerRepository partnerRepository;
 
 	@Autowired
+	private ProjectRepository projectRepository;
+
+	@Autowired
 	private ProjectBudgetIncreaseRequestRepository projectBudgetIncreaseRequestRepository;
 
 	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-	private static final String PHONE_NUMBER_PATTERN =  "^(?:(?:\\+|00)40\\s?|0)(?:(?:[72][236845]\\d{1}\\s?\\d{3}\\s?\\d{3})|(?:7[2-9]\\d{1}\\s?\\d{3}\\s?\\d{4})|(?:3[0-9]{2}\\s?\\d{3}\\s?\\d{3}))$";
+	private static final String PHONE_NUMBER_PATTERN = "^(?:(?:\\+|00)40\\s?|0)(?:(?:[72][236845]\\d{1}\\s?\\d{3}\\s?\\d{3})|(?:7[2-9]\\d{1}\\s?\\d{3}\\s?\\d{4})|(?:3[0-9]{2}\\s?\\d{3}\\s?\\d{3}))$";
 
 	private final Pattern patternPhone = Pattern.compile(PHONE_NUMBER_PATTERN);
 
@@ -188,16 +193,12 @@ public class FinancialService {
 		return projectExpenseRepository.findByProject_Id(id);
 	}
 
-	public void createProjectExpense(ProjectExpense projectExpense) {
-		projectExpenseRepository.save(projectExpense);
+	public ProjectExpense createProjectExpense(ProjectExpense projectExpense) {
+		return projectExpenseRepository.save(projectExpense);
 	}
 
 	public void updateProjectExpense(Long id, ProjectExpense projectExpense) {
-		ProjectExpense existingProjectExpense = projectExpenseRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectExpense not found with id: " + id));
-		// Update the properties of existingProjectExpense with the values from
-		// projectExpense
-		projectExpenseRepository.save(existingProjectExpense);
+		projectExpenseRepository.save(projectExpense);
 	}
 
 	public void deleteProjectExpense(Long id) {
@@ -225,6 +226,7 @@ public class FinancialService {
 		if (ngoYear.getTreasury() < 0) {
 			throw new ValidationException("Treasury must be > 0");
 		}
+		ngoYear.setRemainingTreasury(ngoYear.getTreasury());
 		ngoYearRepository.save(ngoYear);
 	}
 
@@ -239,7 +241,7 @@ public class FinancialService {
 		if (ngoYear.getTreasury() < 0) {
 			throw new ValidationException("Treasury must be > 0");
 		}
-		// Update the properties of existingNgoYear with the values from ngoYear
+		ngoYear.setRemainingTreasury(ngoYear.getTreasury());
 		ngoYearRepository.save(ngoYear);
 	}
 
@@ -276,25 +278,55 @@ public class FinancialService {
 					"Partner with id: " + partnerId + " already associated with the project with id: " + projectId);
 		}
 
+		if (projectPartner.getAmount() > projectPartner.getPartnersType().getMaxAmount()
+				|| projectPartner.getAmount() < projectPartner.getPartnersType().getMinAmount()) {
+			throw new ValidationException(
+					"Partner must give an amount between: " + projectPartner.getPartnersType().getMinAmount() + " and: "
+							+ projectPartner.getPartnersType().getMaxAmount());
+		}
+		Project project = this.projectRepository.findById(projectId).get();
+		project.setBudgetPartners(
+				(project.getBudgetPartners() != null ? project.getBudgetPartners() : 0) + projectPartner.getAmount());
+		project.setRemainingBudget(project.getRemainingBudget() + projectPartner.getAmount());
+		projectRepository.save(project);
 		projectPartnerRepository.save(projectPartner);
 	}
 
 	public void updateProjectPartner(Long id, ProjectPartner projectPartner) {
-		ProjectPartner existingProjectPartner = projectPartnerRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectPartner not found with id: " + id));
 
-		// Update the properties of existingProjectPartner with the values from
-		// projectPartner
-		existingProjectPartner.setProject(projectPartner.getProject());
-		existingProjectPartner.setPartner(projectPartner.getPartner());
+		Long projectId = projectPartner.getProject().getId();
+		Long partnerId = projectPartner.getPartner().getId();
 
-		projectPartnerRepository.save(existingProjectPartner);
+		ProjectPartner partnerExists = projectPartnerRepository.findByProject_IdAndPartner_Id(projectId, partnerId);
+		if (partnerExists != null && !partnerExists.getId().equals(projectPartner.getId())) {
+			throw new EntityConflictException(
+					"Partner with id: " + partnerId + " already associated with the project with id: " + projectId);
+		}
+
+		if (projectPartner.getAmount() > projectPartner.getPartnersType().getMaxAmount()
+				|| projectPartner.getAmount() < projectPartner.getPartnersType().getMinAmount()) {
+			throw new ValidationException(
+					"Partner must give an amount between: " + projectPartner.getPartnersType().getMinAmount() + " and: "
+							+ projectPartner.getPartnersType().getMaxAmount());
+		}
+		ProjectPartner existingPartner = this.projectPartnerRepository.findById(projectPartner.getId()).get();
+		Project project = this.projectRepository.findById(projectId).get();
+		project.setBudgetPartners(
+				project.getBudgetPartners() - existingPartner.getAmount() + projectPartner.getAmount());
+		project.setRemainingBudget(
+				project.getRemainingBudget() - existingPartner.getAmount() + projectPartner.getAmount());
+		projectRepository.save(project);
+		projectPartnerRepository.save(projectPartner);
 	}
 
 	public void deleteProjectPartner(Long id) {
 		ProjectPartner projectPartner = projectPartnerRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("ProjectPartner not found with id: " + id));
 
+		Project project = this.projectRepository.findById(projectPartner.getProject().getId()).get();
+		project.setBudgetPartners(project.getBudgetPartners() - projectPartner.getAmount());
+		project.setRemainingBudget(project.getRemainingBudget() - projectPartner.getAmount());
+		this.projectRepository.save(project);
 		projectPartnerRepository.delete(projectPartner);
 	}
 }

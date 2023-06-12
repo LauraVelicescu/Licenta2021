@@ -32,6 +32,8 @@ public class ProjectDTO {
 
 	private Double budgetPartners;
 
+	private Double remainingBudget;
+
 	public Long getId() {
 		return id;
 	}
@@ -146,4 +148,11 @@ public class ProjectDTO {
 		this.budgetPartners = budgetPartners;
 	}
 
+	public Double getRemainingBudget() {
+		return remainingBudget;
+	}
+
+	public void setRemainingBudget(Double remainingBudget) {
+		this.remainingBudget = remainingBudget;
+	}
 }

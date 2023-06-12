@@ -25,12 +25,24 @@ export enum ProjectAction {
   BOARD = 'Board',
   REPORTS = 'Reports',
   POSITIONS = 'Positions',
+  PARTNERS = 'Partners',
+  EXPENSES = 'Expenses',
   POSITIONS_ADD = 'Add position',
   POSITIONS_EDIT = 'Edit position',
   POSITIONS_DELETE = 'Delete position',
   MEMBER_ADD = 'Add member',
   MEMBER_EDIT = 'Edit member',
-  MEMBER_DELETE = 'Delete member'
+  MEMBER_DELETE = 'Delete member',
+  PARTNER_ADD = 'Partner add',
+  PARTNER_EDIT = 'Partner edit',
+  PARTNER_DELETE = 'Partner delete',
+  EXPENSE_ADD = 'Expense add',
+  EXPENSE_EDIT = 'Expense edit',
+  EXPENSE_DELETE = 'Expense delete',
+  EXPENSE_APPROVE = 'Expense approve',
+  EXPENSE_DENY = 'Expense deny',
+  EXPENSE_UPLOAD = 'Expense upload',
+  EXPENSE_DOWNLOAD = 'Expense download'
 }
 
 @Component({
@@ -139,7 +151,6 @@ export class ProjectHubComponent implements OnInit {
       if (this.selectedProject?.id) {
         this.base64Data = this.selectedProject.logo;
         this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
-        console.log(this.retrievedImage)
       }
       this.currentAction = undefined;
     });
@@ -154,7 +165,8 @@ export class ProjectHubComponent implements OnInit {
         twitter: [''],
         linkedin: [''],
         budgetTreasury: [''],
-        budgetPartners: ['']
+        budgetPartners: [''],
+        remainingBudget: ['']
       }
     )
   }

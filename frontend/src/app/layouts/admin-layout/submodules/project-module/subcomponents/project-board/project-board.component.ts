@@ -14,10 +14,11 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {ProjectMemberDTO} from '../../../../../../shared/dto/ProjectMemberDTO';
 import {MatOptionSelectionChange} from '@angular/material/core';
 import {TaskAttachmentDTO} from '../../../../../../shared/dto/TaskAttachmentDTO';
-import {saveAs} from 'file-saver';
 import {TaskHistoryDTO} from '../../../../../../shared/dto/TaskHistoryDTO';
 import {Router} from '@angular/router';
 import {Role} from '../../../../../../shared/util/ApplicationRoutesInfo';
+import {Report} from '../project-hub/components/project-reports/project-reports.component';
+import {ReportService} from '../../../../../../shared/services/report/report.service';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -83,7 +84,8 @@ export class ProjectBoardComponent implements OnInit {
               private formBuilder: FormBuilder,
               private taskService: TaskService,
               private sanitized: DomSanitizer,
-              private router: Router) {
+              private router: Router,
+              private reportService: ReportService) {
     if (this.router.getCurrentNavigation().extras?.state?.selectedProject) {
       this.selectedProject = this.router.getCurrentNavigation().extras.state.selectedProject
       this.load();
@@ -478,5 +480,22 @@ export class ProjectBoardComponent implements OnInit {
         this.applicationService.emmitLoading(false);
       })
     }
+  }
+
+  generateReport(item: TaskAttachmentDTO) {
+    this.downloadReport(Report.TASK_PROGRESS, item)
+  }
+
+  downloadReport(report: Report, item: TaskAttachmentDTO) {
+    this.reportService.downloadReport(report).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
   }
 }

@@ -1,13 +1,19 @@
 package ro.fii.licenta.api.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
@@ -19,6 +25,7 @@ public class ProjectTask extends NameDescriptionEntity {
 
 	private ProjectMember projectMember;
 
+	@JsonBackReference
 	private Project project;
 
 	private TaskStatus taskStatus;
@@ -26,6 +33,10 @@ public class ProjectTask extends NameDescriptionEntity {
 	private Date createdDate;
 
 	private Date deadline;
+
+	private List<TaskHistory> taskHistories = new ArrayList<>();
+
+	private List<TaskAttachment> taskAttachments = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_member_id")
@@ -72,5 +83,23 @@ public class ProjectTask extends NameDescriptionEntity {
 
 	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
+	}
+
+	@OneToMany(mappedBy = "projectTask", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	public List<TaskHistory> getTaskHistories() {
+		return taskHistories;
+	}
+
+	public void setTaskHistories(List<TaskHistory> taskHistories) {
+		this.taskHistories = taskHistories;
+	}
+
+	@OneToMany(mappedBy = "projectTask", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	public List<TaskAttachment> getTaskAttachments() {
+		return taskAttachments;
+	}
+
+	public void setTaskAttachments(List<TaskAttachment> taskAttachments) {
+		this.taskAttachments = taskAttachments;
 	}
 }

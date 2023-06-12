@@ -1,0 +1,167 @@
+<div class="text-right">
+  <button mat-icon-button class="example-icon favorite-icon"
+          aria-label="Example icon-button with heart icon"
+          (click)="emitAction(actions.EXPENSE_ADD)"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
+<div class=" table-full-width table-responsive" *ngIf="!persistState">
+  <table mat-table class="table" [dataSource]="dataSource">
+
+    <ng-container matColumnDef="no">
+      <th mat-header-cell *matHeaderCellDef style="width: 39px" class="text-center"> #</th>
+      <td mat-cell *matCellDef="let element" style="width: 39px" class="text-center">
+        {{element.id}}
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name</th>
+      <td mat-cell *matCellDef="let element">
+        {{getName(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expenseOwner">
+      <th mat-header-cell *matHeaderCellDef>Expense owner</th>
+      <td mat-cell *matCellDef="let element">
+        {{getExpenseOwner(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="project">
+      <th mat-header-cell *matHeaderCellDef> Project name</th>
+      <td mat-cell *matCellDef="let element">
+        {{getProject(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="task">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Task</th>
+      <td mat-cell *matCellDef="let element" class="text-right">
+        {{getTask(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Created at</th>
+      <td mat-cell *matCellDef="let element" class="text-right">
+        {{getDate(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Amount</th>
+      <td mat-cell *matCellDef="let element" class="text-right">
+        {{element.amount}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Status</th>
+      <td mat-cell *matCellDef="let element" class="text-right">
+        {{getStatus(element)}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef class="text-right"> Actions</th>
+      <td class="td-actions text-right" mat-cell *matCellDef="let element">
+        <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
+                (click)="emitAction(actions.EXPENSE_APPROVE, element)" *ngIf="element.status !== 1">
+          <i class="tim-icons icon-check-2"></i>
+        </button>
+        <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
+                (click)="emitAction(actions.EXPENSE_DENY, element)" *ngIf="element.status !== 2">
+          <i class="tim-icons icon-alert-circle-exc"></i>
+        </button>
+        <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
+                (click)="emitAction(actions.EXPENSE_EDIT, element)" *ngIf="element.status !== 1">
+          <i class="tim-icons icon-settings"></i>
+        </button>
+        <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                (click)="emitAction(actions.EXPENSE_DELETE, element)" *ngIf="element.status !== 1">
+          <i class="tim-icons icon-simple-remove"></i>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns" class="text-primary"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="{hovered: row.hovered}"
+        (mouseover)="row.hovered = true" (mouseout)="row.hovered = false"
+    ></tr>
+  </table>
+</div>
+
+
+<div *ngIf="persistState">
+  <form [formGroup]="expenseForm" style="padding: 15px;" (ngSubmit)="onSubmit(currentAction)">
+    <div class=" row">
+      <div class=" col-md-4 pl-md-1">
+        <div class=" form-group">
+          <label> Name </label>
+          <input
+            class=" form-control"
+            placeholder=""
+            formControlName="name"
+            type="text"
+            [(ngModel)]="selectedProjectExpense.name"
+          >
+        </div>
+      </div>
+      <div class=" col-md-4 pr-md-1">
+        <div class=" form-group">
+          <label> Amount </label>
+          <input
+            class=" form-control"
+            placeholder=""
+            formControlName="amount"
+            type="number"
+            [(ngModel)]="selectedProjectExpense.amount"
+          >
+        </div>
+      </div>
+      <div class=" col-md-4 pr-md-1">
+        <div class=" form-group">
+          <label> Documents </label>
+          <input
+            class=" form-control"
+            placeholder=""
+            type="text"
+
+            (click)="fileInput.click()"
+            [value]="selectedFileName"
+          >
+          <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                  *ngIf="selectedFile || selectedProjectExpense.fileName"
+                  (click)="download()"
+          >
+            <i class="tim-icons icon-cloud-download-93"></i>
+          </button>
+          <input #fileInput type=file (change)="onFileChanged($event)" style="display: none">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class=" col-md-12 p-md-1">
+        <div class=" form-group">
+          <label> Description </label>
+          <input
+            class=" form-control"
+            placeholder="description"
+            formControlName="description"
+            [(ngModel)]="selectedProjectExpense.description"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
+    <div class=" card-footer">
+      <button class=" btn btn-primary" type="submit">Save</button>
+      <button class=" btn btn-secondary" (click)="cancelAction(currentAction)">Back</button>
+    </div>
+  </form>
+</div>

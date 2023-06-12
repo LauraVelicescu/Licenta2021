@@ -15,6 +15,8 @@ public class NgoYearDTO {
 
 	private Double treasury;
 
+	private Double remainingTreasury;
+
 	public Long getId() {
 		return id;
 	}
@@ -69,6 +71,14 @@ public class NgoYearDTO {
 
 	public void setTreasury(Double treasury) {
 		this.treasury = treasury;
+	}
+
+	public Double getRemainingTreasury() {
+		return remainingTreasury;
+	}
+
+	public void setRemainingTreasury(Double remainingTreasury) {
+		this.remainingTreasury = remainingTreasury;
 	}
 
 }

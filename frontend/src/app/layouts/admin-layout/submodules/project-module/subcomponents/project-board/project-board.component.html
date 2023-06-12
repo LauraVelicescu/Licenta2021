@@ -28,8 +28,8 @@
   </div>
   <div *ngIf="selectedProject" style="margin-top: 25px">
     <div class="row" cdkDropListGroup *ngIf="!persistState">
-      <div *ngFor="let status of displayedStatusColumns" class="col-md-3">
-        <h2 style="text-align: right">{{getPrintableStatus(status)}}</h2>
+      <div *ngFor="let status of displayedStatusColumns" class="col-lg-3">
+        <h2 style="text-align: center">{{getPrintableStatus(status)}}</h2>
         <div
           cdkDropList
           [cdkDropListData]="statusTaskMap.get(status)"
@@ -97,7 +97,7 @@
       </div>
     </div>
     <div *ngIf="persistState" class="row">
-      <div class="col-md-2">
+      <div class="col-lg-2">
         <div class="card" *ngIf="viewState" style="padding-top: 24px">
           <div class="card-title">
             <h6 style="text-align: center">
@@ -130,13 +130,17 @@
                   >
                     <i class="tim-icons icon-cloud-download-93"></i>
                   </button>
+                  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
+                          (click)="generateReport(item)">
+                    <mat-icon>assignment</mat-icon>
+                  </button>
                 </div>
               </mat-list-item>
             </mat-list>
           </div>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-lg-8">
         <div class="card">
           <div class="card-title" style="padding: 25px;">
             <h2 *ngIf="currentAction === taskActions.ADD">Create a new task</h2>
@@ -233,7 +237,7 @@
           </form>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-lg-2">
         <div class="card table-full-width table-responsive card-tasks" *ngIf="viewState" style="padding-top: 24px;">
           <div class="card-title">
             <h6 style="text-align: center">

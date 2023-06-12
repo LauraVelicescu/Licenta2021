@@ -28,6 +28,8 @@ public class NgoYear extends NameDescriptionEntity {
 
 	private Double treasury;
 
+	private Double remainingTreasury;
+
 	@Column(name = "start_date")
 	public Date getStartDate() {
 		return startDate;
@@ -63,6 +65,15 @@ public class NgoYear extends NameDescriptionEntity {
 
 	public void setTreasury(Double treasury) {
 		this.treasury = treasury;
+	}
+
+	@Column(name = "remaining_treasury")
+	public Double getRemainingTreasury() {
+		return remainingTreasury;
+	}
+
+	public void setRemainingTreasury(Double remainingTreasury) {
+		this.remainingTreasury = remainingTreasury;
 	}
 
 }

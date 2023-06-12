@@ -9,4 +9,5 @@ export class NgoYearDTO {
   public endDate: Date;
   public treasury: number;
   public ngo: NgoDTO;
+  public remainingTreasury: number;
 }

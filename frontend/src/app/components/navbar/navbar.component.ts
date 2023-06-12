@@ -3,7 +3,7 @@ import {Location} from '@angular/common';
 import {Router} from '@angular/router';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import {AuthenticationService} from '../../shared/services/authentication/authentication.service';
-import {ApplicationRoutesInfo} from '../../shared/util/ApplicationRoutesInfo';
+import {ApplicationRoutesInfo, RouteInfo} from '../../shared/util/ApplicationRoutesInfo';
 import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
 
 @Component({
@@ -12,7 +12,7 @@ import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
-  private listTitles: any[];
+  private listTitles: RouteInfo[];
   location: Location;
   mobile_menu_visible: any = 0;
   private toggleButton: any;
@@ -173,11 +173,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
 
     for (var item = 0; item < this.listTitles.length; item++) {
-      if (titlee.indexOf(this.listTitles[item].parentPath + '/' + this.listTitles[item].path) !== -1) {
-        return this.listTitles[item].title;
+      for(var item1 = 0; item1 < this.listTitles[item].subPaths.length; item1++) {
+        if (titlee.indexOf(this.listTitles[item].path + '/' + this.listTitles[item].subPaths[item1].path) !== -1) {
+          return this.listTitles[item].subPaths[item1].title;
+        }
       }
     }
-    return 'Dashboard';
   }
 
   open(content) {

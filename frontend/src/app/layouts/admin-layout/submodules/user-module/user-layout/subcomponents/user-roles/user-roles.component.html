@@ -1,7 +1,7 @@
 <div class="content">
   <div class="card" style="width: 80%; margin: auto">
     <div class=" card-body">
-      <div class=" table-full-width table-responsive" style="overflow-x: hidden;">
+      <div class=" table-full-width table-responsive">
         <table mat-table class="table" [dataSource]="dataSource">
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef></th>
@@ -24,14 +24,14 @@
       </div>
     </div>
   </div>
-  <div class="row" style="width: 80%; margin: auto;" *ngIf="selectedRole">
-    <div class="card col-md-6">
+  <div class="row" style="width: 80%; margin: 30px auto auto;" *ngIf="selectedRole">
+    <div class="card col-md-12">
       <div class="card-title" style="padding: 24px">
         <h6>Assign roles</h6>
       </div>
       <div class="card-body" style="padding: 24px;">
 
-        <div class="row" *ngIf="selectedRole.ngoEligible">
+        <div class="table-responsive" *ngIf="selectedRole.ngoEligible">
           <mat-form-field style="width: 240px">
             <mat-select (openedChange)="openedChange($event)" placeholder="Select">
               <div class="select-container">
@@ -90,8 +90,8 @@
           </div>
         </div>
 
-        <div class="row" *ngIf="!selectedRole.ngoEligible">
-          <div class="card">
+        <div *ngIf="!selectedRole.ngoEligible">
+          <div class="card table-responsive">
             <div class="card-body">
               <table mat-table class="table" [dataSource]="dataSourceUser">
 
@@ -122,7 +122,7 @@
         <button class=" btn btn-fill btn-danger" (click)="cancelMember()">Back</button>
       </div>
     </div>
-    <div class="card col-md-6">
+    <div class="card col-md-12">
       <div class="card">
         <div class="card-title" style="padding: 24px">
           <h6>Users for role {{selectedRole.name}}</h6>

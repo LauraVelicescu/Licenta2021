@@ -150,7 +150,7 @@ export class UserRolesComponent implements OnInit {
       this.selectedNgo = undefined;
       this.dataSourceMembers.data = []
       this.applicationService.emmitLoading(true);
-      this.ngoService.findMyNGOs().subscribe((result) => {
+      this.ngoService.findAllNGOs().subscribe((result) => {
         this.applicationService.emmitLoading(false);
         this.comboData = result;
         this.filteredOptions = this.searchTextBoxControl.valueChanges

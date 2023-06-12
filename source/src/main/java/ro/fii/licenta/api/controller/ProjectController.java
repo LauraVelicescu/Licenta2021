@@ -66,17 +66,13 @@ public class ProjectController {
 	}
 
 	@PostMapping(value = "/updateProject")
-	public ResponseEntity<ProjectDTO> updateProject(@RequestBody ProjectDTO projectDto) {
+	public void updateProject(@RequestBody ProjectDTO projectDto) {
 		Project project = projectService.findById(projectDto.getId());
 
 		if (project != null) {
 			new NotFoundException(String.format("Project with name %s was not found", projectDto.getName()));
 		}
-
-		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		modelMapper.map(projectDto, project);
-		modelMapper.getConfiguration().setSkipNullEnabled(false);
-		return new ResponseEntity<>(modelMapper.map(projectService.save(project), ProjectDTO.class), HttpStatus.OK);
+		this.projectService.save(this.modelMapper.map(projectDto, Project.class));
 
 	}
 
@@ -215,13 +211,6 @@ public class ProjectController {
 	public void deleteMember(@PathVariable(value = "projectMemberId") Long projectMemberId) {
 		this.projectService.deleteProjectMember(projectMemberId);
 	}
-
-//	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file,
-//			@PathVariable(value = "projectId") Long projectId) throws IOException {
-//		Project p = this.projectService.findById(projectId);
-//		p.setLogo(compressBytes(file.getBytes()));
-//		return new ResponseEntity<>(modelMapper.map(projectService.save(p), ProjectDTO.class), HttpStatus.OK);
-//	}
 
 	@PostMapping(value = "/project/{projectId}/uploadImage")
 	public ResponseEntity<?> uploadImage(@RequestParam("imageFile") MultipartFile file,

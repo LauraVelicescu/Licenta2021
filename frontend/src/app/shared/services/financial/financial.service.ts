@@ -8,8 +8,8 @@ import {ProjectExpenseDTO} from '../../dto/ProjectExpenseDTO';
 import {ProjectPartnerDTO} from '../../dto/ProjectPartnerDTO';
 import {ProjectBudgetIncreaseRequestDTO} from '../../dto/ProjectBudgetIncreaseRequestDTO';
 import {NgoDTO} from '../../dto/NgoDTO';
-import {MemberDTO} from '../../dto/MemberDTO';
 import {ProjectDTO} from '../../dto/ProjectDTO';
+import {plainToClass} from 'class-transformer';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,11 @@ export class FinancialService {
   private partnerURL: string = '/partners';
   private projectBudgetIncreaseRequestURL: string = '/projectBudgetIncreaseRequests';
   private projectExpenseURL: string = '/projectExpenses';
+  private projectExpenseUploadURL: string = '/projectExpenses/upload';
+  private projectExpenseDownloadURL: string = '/projectExpenses/download';
   private projectPartnerURL: string = '/projectPartners';
   private ngoYearURL: string = '/ngoYears';
+  private projectExpensesStatusURL: string = '/projectExpenses'
 
   constructor(private mainService: MainServiceService) {
   }
@@ -188,13 +191,32 @@ export class FinancialService {
 
   public createProjectExpense(data: ProjectExpenseDTO) {
     return this.mainService.post(this.rootURL + this.projectExpenseURL, data).pipe(
-      map((result) => {
-        return result;
+      map((result: ProjectExpenseDTO) => {
+        return plainToClass(ProjectExpenseDTO, result);
       }),
       catchError(err => {
         throw new Error(err.error.message);
       })
     );
+  }
+
+
+  public updateDocument(profilePicture: any, projectExpenseDTO: ProjectExpenseDTO) {
+    return this.mainService.postFile(this.rootURL + this.projectExpenseUploadURL + '/' + projectExpenseDTO.id, profilePicture).pipe(map((result: ProjectExpenseDTO) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err);
+    }));
+  }
+
+
+  downloadDownload(projectExpenseDTO: ProjectExpenseDTO) {
+    return this.mainService.downloadFile(this.rootURL + this.projectExpenseDownloadURL + '/' + projectExpenseDTO.id).pipe(map((result: any) => {
+      return result;
+    }), catchError(err => {
+      throw new Error(err.error.message);
+    }));
   }
 
   public createProjectPartner(data: ProjectPartnerDTO) {
@@ -254,6 +276,17 @@ export class FinancialService {
 
   public updateProjectExpense(data: ProjectExpenseDTO) {
     return this.mainService.put(this.rootURL + this.projectExpenseURL + '/' + data.id, data).pipe(
+      map((result) => {
+        return result;
+      }),
+      catchError(err => {
+        throw new Error(err.error.message);
+      })
+    );
+  }
+
+  public updateProjectExpenseState(data: ProjectExpenseDTO, state: number) {
+    return this.mainService.put(this.rootURL + this.projectExpenseURL + '/' + data.id + '/' + state, data).pipe(
       map((result) => {
         return result;
       }),

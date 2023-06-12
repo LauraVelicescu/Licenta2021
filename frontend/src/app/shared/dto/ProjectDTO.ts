@@ -13,4 +13,5 @@ export class ProjectDTO{
   public logo: any;
   public budgetTreasury: number;
   public budgetPartners: number;
+  public remainingBudget: number;
 }

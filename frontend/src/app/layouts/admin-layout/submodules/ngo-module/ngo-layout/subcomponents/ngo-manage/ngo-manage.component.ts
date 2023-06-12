@@ -18,6 +18,8 @@ import {MemberRequestDTO, MemberRequestStatus} from '../../../../../../../shared
 import {OrganizationalComponentDTO} from '../../../../../../../shared/dto/OrganizationalComponentDTO';
 import {MemberService} from '../../../../../../../shared/services/member-service/member.service';
 import {Role} from '../../../../../../../shared/util/ApplicationRoutesInfo';
+import {Report} from '../../../../project-module/subcomponents/project-hub/components/project-reports/project-reports.component';
+import {ReportService} from '../../../../../../../shared/services/report/report.service';
 
 @Component({
   selector: 'app-ngo-manage',
@@ -52,7 +54,8 @@ export class NgoManageComponent implements OnInit {
   private componentEdit: boolean = false
 
   constructor(private formBuilder: FormBuilder, private NGOService: NGOService, private notificationService: NotificationService,
-              private applicationService: ApplicationService, private matDialog: MatDialog) {
+              private applicationService: ApplicationService, private matDialog: MatDialog,
+              private reportService: ReportService) {
   }
 
 
@@ -237,6 +240,24 @@ export class NgoManageComponent implements OnInit {
       }
     }
   }
+
+  generateNgoReport(selected: NgoDTO[]) {
+   this.downloadReport(Report.NGO_FINANCIAL_SITUATION, selected[0]);
+  }
+
+  downloadReport(report: Report, ngoDTO: NgoDTO) {
+    this.reportService.downloadReport(report).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
 }
 
 

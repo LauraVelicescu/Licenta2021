@@ -1,7 +1,7 @@
 <div class="content" [hidden]="persistState">
   <div class="row">
     <div class=" col-md-10" style="margin: auto">
-      <div class="card">
+      <div class="card table-responsive">
         <mat-toolbar class="card-header">
           <h4 class="card-title">All NGOs</h4>
           <span class="example-spacer"></span>
@@ -36,7 +36,7 @@
             ></tr>
           </table>
           <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons [length]="length"
-                         style="background-color: lightpink; opacity: 0.5" #paginator></mat-paginator>
+                         #paginator></mat-paginator>
         </div>
       </div>
     </div>

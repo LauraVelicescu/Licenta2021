@@ -21,6 +21,8 @@ import { ProjectBoardComponent } from './subcomponents/project-board/project-boa
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatListModule} from '@angular/material/list';
 import { ProjectReportsComponent } from './subcomponents/project-hub/components/project-reports/project-reports.component';
+import { ProjectParnersComponent } from './subcomponents/project-hub/components/project-parners/project-parners.component';
+import { ProjectExpensesComponent } from './subcomponents/project-hub/components/project-expenses/project-expenses.component';
 
 
 @NgModule({
@@ -30,7 +32,9 @@ import { ProjectReportsComponent } from './subcomponents/project-hub/components/
     ProjectTeamComponent,
     ProjectPositionsComponent,
     ProjectBoardComponent,
-    ProjectReportsComponent
+    ProjectReportsComponent,
+    ProjectParnersComponent,
+    ProjectExpensesComponent
   ],
   imports: [
     CommonModule,
