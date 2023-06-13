@@ -27,7 +27,7 @@
     </mat-form-field>
   </div>
   <div *ngIf="selectedProject" style="margin-top: 25px">
-    <div class="row" cdkDropListGroup *ngIf="!persistState">
+    <div class="row" cdkDropListGroup *ngIf="!persistState && !createExpenseState">
       <div *ngFor="let status of displayedStatusColumns" class="col-lg-3">
         <h2 style="text-align: center">{{getPrintableStatus(status)}}</h2>
         <div
@@ -67,28 +67,35 @@
                 </div>
               </div>
               <div class="col-md-2">
-                <div class="text-right">
-                  <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
-                          (click)="emmitAction(taskActions.EDIT, item)"
+                <div ngbDropdown style="text-align: right">
+                  <button
+                    class="btn btn-link btn-icon"
+                    data-toggle="dropdown"
+                    ngbDropdownToggle
+                    type="button"
                   >
-                    <i class="tim-icons icon-settings"></i>
+                    <i class="tim-icons icon-settings-gear-63"> </i>
                   </button>
-                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
-                          (click)="emmitAction(taskActions.DELETE, item)"
+                  <div
+                    aria-labelledby="dropdownMenuLink"
+                    class="dropdown-menu-right"
+                    ngbDropdownMenu
                   >
-                    <i class="tim-icons icon-simple-remove"></i>
-                  </button>
-                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
-                          (click)="fileInput.click()"
-                  >
-                    <i class="tim-icons icon-attach-87"></i>
-                    <input #fileInput type=file (change)="onFileUploaded($event, item)" style="display: none" multiple>
-                  </button>
-                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
-                          (click)="emmitAction(taskActions.VIEW, item)"
-                  >
-                    <i class="tim-icons icon-vector"></i>
-                  </button>
+                    <a href="javascript:void(0)" ngbDropdownItem
+                       (click)="emmitAction(taskActions.EDIT, item)"> Edit </a>
+                    <a href="javascript:void(0)" ngbDropdownItem
+                       (click)="emmitAction(taskActions.DELETE, item)"> Delete </a>
+                    <a href="javascript:void(0)" ngbDropdownItem
+                       (click)="fileInput.click()"> Upload
+                      <input #fileInput type=file (change)="onFileUploaded($event, item)" style="display: none"
+                             multiple></a>
+                    <a href="javascript:void(0)" ngbDropdownItem
+                       (click)="emmitAction(taskActions.VIEW, item)"> View </a>
+                    <a href="javascript:void(0)" ngbDropdownItem
+                       (click)="generateReport(item)"> Generate report </a>
+                    <a href="javascript:void(0)" ngbDropdownItem
+                       (click)="createExpense(item)"> Create expense </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -129,10 +136,6 @@
                           (click)="emmitAttachmentAction(taskActions.DOWNLOAD_ATTACHMENT, item)"
                   >
                     <i class="tim-icons icon-cloud-download-93"></i>
-                  </button>
-                  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-                          (click)="generateReport(item)">
-                    <mat-icon>assignment</mat-icon>
                   </button>
                 </div>
               </mat-list-item>
@@ -273,6 +276,69 @@
           </div>
         </div>
       </div>
+    </div>
+    <div *ngIf="createExpenseState" class="card" style="padding: 24px">
+      <h6>Create new expense</h6>
+      <form [formGroup]="expenseForm" style="padding: 15px;" (ngSubmit)="saveExpense()">
+        <div class=" row">
+          <div class=" col-md-4 pl-md-1">
+            <div class=" form-group">
+              <label> Name </label>
+              <input
+                class=" form-control"
+                placeholder=""
+                formControlName="name"
+                type="text"
+                [(ngModel)]="newExpense.name"
+              >
+            </div>
+          </div>
+          <div class=" col-md-4 pr-md-1">
+            <div class=" form-group">
+              <label> Amount </label>
+              <input
+                class=" form-control"
+                placeholder=""
+                formControlName="amount"
+                type="number"
+                [(ngModel)]="newExpense.amount"
+              >
+            </div>
+          </div>
+          <div class=" col-md-4 pr-md-1">
+            <div class=" form-group">
+              <label> Documents </label>
+              <input
+                class=" form-control"
+                placeholder=""
+                type="text"
+
+                (click)="fileInput.click()"
+                [value]="selectedFileName"
+              >
+              <input #fileInput type=file (change)="onFileChanged($event)" style="display: none">
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class=" col-md-12 p-md-1">
+            <div class=" form-group">
+              <label> Description </label>
+              <input
+                class=" form-control"
+                placeholder="description"
+                formControlName="description"
+                [(ngModel)]="newExpense.description"
+                type="text"
+              />
+            </div>
+          </div>
+        </div>
+        <div class=" card-footer">
+          <button class=" btn btn-primary" type="submit">Save</button>
+          <button class=" btn btn-secondary" (click)="cancelSaveExpense()">Back</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

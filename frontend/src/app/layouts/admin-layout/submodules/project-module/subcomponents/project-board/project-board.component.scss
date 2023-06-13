@@ -3,9 +3,14 @@
   height: 100%;
   background: white;
   border-radius: 4px;
-  overflow: hidden;
   display: block;
 }
+
+
+.dropdown-menu-right>a:hover {
+  opacity: 0.5;
+}
+
 
 .example-box {
   padding: 20px 10px;

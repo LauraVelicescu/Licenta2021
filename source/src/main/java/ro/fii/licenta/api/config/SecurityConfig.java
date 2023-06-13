@@ -81,10 +81,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 		entryPoint.setRealmName("Swagger Realm");
 		return entryPoint;
 	}
-	
-	
-	@Override
-	public void addCorsMappings(CorsRegistry registry ){
-		registry.addMapping("/**").allowedOrigins("http://localhost:4200");
-	}
+//	
+//	
+//	@Override
+//	public void addCorsMappings(CorsRegistry registry ){
+//		registry.addMapping("/**").allowedOrigins("http://localhost:4200");
+//	}
 }

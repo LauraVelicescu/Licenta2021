@@ -46,6 +46,7 @@ import ro.fii.licenta.api.dto.ProjectBudgetIncreaseRequestDTO;
 import ro.fii.licenta.api.dto.ProjectExpenseDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPartnerDTO;
+import ro.fii.licenta.api.exception.ValidationException;
 import ro.fii.licenta.api.repository.ProjectExpenseRepository;
 import ro.fii.licenta.api.repository.ProjectMemberRepository;
 import ro.fii.licenta.api.repository.ProjectRepository;
@@ -210,17 +211,21 @@ public class FinancialController {
 		ProjectMember pm = this.projectMemberRepository
 				.findByProject_IdAndMember_User_Id(projectExpenseDTO.getProject().getId(), user.getId());
 		projectExpenseDTO.setExpenseOwner(this.modelMapper.map(pm, ProjectMemberDTO.class));
-		return ResponseEntity
-				.ok(this.modelMapper.map(
-						this.financialService
-								.createProjectExpense(this.modelMapper.map(projectExpenseDTO, ProjectExpense.class)),
-						ProjectExpenseDTO.class));
+		ProjectExpense created = this.financialService
+				.createProjectExpense(this.modelMapper.map(projectExpenseDTO, ProjectExpense.class));
+		ProjectExpenseDTO toReturn = new ProjectExpenseDTO();
+		toReturn.setId(created.getId());
+		return ResponseEntity.ok(toReturn);
 	}
 
 	@PutMapping(value = "/projectExpenses/{id}/{state}")
 	public void updateState(@PathVariable("id") Long id, @PathVariable("state") Long state) {
 		ProjectExpense projectExpense = this.projectExpenseRepository.findById(id).get();
 		if (state == 1) {
+			if (projectExpense.getAmount() > projectExpense.getProject().getRemainingBudget()) {
+				throw new ValidationException(
+						"Cannot validate the expense because it's higher than the remaining budget");
+			}
 			projectExpense.setStatus(1);
 			Project project = projectExpense.getProject();
 			project.setRemainingBudget(project.getRemainingBudget() - projectExpense.getAmount());
