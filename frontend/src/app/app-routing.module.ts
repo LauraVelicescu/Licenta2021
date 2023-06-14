@@ -10,14 +10,9 @@ import {ApplicationRoutes} from './shared/util/ApplicationRoutes';
 
 const routes: Routes = [
   {
-    path: '',
-    redirectTo: ApplicationRoutes.ADMIN_MODULE_ROUTE,
-    pathMatch: 'full'
-  },
-  {
     path: ApplicationRoutes.ADMIN_MODULE_ROUTE,
     component: AdminLayoutComponent,
-   canActivate: [LoginGuard],
+    canActivate: [LoginGuard],
     children: [
       {
         path: '',
@@ -34,6 +29,11 @@ const routes: Routes = [
         loadChildren: () => import('./layouts/auth-layout/auth-layout.module').then(m => m.AuthLayoutModule)
       }
     ]
+  },
+  {
+    path: '**',
+    redirectTo: ApplicationRoutes.ADMIN_MODULE_ROUTE,
+    pathMatch: 'full'
   }
 ];
 

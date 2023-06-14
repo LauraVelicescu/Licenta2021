@@ -190,7 +190,7 @@ export class ProjectExpensesComponent implements OnInit {
           this.applicationService.emmitLoading(false);
           this.load();
         }, error => {
-          this.applicationService.emmitLoading(true);
+          this.applicationService.emmitLoading(false);
           this.notificationService.error(error);
         })
       }

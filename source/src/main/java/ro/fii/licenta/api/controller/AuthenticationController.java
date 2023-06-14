@@ -1,6 +1,7 @@
 package ro.fii.licenta.api.controller;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
@@ -85,8 +86,8 @@ public class AuthenticationController {
 	}
 
 	@PostMapping("/resetPassword")
-	public ResponseEntity<String> resetPassword(HttpServletRequest request, @RequestBody String email) throws BusinessException {
-		User user = userService.findUserByEmail(email);
+	public ResponseEntity<String> resetPassword(HttpServletRequest request, @RequestBody Map<String, Object> email) throws BusinessException {
+		User user = userService.findUserByEmail((String) email.get("emailAddress"));
 		if (user == null) {
 			throw new BusinessException("This user does not exist.");
 		}

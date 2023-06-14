@@ -33,11 +33,4 @@ export const AdminLayoutRoutes: Routes = [
     }]
   },
   {path: ApplicationRoutes.DASHBOARD_ROUTE, component: DashboardComponent},
-  // { path: 'icons', component: IconsComponent },
-  // { path: "maps", component: MapComponent },
-  // { path: "notifications", component: NotificationsComponent },
-  // { path: "user", component: UserComponent },
-  // { path: "tables", component: TablesComponent },
-  // { path: "typography", component: TypographyComponent },
-  // { path: "ngo", component: NGOComponent}
 ];

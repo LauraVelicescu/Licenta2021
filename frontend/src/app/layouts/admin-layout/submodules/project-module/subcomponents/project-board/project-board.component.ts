@@ -19,6 +19,8 @@ import {Router} from '@angular/router';
 import {Role} from '../../../../../../shared/util/ApplicationRoutesInfo';
 import {Report} from '../project-hub/components/project-reports/project-reports.component';
 import {ReportService} from '../../../../../../shared/services/report/report.service';
+import {ProjectExpenseDTO} from '../../../../../../shared/dto/ProjectExpenseDTO';
+import {FinancialService} from '../../../../../../shared/services/financial/financial.service';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -77,6 +79,13 @@ export class ProjectBoardComponent implements OnInit {
 
   history: TaskHistoryDTO[] = [];
   newChat: string;
+  createExpenseState: boolean = false;
+
+  expenseForm: FormGroup;
+  private afterSaveFileHook: boolean = false;
+  selectedFileName: string = '';
+  newExpense: ProjectExpenseDTO = undefined;
+  private selectedFileExpense: any;
 
   constructor(private projectService: ProjectService,
               private applicationService: ApplicationService,
@@ -85,7 +94,8 @@ export class ProjectBoardComponent implements OnInit {
               private taskService: TaskService,
               private sanitized: DomSanitizer,
               private router: Router,
-              private reportService: ReportService) {
+              private reportService: ReportService,
+              private financialService: FinancialService) {
     if (this.router.getCurrentNavigation().extras?.state?.selectedProject) {
       this.selectedProject = this.router.getCurrentNavigation().extras.state.selectedProject
       this.load();
@@ -482,11 +492,11 @@ export class ProjectBoardComponent implements OnInit {
     }
   }
 
-  generateReport(item: TaskAttachmentDTO) {
+  generateReport(item: ProjectTaskDTO) {
     this.downloadReport(Report.TASK_PROGRESS, item)
   }
 
-  downloadReport(report: Report, item: TaskAttachmentDTO) {
+  downloadReport(report: Report, item: ProjectTaskDTO) {
     this.reportService.downloadReport(report).subscribe(blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -497,5 +507,60 @@ export class ProjectBoardComponent implements OnInit {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     });
+  }
+
+  createExpense(item: ProjectTaskDTO) {
+
+    this.createExpenseState = true;
+    this.expenseForm = this.formBuilder.group({
+        name: ['', Validators.required],
+        description: ['', Validators.required],
+        amount: ['', Validators.required],
+      }
+    )
+    this.newExpense = new ProjectExpenseDTO();
+    this.newExpense.project = item.project;
+    this.newExpense.task = item;
+    this.newExpense.date = new Date();
+  }
+
+  saveExpense() {
+    if(this.expenseForm.invalid) {
+      return
+    } else {
+      this.newExpense.status = 0;
+      this.applicationService.emmitLoading(true);
+      this.financialService.createProjectExpense(this.newExpense).subscribe((result) => {
+          if (this.afterSaveFileHook) {
+            this.afterSaveFileHook = false;
+            const uploadImageData = new FormData();
+            uploadImageData.append('imageFile', this.selectedFileExpense, this.selectedFileExpense.name);
+            this.financialService.updateDocument(uploadImageData, result).subscribe(() => {
+            });
+          }
+          this.applicationService.emmitLoading(false);
+          this.load();
+          this.newExpense = undefined;
+          this.selectedFileExpense = undefined;
+          this.createExpenseState = false;
+        }, error => {
+          this.applicationService.emmitLoading(false);
+          this.notificationService.error(error);
+        }
+      )
+    }
+  }
+
+  onFileChanged(event: any) {
+
+    this.selectedFileExpense = event.target.files[0];
+    this.selectedFileName = this.selectedFileExpense.name;
+    this.afterSaveFileHook = true;
+  }
+
+  cancelSaveExpense() {
+    this.newExpense = undefined;
+    this.selectedFileExpense = undefined;
+    this.createExpenseState = false;
   }
 }

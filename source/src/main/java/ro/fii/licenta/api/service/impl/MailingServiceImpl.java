@@ -13,7 +13,7 @@ public class MailingServiceImpl implements MailingService {
 		email.setSubject(subject);
 		email.setText(body);
 		email.setTo(user.getEmailAddress());
-		email.setFrom("admin@ongmanager.com");
+		email.setFrom("mangongoadm@gmail.com");
 		return email;
 	}
 
