@@ -84,11 +84,11 @@
                     <i class="tim-icons icon-attach-87"></i>
                     <input #fileInput type=file (change)="onFileUploaded($event, item)" style="display: none" multiple>
                   </button>
-                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
-                          (click)="emmitAction(taskActions.VIEW, item)"
-                  >
-                    <i class="tim-icons icon-vector"></i>
-                  </button>
+<!--                  <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"-->
+<!--                          (click)="emmitAction(taskActions.VIEW, item)"-->
+<!--                  >-->
+<!--                    <i class="tim-icons icon-vector"></i>-->
+<!--                  </button>-->
                 </div>
               </div>
             </div>
@@ -97,7 +97,7 @@
       </div>
     </div>
     <div *ngIf="persistState" class="row">
-      <div class="col-lg-2">
+      <div class="col-md-12">
         <div class="card" *ngIf="viewState" style="padding-top: 24px">
           <div class="card-title">
             <h6 style="text-align: center">
@@ -140,7 +140,7 @@
           </div>
         </div>
       </div>
-      <div class="col-lg-8">
+      <div class="col-md-12">
         <div class="card">
           <div class="card-title" style="padding: 25px;">
             <h2 *ngIf="currentAction === taskActions.ADD">Create a new task</h2>
@@ -237,7 +237,7 @@
           </form>
         </div>
       </div>
-      <div class="col-lg-2">
+      <div class="col-md-12">
         <div class="card table-full-width table-responsive card-tasks" *ngIf="viewState" style="padding-top: 24px;">
           <div class="card-title">
             <h6 style="text-align: center">
