@@ -24,11 +24,6 @@
                   (click)="handleOperation(operationType.ASSIGN_FUNCTION_FOR_PEOPLE, selection.selected)">
             <mat-icon>people</mat-icon>
           </button>
-          <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-                  [disabled]="selection.selected.length !== 1"
-                  (click)="generateNgoReport(selection.selected)">
-            <mat-icon>assignment</mat-icon>
-          </button>
         </mat-toolbar>
         <div class="card-body">
           <table mat-table class="table" [dataSource]="dataSource">

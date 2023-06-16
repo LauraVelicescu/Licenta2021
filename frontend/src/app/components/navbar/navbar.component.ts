@@ -5,6 +5,7 @@ import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import {AuthenticationService} from '../../shared/services/authentication/authentication.service';
 import {ApplicationRoutesInfo, RouteInfo} from '../../shared/util/ApplicationRoutesInfo';
 import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
+import {ApplicationService} from '../../shared/services/application/application.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,6 +13,18 @@ import {ApplicationRoutes} from '../../shared/util/ApplicationRoutes';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
+
+  constructor(
+    location: Location,
+    private element: ElementRef,
+    private router: Router,
+    private modalService: NgbModal,
+    private authenticationService: AuthenticationService,
+    private applicationService: ApplicationService
+  ) {
+    this.location = location;
+    this.sidebarVisible = false;
+  }
   private listTitles: RouteInfo[];
   location: Location;
   mobile_menu_visible: any = 0;
@@ -21,17 +34,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public isCollapsed = true;
 
   closeResult: string;
-
-  constructor(
-    location: Location,
-    private element: ElementRef,
-    private router: Router,
-    private modalService: NgbModal,
-    private authenticationService: AuthenticationService
-  ) {
-    this.location = location;
-    this.sidebarVisible = false;
-  }
+  retrievedImage: any;
 
   // function that adds color white/transparent to the navbar on resize (this is for the collapse)
   updateColor = () => {
@@ -58,6 +61,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.mobile_menu_visible = 0;
       }
     });
+    setTimeout(() => {
+      this.retrievedImage = this.applicationService.retrievedImage
+    }, 100)
   }
 
   collapse() {
@@ -173,7 +179,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
 
     for (var item = 0; item < this.listTitles.length; item++) {
-      for(var item1 = 0; item1 < this.listTitles[item].subPaths.length; item1++) {
+      for (var item1 = 0; item1 < this.listTitles[item].subPaths.length; item1++) {
         if (titlee.indexOf(this.listTitles[item].path + '/' + this.listTitles[item].subPaths[item1].path) !== -1) {
           return this.listTitles[item].subPaths[item1].title;
         }
@@ -205,10 +211,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.authenticationService.logout();
-    this.router.navigateByUrl("/"+ ApplicationRoutes.AUTH_MODULE_ROUTE);
+    this.router.navigateByUrl('/' + ApplicationRoutes.AUTH_MODULE_ROUTE);
   }
 
   onProfile() {
-    this.router.navigateByUrl(ApplicationRoutes.ADMIN_MODULE_ROUTE + "/" + ApplicationRoutes.USER_ROUTE + "/" + ApplicationRoutes.USER_ME_ROUTE);
+    this.router.navigateByUrl(ApplicationRoutes.ADMIN_MODULE_ROUTE + '/' + ApplicationRoutes.USER_ROUTE + '/' + ApplicationRoutes.USER_ME_ROUTE);
   }
 }
