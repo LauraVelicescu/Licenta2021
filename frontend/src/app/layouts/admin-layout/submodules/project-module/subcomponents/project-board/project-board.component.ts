@@ -497,7 +497,8 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   downloadReport(report: Report, item: ProjectTaskDTO) {
-    this.reportService.downloadReport(report).subscribe(blob => {
+    let params = {taskId: item.id}
+    this.reportService.downloadReport(report,params).subscribe(blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -525,7 +526,7 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   saveExpense() {
-    if(this.expenseForm.invalid) {
+    if (this.expenseForm.invalid) {
       return
     } else {
       this.newExpense.status = 0;

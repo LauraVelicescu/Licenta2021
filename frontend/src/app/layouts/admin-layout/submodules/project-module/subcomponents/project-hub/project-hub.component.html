@@ -439,7 +439,7 @@
             <ng-container *ngSwitchCase="projectAction.BOARD">
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.REPORTS">
-              <app-project-reports></app-project-reports>
+              <app-project-reports [selectedProject]="selectedProject"></app-project-reports>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.POSITIONS">
               <app-project-positions [selectedProject]="selectedProject"></app-project-positions>

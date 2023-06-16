@@ -14,6 +14,7 @@ export class ApplicationService {
   private _loading: ReplaySubject<boolean> = new ReplaySubject<boolean>();
 
   public globalPrivileges: string[] = [];
+  public retrievedImage: string;
 
   constructor(private userService: UserService) {
     this._loading.next(false);
@@ -23,6 +24,8 @@ export class ApplicationService {
   public  buildNavbarForUser() {
     let userPrivileges: string[] = ['ANY']
     return this.userService.getUser().pipe(map((result: UserDTO) => {
+      let base64Data = result.profilePicture;
+      this.retrievedImage = 'data:image/jpeg;base64,' + base64Data;
       let roles: string[] = result.roles.map(r => r.name.toUpperCase())
       for (const role of roles) {
         userPrivileges.push(role)

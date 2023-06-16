@@ -16,5 +16,15 @@
 }
 
 .active-link {
-  text-decoration: underline!important;
+  text-decoration: underline !important;
+}
+
+
+.mat-icon-button {
+  min-width: 0!important;
+  width: 20px!important;
+  height: 20px!important;
+  flex-shrink: 0!important;
+  line-height: 1px!important;
+  border-radius: 0%!important;
 }
