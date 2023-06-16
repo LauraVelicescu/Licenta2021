@@ -216,7 +216,7 @@ export class UserRolesComponent implements OnInit {
     if (this.selectedRole.ngoEligible) {
       if (this.selectionMembers.selected.length > 0) {
         this.applicationService.emmitLoading(true);
-        this.userService.setRolesForMember(this.selectedRole, this.selectionMembers.selected).subscribe((result) => {
+        this.userService.setRolesForMember(this.selectedRole, this.selectionMembers.selected, true).subscribe((result) => {
           this.selectedNgo = undefined;
           this.dataSourceMembers.data = [];
           this.selectedRole = undefined;
@@ -230,7 +230,7 @@ export class UserRolesComponent implements OnInit {
     } else {
       if (this.selectionUser.selected.length > 0) {
         this.applicationService.emmitLoading(true);
-        this.userService.setRolesForMember(this.selectedRole, this.selectionUser.selected).subscribe((result) => {
+        this.userService.setRolesForMember(this.selectedRole, this.selectionUser.selected, false).subscribe((result) => {
           this.selectedNgo = undefined;
           this.dataSourceUser.data = [];
           this.selectedRole = undefined;

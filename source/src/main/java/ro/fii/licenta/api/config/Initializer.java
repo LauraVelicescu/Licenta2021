@@ -36,13 +36,14 @@ public class Initializer {
 
 	private void createAdminIfDoesNotExist() {
 
-		User user = this.userRepository.findByEmailAddress("admin@gmail.com");
+		User user = this.userRepository.findByEmailAddress("mangongoadm@gmail.com");
 		if (user == null) {
 			user = new User();
-			user.setEmailAddress("admin@gmail.com");
-			user.setFirstName("Admin");
+			user.setEmailAddress("mangongoadm@gmail.com");
+			user.setFirstName("Web App");
 			user.setLastName("Admin");
 			user.setPassword(passwordEncoder.encode("admin"));
+			user.setAboutMe("Default administrator account.");
 			this.userRepository.save(user);
 
 		}

@@ -34,7 +34,9 @@ import ro.fii.licenta.api.dto.RoleDTO;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.dto.UserRoleDTO;
 import ro.fii.licenta.api.exception.BusinessException;
+import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.repository.RoleRepository;
+import ro.fii.licenta.api.repository.UserRepository;
 import ro.fii.licenta.api.repository.UserRoleRepoistory;
 import ro.fii.licenta.api.service.MailingService;
 import ro.fii.licenta.api.service.MemberService;
@@ -98,13 +100,10 @@ public class UserController {
 			throws Exception {
 		User user = userService.findUserByEmail(userDTO.getEmailAddress());
 
-		if (user == null) {
-			throw new NotFoundException(String.format("User ith email %s was not found", userDTO.getEmailAddress()));
+		if (user != null && !user.getId().equals(userDTO.getId())) {
+			throw new EntityConflictException(String.format("Already exists an user with email %s", userDTO.getEmailAddress()));
 		}
-		modelMapper.getConfiguration().setSkipNullEnabled(true);
-		modelMapper.map(userDTO, user);
-		modelMapper.getConfiguration().setSkipNullEnabled(false);
-		return new ResponseEntity<>(modelMapper.map(userService.save(user), UserDTO.class), HttpStatus.OK);
+		return new ResponseEntity<>(modelMapper.map(userService.save(this.modelMapper.map(userDTO, User.class)), UserDTO.class), HttpStatus.OK);
 
 	}
 

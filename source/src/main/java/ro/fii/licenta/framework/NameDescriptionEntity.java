@@ -1,6 +1,7 @@
 package ro.fii.licenta.framework;
 
 import javax.persistence.Column;
+import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 
 
@@ -22,7 +23,8 @@ public abstract class NameDescriptionEntity extends PersistableEntity {
 		this.name = name;
 	}
 
-	@Column(name = "description")
+	@Lob
+	@Column( length = 100000, name = "description" )
 	public String getDescription() {
 		return description;
 	}

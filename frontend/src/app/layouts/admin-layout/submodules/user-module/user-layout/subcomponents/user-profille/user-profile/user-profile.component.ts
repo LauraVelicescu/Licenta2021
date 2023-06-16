@@ -3,6 +3,8 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {UserDTO} from '../../../../../../../../shared/dto/UserDTO';
 import {UserService} from '../../../../../../../../shared/services/user-service/user.service';
 import {formatDate} from '@angular/common';
+import {ApplicationService} from '../../../../../../../../shared/services/application/application.service';
+import {NotificationService} from '../../../../../../../../shared/services/notification-service/notification.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -19,7 +21,10 @@ export class UserProfileComponent implements OnInit {
   message: string;
   imageName: any;
 
-  constructor(private formBuilder: FormBuilder, private userService: UserService) {
+  constructor(private formBuilder: FormBuilder,
+              private userService: UserService,
+              private applicationService: ApplicationService,
+              private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -38,7 +43,6 @@ export class UserProfileComponent implements OnInit {
       this.currentUser = result;
       this.base64Data = this.currentUser.profilePicture;
       this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
-      console.log(this.retrievedImage)
       this.userForm.patchValue({
           emailAddress: this.currentUser.emailAddress,
           firstName: this.currentUser.firstName,
@@ -57,7 +61,7 @@ export class UserProfileComponent implements OnInit {
     if (this.userForm.invalid) {
       return;
     } else {
-      const user: UserDTO = new UserDTO();
+      const user: UserDTO = this.currentUser;
       user.emailAddress = this.userForm.controls.emailAddress.value;
       user.firstName = this.userForm.controls.firstName.value;
       user.lastName = this.userForm.controls.lastName.value;
@@ -66,11 +70,13 @@ export class UserProfileComponent implements OnInit {
       user.twitterLink = this.userForm.controls.twitterLink.value;
       user.linkedinLink = this.userForm.controls.linkedinLink.value;
       user.aboutMe = this.userForm.controls.aboutMe.value;
-      this.userService.update(user).subscribe((result) => {
-        console.log(result);
-      }, error => {
-        console.log(error);
 
+      this.applicationService.emmitLoading(true);
+      this.userService.update(user).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+      }, error => {
+        this.applicationService.emmitLoading(false);
+        this.notificationService.error(error);
       })
     }
   }

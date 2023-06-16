@@ -65,9 +65,12 @@ export class AssignUserComponent implements OnInit {
     this.applicationService.emmitLoading(true);
     switch (this.assignType) {
       case AssignType.FUNCTION:
+        this.comboDataFunction = []
+        console.log(this.comboDataFunction)
         this.ngoService.findNGOFunctions(this.selectedNGO).subscribe((result) => {
           this.comboDataFunction = result;
           this.comboDataFunction.push({description: '', id: 0, name: NONE})
+          console.log(this.comboDataFunction)
           this.filteredOptions = this.searchTextBoxControl.valueChanges
             .pipe(
               startWith<string>(''),
@@ -79,7 +82,8 @@ export class AssignUserComponent implements OnInit {
         });
         break;
       case AssignType.ORGANIZATIONAL_UNIT:
-        this.comboDataOrganizationalComponent = this.selectedNGO.componentList;
+        this.comboDataOrganizationalComponent = [...this.selectedNGO.componentList];
+        console.log(this.comboDataOrganizationalComponent)
         this.comboDataOrganizationalComponent.push({description: '', id: 0, lead: false, parentNgo: undefined, name: NONE})
         this.filteredOptions = this.searchTextBoxControl.valueChanges
           .pipe(

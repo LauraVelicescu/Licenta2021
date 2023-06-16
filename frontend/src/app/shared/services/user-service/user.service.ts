@@ -137,12 +137,12 @@ export class UserService {
     })));
   }
 
-  public setRolesForMember(role: RoleDTO, members: MemberDTO[] | UserDTO[]) {
+  public setRolesForMember(role: RoleDTO, members: MemberDTO[] | UserDTO[], isMember: boolean) {
     let list: UserRoleDTO[] = [];
     members.forEach(m => {
       let userRole: UserRoleDTO = new UserRoleDTO();
       userRole.role = role;
-      if(m instanceof MemberDTO) {
+      if(isMember) {
         userRole.user = m.user;
         userRole.ngo = m.ngo
       } else {
