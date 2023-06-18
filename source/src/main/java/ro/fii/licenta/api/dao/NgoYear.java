@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
@@ -59,6 +60,7 @@ public class NgoYear extends NameDescriptionEntity {
 	}
 
 	@Column(name = "treasury")
+	@ColumnDefault(value = "0")
 	public Double getTreasury() {
 		return treasury;
 	}
@@ -68,6 +70,7 @@ public class NgoYear extends NameDescriptionEntity {
 	}
 
 	@Column(name = "remaining_treasury")
+	@ColumnDefault(value = "0")
 	public Double getRemainingTreasury() {
 		return remainingTreasury;
 	}

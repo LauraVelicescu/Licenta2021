@@ -16,6 +16,7 @@ import {UserService} from '../../../../../../shared/services/user-service/user.s
 import {Role} from '../../../../../../shared/util/ApplicationRoutesInfo';
 import {NgoYearDTO} from '../../../../../../shared/dto/NgoYearDTO';
 import {FinancialService} from '../../../../../../shared/services/financial/financial.service';
+import {SecurityStorage} from '../../../../../../security/SecurityStorage';
 
 export enum ProjectAction {
   ADD = 'Add',
@@ -94,7 +95,8 @@ export class ProjectHubComponent implements OnInit {
               private formBuilder: FormBuilder,
               private projectService: ProjectService,
               private userService: UserService,
-              private router: Router) {
+              private router: Router,
+              private securityStorage: SecurityStorage) {
   }
 
   ngOnInit(): void {
@@ -140,7 +142,7 @@ export class ProjectHubComponent implements OnInit {
           this.applicationService.emmitLoading(false);
         });
       }
-    }, 100);
+    }, 300);
 
 
     this.selection.changed.asObservable().subscribe(value => {
@@ -236,11 +238,14 @@ export class ProjectHubComponent implements OnInit {
   }
 
 
-  private load() {
+  private load(keepSelection?:boolean) {
     this.persistState = false;
-    this.selectedProject = undefined;
-    this.currentAction = undefined;
-    this.selection.clear();
+    if(!keepSelection) {
+      this.selectedProject = undefined;
+      this.currentAction = undefined;
+      this.selection.clear();
+    }
+
     this.applicationService.emmitLoading(true);
     this.projectService.findProjectsCount(this.selectedNgoYear).subscribe((number) => {
       this.length = number;
@@ -371,5 +376,17 @@ export class ProjectHubComponent implements OnInit {
     }, error => {
       this.applicationService.emmitLoading(false);
     });
+  }
+
+  onEmmitPartnerSave() {
+    this.load(true);
+  }
+
+  canView() {
+    return this.applicationService.globalPrivileges.includes(Role.REPORTS) || this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)
+  }
+
+  canViewProject() {
+    return this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)
   }
 }

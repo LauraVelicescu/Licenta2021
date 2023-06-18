@@ -70,19 +70,19 @@
       <th mat-header-cell *matHeaderCellDef class="text-right"> Actions</th>
       <td class="td-actions text-right" mat-cell *matCellDef="let element">
         <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
-                (click)="emitAction(actions.EXPENSE_APPROVE, element)" *ngIf="element.status !== 1">
+                (click)="emitAction(actions.EXPENSE_APPROVE, element)" *ngIf="element.status !== 1 && canView()">
           <i class="tim-icons icon-check-2"></i>
         </button>
         <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
-                (click)="emitAction(actions.EXPENSE_DENY, element)" *ngIf="element.status !== 2">
+                (click)="emitAction(actions.EXPENSE_DENY, element)" *ngIf="element.status !== 2 && canView()">
           <i class="tim-icons icon-alert-circle-exc"></i>
         </button>
         <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
-                (click)="emitAction(actions.EXPENSE_EDIT, element)" *ngIf="element.status !== 1">
+                (click)="emitAction(actions.EXPENSE_EDIT, element)" *ngIf="element.status !== 1 && canViewOwn(element)" >
           <i class="tim-icons icon-settings"></i>
         </button>
         <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
-                (click)="emitAction(actions.EXPENSE_DELETE, element)" *ngIf="element.status !== 1">
+                (click)="emitAction(actions.EXPENSE_DELETE, element)" *ngIf="element.status !== 1 && canViewOwn(element)">
           <i class="tim-icons icon-simple-remove"></i>
         </button>
       </td>

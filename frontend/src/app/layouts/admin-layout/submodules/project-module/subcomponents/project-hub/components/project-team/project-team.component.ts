@@ -14,6 +14,7 @@ import {ProjectPositionDTO} from '../../../../../../../../shared/dto/ProjectPosi
 import {map, startWith} from 'rxjs/operators';
 import {MemberService} from '../../../../../../../../shared/services/member-service/member.service';
 import {NgoDTO} from '../../../../../../../../shared/dto/NgoDTO';
+import {Role} from '../../../../../../../../shared/util/ApplicationRoutesInfo';
 
 @Component({
   selector: 'app-project-team',
@@ -280,5 +281,9 @@ export class ProjectTeamComponent implements OnInit {
     }, error => {
       this.applicationService.emmitLoading(false);
     });
+  }
+
+  canView() {
+    return this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)
   }
 }

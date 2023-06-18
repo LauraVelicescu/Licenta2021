@@ -61,9 +61,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.mobile_menu_visible = 0;
       }
     });
-    setTimeout(() => {
-      this.retrievedImage = this.applicationService.retrievedImage
-    }, 100)
   }
 
   collapse() {

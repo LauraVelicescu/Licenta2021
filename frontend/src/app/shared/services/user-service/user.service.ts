@@ -8,6 +8,7 @@ import {MemberRequestDTO} from '../../dto/MemberRequestDTO';
 import {RoleDTO} from '../../dto/RoleDTO';
 import {MemberDTO} from '../../dto/MemberDTO';
 import {UserRoleDTO} from '../../dto/UserRoleDTO';
+import {UserDTOImage} from '../../dto/UserDTOImage';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class UserService {
   private rootURL = 'api/user'
   private updateURL = '/updateUser';
   private getURL = '/getUser';
+  private getUserImageURL = '/getUser/image';
   private getUsersURL = '/findUsers'
   private getUsersCountURL = '/findUsers/count';
   private getAllRolesURL = '/roles'
@@ -51,8 +53,17 @@ export class UserService {
     }));
   }
 
+  public getUserImage() {
+    return this.mainService.get(this.rootURL + this.getUserImageURL).pipe(map((result: UserDTOImage) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err);
+    }));
+  }
+
   public updateProfilePicture(profilePicture: any) {
-    return this.mainService.postFile(this.rootURL + this.uploadImageURL, profilePicture).pipe(map((result: UserDTO) => {
+    return this.mainService.postFile(this.rootURL + this.uploadImageURL, profilePicture).pipe(map((result: UserDTOImage) => {
       return result;
     }), catchError(err => {
       this.mainService.httpError(err);

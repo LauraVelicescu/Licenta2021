@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import {PartnerDTO} from '../../../../../../../shared/dto/PartnerDTO';
@@ -27,6 +27,7 @@ export class PartnersComponent implements OnInit {
   dataSource = new MatTableDataSource<PartnerDTO>([]);
   private currentPartner: PartnerDTO;
   ngoName: string = '';
+
 
   constructor(
     private applicationService: ApplicationService,

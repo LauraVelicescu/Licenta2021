@@ -8,6 +8,7 @@ import {ApplicationService} from '../../../../../../../../shared/services/applic
 import {NotificationService} from '../../../../../../../../shared/services/notification-service/notification.service';
 import {ProjectService} from '../../../../../../../../shared/services/project-service/project.service';
 import {ProjectDTO} from '../../../../../../../../shared/dto/ProjectDTO';
+import {Role} from '../../../../../../../../shared/util/ApplicationRoutesInfo';
 
 @Component({
   selector: 'app-project-positions',
@@ -135,5 +136,9 @@ export class ProjectPositionsComponent implements OnInit {
       this.applicationService.emmitLoading(false);
       this.notificationService.error(error);
     })
+  }
+
+  canView() {
+    return this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)
   }
 }

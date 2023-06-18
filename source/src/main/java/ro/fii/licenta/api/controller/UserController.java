@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,11 +30,7 @@ import javassist.NotFoundException;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dao.UserRole;
-import ro.fii.licenta.api.dto.EmailPayloadDTO;
-import ro.fii.licenta.api.dto.MemberRequestDTO;
-import ro.fii.licenta.api.dto.RoleDTO;
-import ro.fii.licenta.api.dto.UserDTO;
-import ro.fii.licenta.api.dto.UserRoleDTO;
+import ro.fii.licenta.api.dto.*;
 import ro.fii.licenta.api.exception.BusinessException;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.repository.RoleRepository;
@@ -80,6 +78,18 @@ public class UserController {
 
 	}
 
+	@GetMapping(value = "/getUser/image")
+	public ResponseEntity<UserDTOImage> getUserImage(HttpServletRequest request) throws NotFoundException {
+
+		User user = userService.getCurrentUser(request);
+
+		if (user == null) {
+			throw new NotFoundException(String.format("User ith email %s was not found", ""));
+		}
+		return ResponseEntity.ok(this.modelMapper.map(user, UserDTOImage.class));
+	}
+
+
 	@GetMapping(value = "/findUsers")
 	public ResponseEntity<List<UserDTO>> findUsers(@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "pageNo", required = false) Integer pageNo) {
@@ -113,7 +123,7 @@ public class UserController {
 		User user = userService.getCurrentUser(request);
 
 		user.setProfilePicture(compressBytes(file.getBytes()));
-		return new ResponseEntity<>(modelMapper.map(userService.save(user), UserDTO.class), HttpStatus.OK);
+		return new ResponseEntity<>(modelMapper.map(userService.save(user), UserDTOImage.class), HttpStatus.OK);
 
 	}
 

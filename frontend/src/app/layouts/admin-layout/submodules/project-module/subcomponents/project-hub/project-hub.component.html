@@ -62,7 +62,7 @@
                 <p class="card-category d-inline " *ngIf="selectedNgoYear">{{getCurrentOpenYear(selectedNgoYear)}}
                   </p>
 
-                <div ngbDropdown style="text-align: right">
+                <div ngbDropdown style="text-align: right" *ngIf="canViewProject()">
                   <button
                     class="btn btn-link btn-icon"
                     data-toggle="dropdown"
@@ -119,7 +119,7 @@
                       <th mat-header-cell *matHeaderCellDef></th>
                       <td class=" td-actions text-right" mat-cell *matCellDef="let element">
                         <button class=" btn btn-link" type="button" placement="left" ngbTooltip="Edit Task"
-                                container="body" (click)="selectRow(element, projectAction.EDIT)">
+                                container="body" (click)="selectRow(element, projectAction.EDIT)" *ngIf="canViewProject()">
                           <i class=" tim-icons icon-pencil"> </i>
                         </button>
                       </td>
@@ -445,10 +445,10 @@
               <app-project-positions [selectedProject]="selectedProject"></app-project-positions>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.PARTNERS">
-              <app-project-parners [selectedProject]="selectedProject"></app-project-parners>
+              <app-project-parners [selectedProject]="selectedProject" (emmitPartnerSave)="onEmmitPartnerSave()" ></app-project-parners>
             </ng-container>
             <ng-container *ngSwitchCase="projectAction.EXPENSES">
-              <app-project-expenses [selectedProject]="selectedProject"></app-project-expenses>
+              <app-project-expenses [selectedProject]="selectedProject" (emmitExpenseSave)="onEmmitPartnerSave()"></app-project-expenses>
             </ng-container>
           </div>
         </container-element>
@@ -488,7 +488,8 @@
                    (click)="emitAction(projectAction.BOARD)"> Board </a>
                 <a href="javascript:void(0)" ngbDropdownItem
                    [ngClass]="{'highlighted-action':currentAction===projectAction.REPORTS}"
-                   (click)="emitAction(projectAction.REPORTS)"> Reports </a>
+                   (click)="emitAction(projectAction.REPORTS)"
+                *ngIf="canView()"> Reports </a>
                 <a href="javascript:void(0)" ngbDropdownItem
                    [ngClass]="{'highlighted-action':currentAction===projectAction.POSITIONS}"
                    (click)="emitAction(projectAction.POSITIONS)"> Positions </a>

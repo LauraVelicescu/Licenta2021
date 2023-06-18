@@ -9,6 +9,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import org.hibernate.annotations.ColumnDefault;
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
@@ -56,6 +57,7 @@ public class ProjectPartner extends NameDescriptionEntity {
 	}
 
 	@Column(name = "amount")
+	@ColumnDefault(value = "0")
 	public Double getAmount() {
 		return amount;
 	}

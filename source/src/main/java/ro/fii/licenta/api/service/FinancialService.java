@@ -91,7 +91,7 @@ public class FinancialService {
 			NgoPartnersType updatedNgoPartnersType) {
 		NgoPartnersType existingNgoPartnersType = ngoPartnersTypeRepository.findByNameAndNgo_Id(name, currentId);
 		if (existingNgoPartnersType != null
-				&& (updatedNgoPartnersType.getId() == null || !existingNgoPartnersType.getId().equals(currentId))) {
+				&& (updatedNgoPartnersType.getId() == null || !existingNgoPartnersType.getId().equals(updatedNgoPartnersType.getId()))) {
 			throw new EntityConflictException("NgoPartnersType with name: " + name + " already exists.");
 		}
 	}

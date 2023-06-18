@@ -21,6 +21,7 @@ import {Report} from '../project-hub/components/project-reports/project-reports.
 import {ReportService} from '../../../../../../shared/services/report/report.service';
 import {ProjectExpenseDTO} from '../../../../../../shared/dto/ProjectExpenseDTO';
 import {FinancialService} from '../../../../../../shared/services/financial/financial.service';
+import {UserService} from '../../../../../../shared/services/user-service/user.service';
 
 export enum TaskStatus {
   TO_DO = 'TO_DO',
@@ -95,7 +96,8 @@ export class ProjectBoardComponent implements OnInit {
               private sanitized: DomSanitizer,
               private router: Router,
               private reportService: ReportService,
-              private financialService: FinancialService) {
+              private financialService: FinancialService,
+              private userService: UserService) {
     if (this.router.getCurrentNavigation().extras?.state?.selectedProject) {
       this.selectedProject = this.router.getCurrentNavigation().extras.state.selectedProject
       this.load();
@@ -250,18 +252,9 @@ export class ProjectBoardComponent implements OnInit {
     }
   }
 
-  hasProfilePicture(item: ProjectTaskDTO) {
-
-  }
 
   getUserLogo(item: ProjectTaskDTO) {
-    if (item.projectMember.member.user.profilePicture) {
-      let base64Data = item.projectMember.member.user.profilePicture;
-      let retrievedImage = 'data:image/jpeg;base64,' + base64Data;
-      return this.sanitized.bypassSecurityTrustHtml('<img  src=\'' + retrievedImage + '\' style=\'max-width: 50px!important;border-radius: 50%;\' / > ');
-    } else {
-      return this.sanitized.bypassSecurityTrustHtml('<button disabled style=\'border-radius: 50%\'>' + item.projectMember.member.user.firstName.substring(0, 1) + item.projectMember.member.user.lastName.substring(0, 1) + '</button>')
-    }
+    return this.sanitized.bypassSecurityTrustHtml('<button disabled style=\'border-radius: 50%\'>' + item.projectMember.member.user.firstName.substring(0, 1) + item.projectMember.member.user.lastName.substring(0, 1) + '</button>')
   }
 
   get taskActions() {

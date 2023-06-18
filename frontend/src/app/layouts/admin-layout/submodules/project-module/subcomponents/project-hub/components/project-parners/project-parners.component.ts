@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectDTO} from '../../../../../../../../shared/dto/ProjectDTO';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectPartnerDTO} from '../../../../../../../../shared/dto/ProjectPartnerDTO';
@@ -13,6 +13,7 @@ import {Observable} from 'rxjs';
 import {PartnerDTO} from '../../../../../../../../shared/dto/PartnerDTO';
 import {NgoPartnersTypeDTO} from '../../../../../../../../shared/dto/NgoPartnersTypeDTO';
 import {map, startWith} from 'rxjs/operators';
+import {Role} from '../../../../../../../../shared/util/ApplicationRoutesInfo';
 
 @Component({
   selector: 'app-project-parners',
@@ -50,6 +51,8 @@ export class ProjectParnersComponent implements OnInit {
   @Input()
   private selectedProject: ProjectDTO;
   private selectedPartner: PartnerDTO ;
+  @Output()
+  emmitPartnerSave = new EventEmitter();
 
   constructor(private applicationService: ApplicationService,
               private notificationService: NotificationService,
@@ -148,6 +151,7 @@ export class ProjectParnersComponent implements OnInit {
           this.financialService.updateProjectPartner(partnerDTO).subscribe((result) => {
               this.applicationService.emmitLoading(false);
               this.load();
+            this.emmitPartnerSave.emit();
             }, error => {
               this.applicationService.emmitLoading(false);
               this.notificationService.error(error);
@@ -157,6 +161,7 @@ export class ProjectParnersComponent implements OnInit {
           this.financialService.createProjectPartner(partnerDTO).subscribe((result) => {
               this.applicationService.emmitLoading(false);
               this.load();
+              this.emmitPartnerSave.emit();
             }, error => {
               this.applicationService.emmitLoading(false);
               this.notificationService.error(error);
@@ -169,6 +174,7 @@ export class ProjectParnersComponent implements OnInit {
       this.financialService.deleteProjectPartner(this.selectedProjectPartner).subscribe((result) => {
         this.applicationService.emmitLoading(false);
         this.load();
+        this.emmitPartnerSave.emit();
       })
     }
   }
@@ -265,5 +271,8 @@ export class ProjectParnersComponent implements OnInit {
     }
   }
 
+  canView() {
+    return this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)
+  }
 
 }

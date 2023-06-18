@@ -103,7 +103,7 @@ export class ApplicationRoutesInfo {
       path: 'manage',
       title: 'Manage projects',
       icon: 'manage_search',
-      privileges: [Role.ADMIN, Role.NGO_ADMIN, Role.REPORTS],
+      privileges: [Role.ADMIN, Role.NGO_ADMIN, Role.REPORTS, Role.ACTIVE_MEMBER],
       parentPath: 'project'
     }, {
       path: 'board',

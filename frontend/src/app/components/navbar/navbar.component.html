@@ -34,7 +34,7 @@
           >
             <div class=" photo">
 <!--              <img alt="Profile Photo" src="assets/img/anime3.png" />-->
-              <img alt="assets/img/anime3.png" class=" avatar" [src]="retrievedImage"/>
+              <img alt="assets/img/anime3.png" class=" avatar" [src]="applicationService.retrievedImage | async"/>
             </div>
             <b class=" caret d-none d-lg-block d-xl-block"> </b>
             <p class=" d-lg-none">Log out</p>

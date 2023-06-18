@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import org.hibernate.annotations.ColumnDefault;
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
@@ -124,6 +125,7 @@ public class Project extends NameDescriptionEntity {
 	}
 
 	@Column(name = "budget_treasury")
+	@ColumnDefault(value = "0")
 	public Double getBudgetTreasury() {
 		return budgetTreasury;
 	}
@@ -133,6 +135,7 @@ public class Project extends NameDescriptionEntity {
 	}
 
 	@Column(name = "budget_partners")
+	@ColumnDefault(value = "0")
 	public Double getBudgetPartners() {
 		return budgetPartners;
 	}
@@ -178,6 +181,7 @@ public class Project extends NameDescriptionEntity {
 	}
 
 	@Column(name = "remaining_budget")
+	@ColumnDefault(value = "0")
 	public Double getRemainingBudget() {
 		return remainingBudget;
 	}

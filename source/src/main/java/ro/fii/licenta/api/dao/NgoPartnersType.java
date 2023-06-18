@@ -7,6 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
 import ro.fii.licenta.framework.NameDescriptionEntity;
 
 @Entity
@@ -19,6 +20,7 @@ public class NgoPartnersType extends NameDescriptionEntity {
 	private Ngo ngo;
 
 	@Column(name = "min_amount")
+	@ColumnDefault(value = "0")
 	public Double getMinAmount() {
 		return minAmount;
 	}
@@ -28,6 +30,7 @@ public class NgoPartnersType extends NameDescriptionEntity {
 	}
 
 	@Column(name = "max_amount")
+	@ColumnDefault(value = "0")
 	public Double getMaxAmount() {
 		return maxAmount;
 	}

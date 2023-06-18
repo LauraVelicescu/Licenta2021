@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ProjectDTO} from '../../../../../../../../shared/dto/ProjectDTO';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProjectExpenseDTO} from '../../../../../../../../shared/dto/ProjectExpenseDTO';
@@ -12,6 +12,8 @@ import {MemberService} from '../../../../../../../../shared/services/member-serv
 import {formatDate} from '@angular/common';
 import {FinancialService} from '../../../../../../../../shared/services/financial/financial.service';
 import {saveAs} from 'file-saver';
+import {Role} from '../../../../../../../../shared/util/ApplicationRoutesInfo';
+import {SecurityStorage} from '../../../../../../../../security/SecurityStorage';
 
 @Component({
   selector: 'app-project-expenses',
@@ -41,13 +43,16 @@ export class ProjectExpensesComponent implements OnInit {
   private afterSaveFileHook: boolean = false;
   selectedFileName: string = '';
 
+  @Output()
+  emmitExpenseSave = new EventEmitter();
 
   constructor(private projectService: ProjectService,
               private applicationService: ApplicationService,
               private notificationService: NotificationService,
               private formBuilder: FormBuilder,
               private memberService: MemberService,
-              private financialService: FinancialService
+              private financialService: FinancialService,
+              private securityStorage: SecurityStorage
   ) {
   }
 
@@ -115,6 +120,7 @@ export class ProjectExpensesComponent implements OnInit {
               }
               this.applicationService.emmitLoading(false);
               this.load();
+              this.emmitExpenseSave.emit();
             }, error => {
               this.applicationService.emmitLoading(false);
               this.notificationService.error(error);
@@ -132,6 +138,7 @@ export class ProjectExpensesComponent implements OnInit {
               }
               this.applicationService.emmitLoading(false);
               this.load();
+              this.emmitExpenseSave.emit();
             }, error => {
               this.applicationService.emmitLoading(false);
               this.notificationService.error(error);
@@ -144,6 +151,7 @@ export class ProjectExpensesComponent implements OnInit {
       this.financialService.deleteProjectExpense(this.selectedProjectExpense).subscribe((result) => {
         this.applicationService.emmitLoading(false);
         this.load();
+        this.emmitExpenseSave.emit();
       })
     }
   }
@@ -181,6 +189,7 @@ export class ProjectExpensesComponent implements OnInit {
         this.financialService.updateProjectExpenseState(projectExpense, 2).subscribe((result) => {
           this.applicationService.emmitLoading(false);
           this.load();
+          this.emmitExpenseSave.emit();
         }, error => {
           this.applicationService.emmitLoading(true);
           this.notificationService.error(error);
@@ -189,6 +198,7 @@ export class ProjectExpensesComponent implements OnInit {
         this.financialService.updateProjectExpenseState(projectExpense, 1).subscribe((result) => {
           this.applicationService.emmitLoading(false);
           this.load();
+          this.emmitExpenseSave.emit();
         }, error => {
           this.applicationService.emmitLoading(false);
           this.notificationService.error(error);
@@ -198,8 +208,12 @@ export class ProjectExpensesComponent implements OnInit {
   }
 
 
+  canView() {
+    return this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN)
+  }
+
   getExpenseOwner(element: ProjectExpenseDTO) {
-    return element?.expenseOwner?.member?.user?.lastName + ' ' + element?.expenseOwner?.member?.user?.firstName;
+    return (element?.expenseOwner?.member?.user?.lastName ?? '') + ' ' + (element?.expenseOwner?.member?.user?.firstName ?? '');
   }
 
   getProject(element: ProjectExpenseDTO) {
@@ -251,5 +265,12 @@ export class ProjectExpensesComponent implements OnInit {
         saveAs(blob, this.selectedProjectExpense.fileName + this.selectedProjectExpense.fileExtension);
       })
     }
+  }
+
+  canViewOwn(element: ProjectExpenseDTO) {
+
+    console.log(element?.expenseOwner?.member?.user?.id);
+    return (this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN) || this.applicationService.globalPrivileges.includes(Role.ADMIN))
+      || element?.expenseOwner?.member?.user?.id === this.securityStorage.getLoggedUser();
   }
 }

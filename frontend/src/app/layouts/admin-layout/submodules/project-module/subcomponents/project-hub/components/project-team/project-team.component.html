@@ -2,7 +2,7 @@
   <button mat-icon-button class="example-icon favorite-icon"
           aria-label="Example icon-button with heart icon"
           (click)="emitAction(actions.MEMBER_ADD)"
-  >
+  *ngIf="canView()">
     <mat-icon>add</mat-icon>
   </button>
 </div>
@@ -47,18 +47,21 @@
 
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef class="text-right"> Actions</th>
-      <td class="td-actions text-right" mat-cell *matCellDef="let element">
+      <td class="td-actions text-right" mat-cell *matCellDef="let element" >
         <!--        <button type="button" rel="tooltip" class="btn btn-info btn-link btn-icon btn-sm">-->
         <!--          <i class="tim-icons icon-single-02"></i>-->
         <!--        </button>-->
-        <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
-                (click)="emitAction(actions.MEMBER_EDIT, element)">
-          <i class="tim-icons icon-settings"></i>
-        </button>
-        <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
-                (click)="emitAction(actions.MEMBER_DELETE, element)">
-          <i class="tim-icons icon-simple-remove"></i>
-        </button>
+        <div *ngIf="canView()">
+          <button type="button" rel="tooltip" class="btn btn-success btn-link btn-icon btn-sm"
+                  (click)="emitAction(actions.MEMBER_EDIT, element)">
+            <i class="tim-icons icon-settings"></i>
+          </button>
+          <button type="button" rel="tooltip" class="btn btn-danger btn-link btn-icon btn-sm"
+                  (click)="emitAction(actions.MEMBER_DELETE, element)">
+            <i class="tim-icons icon-simple-remove"></i>
+          </button>
+        </div>
+
       </td>
     </ng-container>
 

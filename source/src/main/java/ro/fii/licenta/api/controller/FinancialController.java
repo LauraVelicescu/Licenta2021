@@ -210,7 +210,10 @@ public class FinancialController {
 		User user = userService.getCurrentUser(request);
 		ProjectMember pm = this.projectMemberRepository
 				.findByProject_IdAndMember_User_Id(projectExpenseDTO.getProject().getId(), user.getId());
-		projectExpenseDTO.setExpenseOwner(this.modelMapper.map(pm, ProjectMemberDTO.class));
+		if(pm != null) {
+			projectExpenseDTO.setExpenseOwner(this.modelMapper.map(pm, ProjectMemberDTO.class));
+		}
+
 		ProjectExpense created = this.financialService
 				.createProjectExpense(this.modelMapper.map(projectExpenseDTO, ProjectExpense.class));
 		ProjectExpenseDTO toReturn = new ProjectExpenseDTO();

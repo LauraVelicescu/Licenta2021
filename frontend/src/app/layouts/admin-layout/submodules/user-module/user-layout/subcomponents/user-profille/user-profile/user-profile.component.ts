@@ -41,8 +41,6 @@ export class UserProfileComponent implements OnInit {
     )
     this.userService.getUser().subscribe((result: UserDTO) => {
       this.currentUser = result;
-      this.base64Data = this.currentUser.profilePicture;
-      this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
       this.userForm.patchValue({
           emailAddress: this.currentUser.emailAddress,
           firstName: this.currentUser.firstName,
@@ -54,6 +52,13 @@ export class UserProfileComponent implements OnInit {
           aboutMe: this.currentUser.aboutMe,
         }
       )
+    })
+
+    this.userService.getUserImage().subscribe((result) => {
+      if(result.profilePicture) {
+        this.base64Data = result.profilePicture;
+        this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+      }
     })
   }
 

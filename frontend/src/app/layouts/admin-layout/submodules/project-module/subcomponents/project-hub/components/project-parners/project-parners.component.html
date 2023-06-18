@@ -1,5 +1,5 @@
 <div class="card-header">
-  <div ngbDropdown style="text-align: right">
+  <div ngbDropdown style="text-align: right" *ngIf="canView()">
     <button
       class="btn btn-link btn-icon"
       data-toggle="dropdown"

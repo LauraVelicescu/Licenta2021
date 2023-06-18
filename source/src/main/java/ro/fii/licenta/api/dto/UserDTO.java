@@ -31,8 +31,6 @@ public class UserDTO {
 
 	private String linkedinLink;
 
-	private byte[] profilePicture;
-
 	protected boolean blocked;
 
 	protected int failAttemtps;
@@ -120,14 +118,6 @@ public class UserDTO {
 		this.linkedinLink = linkedinLink;
 	}
 
-	public byte[] getProfilePicture() {
-		return profilePicture;
-	}
-
-	public void setProfilePicture(byte[] profilePicture) {
-		this.profilePicture = profilePicture != null ? this.decompressBytes(profilePicture) : null;
-	}
-
 	public boolean isBlocked() {
 		return blocked;
 	}
@@ -152,23 +142,4 @@ public class UserDTO {
 		this.roles = roles;
 	}
 
-	// decompress the image bytes before returning it to the angular app
-
-	private byte[] decompressBytes(byte[] data) {
-		Inflater inflater = new Inflater();
-		inflater.setInput(data);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-		byte[] buffer = new byte[1024];
-		try {
-			while (!inflater.finished()) {
-				int count = inflater.inflate(buffer);
-				outputStream.write(buffer, 0, count);
-			}
-			outputStream.close();
-		} catch (IOException ioe) {
-		} catch (DataFormatException e) {
-		}
-		return outputStream.toByteArray();
-
-	}
 }

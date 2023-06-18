@@ -83,7 +83,6 @@ export class AssignUserComponent implements OnInit {
         break;
       case AssignType.ORGANIZATIONAL_UNIT:
         this.comboDataOrganizationalComponent = [...this.selectedNGO.componentList];
-        console.log(this.comboDataOrganizationalComponent)
         this.comboDataOrganizationalComponent.push({description: '', id: 0, lead: false, parentNgo: undefined, name: NONE})
         this.filteredOptions = this.searchTextBoxControl.valueChanges
           .pipe(
