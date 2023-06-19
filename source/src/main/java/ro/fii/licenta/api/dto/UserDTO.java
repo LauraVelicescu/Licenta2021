@@ -25,6 +25,8 @@ public class UserDTO {
 
 	private String aboutMe;
 
+	private Date createdDate;
+
 	private String facebookLink;
 
 	private String twitterLink;
@@ -140,6 +142,14 @@ public class UserDTO {
 
 	public void setRoles(Set<RoleDTO> roles) {
 		this.roles = roles;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
 }

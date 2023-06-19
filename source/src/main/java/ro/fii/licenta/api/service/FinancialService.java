@@ -10,7 +10,6 @@ import ro.fii.licenta.api.dao.NgoPartnersType;
 import ro.fii.licenta.api.dao.NgoYear;
 import ro.fii.licenta.api.dao.Partner;
 import ro.fii.licenta.api.dao.Project;
-import ro.fii.licenta.api.dao.ProjectBudgetIncreaseRequest;
 import ro.fii.licenta.api.dao.ProjectExpense;
 import ro.fii.licenta.api.dao.ProjectPartner;
 import ro.fii.licenta.api.exception.EntityConflictException;
@@ -19,7 +18,6 @@ import ro.fii.licenta.api.exception.ValidationException;
 import ro.fii.licenta.api.repository.NgoPartnersTypeRepository;
 import ro.fii.licenta.api.repository.NgoYearRepository;
 import ro.fii.licenta.api.repository.PartnerRepository;
-import ro.fii.licenta.api.repository.ProjectBudgetIncreaseRequestRepository;
 import ro.fii.licenta.api.repository.ProjectExpenseRepository;
 import ro.fii.licenta.api.repository.ProjectPartnerRepository;
 import ro.fii.licenta.api.repository.ProjectRepository;
@@ -45,8 +43,6 @@ public class FinancialService {
 	@Autowired
 	private ProjectRepository projectRepository;
 
-	@Autowired
-	private ProjectBudgetIncreaseRequestRepository projectBudgetIncreaseRequestRepository;
 
 	private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -140,10 +136,6 @@ public class FinancialService {
 		}
 	}
 
-	public List<ProjectBudgetIncreaseRequest> getAllProjectBudgetIncreaseRequests() {
-		return projectBudgetIncreaseRequestRepository.findAll();
-	}
-
 	private boolean isValidEmail(String email) {
 		if (email == null) {
 			return false;
@@ -162,28 +154,6 @@ public class FinancialService {
 //		0753738357
 	}
 
-	public List<ProjectBudgetIncreaseRequest> getProjectBudgetIncreaseRequestById(Long id) {
-		return projectBudgetIncreaseRequestRepository.findByProject_Id(id);
-	}
-
-	public void createProjectBudgetIncreaseRequest(ProjectBudgetIncreaseRequest projectBudgetIncreaseRequest) {
-		projectBudgetIncreaseRequestRepository.save(projectBudgetIncreaseRequest);
-	}
-
-	public void updateProjectBudgetIncreaseRequest(Long id, ProjectBudgetIncreaseRequest projectBudgetIncreaseRequest) {
-		ProjectBudgetIncreaseRequest existingProjectBudgetIncreaseRequest = projectBudgetIncreaseRequestRepository
-				.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectBudgetIncreaseRequest not found with id: " + id));
-		// Update the properties of existingProjectBudgetIncreaseRequest with the values
-		// from projectBudgetIncreaseRequest
-		projectBudgetIncreaseRequestRepository.save(existingProjectBudgetIncreaseRequest);
-	}
-
-	public void deleteProjectBudgetIncreaseRequest(Long id) {
-		ProjectBudgetIncreaseRequest projectBudgetIncreaseRequest = projectBudgetIncreaseRequestRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("ProjectBudgetIncreaseRequest not found with id: " + id));
-		projectBudgetIncreaseRequestRepository.delete(projectBudgetIncreaseRequest);
-	}
 
 	public List<ProjectExpense> getAllProjectExpenses() {
 		return projectExpenseRepository.findAll();

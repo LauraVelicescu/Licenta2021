@@ -18,7 +18,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog
   styleUrls: ['./user-manage.component.scss']
 })
 export class UserManageComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['id', 'Nume', 'Prenume', 'Este blocat', 'Email'];
+  displayedColumns: string[] = ['Nume', 'Prenume', 'Este blocat', 'Email'];
   dataSource = new MatTableDataSource<UserDTO>([]);
 
   persistState: boolean = false;

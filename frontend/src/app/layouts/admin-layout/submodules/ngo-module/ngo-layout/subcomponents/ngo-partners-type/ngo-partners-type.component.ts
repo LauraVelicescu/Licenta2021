@@ -35,7 +35,7 @@ export class NgoPartnersTypeComponent implements OnInit {
   selection = new SelectionModel<NgoPartnersTypeDTO>(false, []);
 
   ngoPartnersTypeForm: FormGroup;
-  displayedColumns: string[] = ['id', 'name', 'minAmount', 'maxAmount'];
+  displayedColumns: string[] = ['name', 'minAmount', 'maxAmount'];
   dataSource = new MatTableDataSource<NgoPartnersTypeDTO>([]);
   selectedOption: NgoDTO;
   private currentNgoPartnersType: NgoPartnersTypeDTO;

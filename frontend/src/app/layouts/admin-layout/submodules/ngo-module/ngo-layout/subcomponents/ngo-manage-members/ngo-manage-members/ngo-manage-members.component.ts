@@ -37,7 +37,7 @@ export class NgoManageMembersComponent implements OnInit {
   length: number;
 
   functionForm: FormGroup;
-  displayedColumns: string[] = ['id', 'name', 'function', 'organizationalUnit'];
+  displayedColumns: string[] = ['name', 'function', 'organizationalUnit'];
   dataSource = new MatTableDataSource<MemberDTO>([]);
   selectedNgo: NgoDTO;
   private selectedMembers: MemberDTO[];

@@ -1,23 +1,59 @@
-import { Component, OnInit } from "@angular/core";
+import {Component, OnInit} from '@angular/core';
 import Chart from 'chart.js';
+import {UserService} from '../../shared/services/user-service/user.service';
+import {NGOService} from '../../shared/services/ngo-service/ngo.service';
+import {formatDate} from '@angular/common';
+import {ProjectService} from '../../shared/services/project-service/project.service';
+import {TaskService} from '../../shared/services/task-service/task.service';
+import {MatTableDataSource} from '@angular/material/table';
+import {ProjectDTO} from '../../shared/dto/ProjectDTO';
+import {UserDTO} from '../../shared/dto/UserDTO';
 
 @Component({
-  selector: "app-dashboard",
-  templateUrl: "dashboard.component.html"
+  selector: 'app-dashboard',
+  templateUrl: 'dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
-  public canvas : any;
+  public canvas: any;
   public ctx;
-  public datasets: any;
+  public datasets: any[] = [];
   public data: any;
   public myChartData;
   public clicked: boolean = true;
   public clicked1: boolean = false;
   public clicked2: boolean = false;
+  countInProgress: any;
+  countBlocked: any;
+  countDone: any;
 
-  constructor() {}
+  displayedColumns: string[] = ['name'];
+  dataSource = new MatTableDataSource<ProjectDTO>([]);
+  lengthProject: any;
 
-  ngOnInit() {
+  displayedColumnsMember: string[] = ['Nume', 'Prenume', 'Email'];
+  dataSourceMember = new MatTableDataSource<UserDTO>([]);
+
+
+
+  constructor(private userService: UserService,
+              private ngoService: NGOService,
+              private projectService: ProjectService,
+              private taskService: TaskService) {
+  }
+
+   ngOnInit() {
+
+     this.projectService.findAllProjects().subscribe((result) => {
+       this.dataSource.data = result;
+       this.lengthProject = result.length
+     }, error => {
+     })
+
+     this.userService.findUsers().subscribe((result) => {
+       this.dataSourceMember.data = result;
+     }, error => {
+     })
+
     var gradientChartOptionsConfigurationWithTooltipBlue: any = {
       maintainAspectRatio: false,
       legend: {
@@ -30,9 +66,9 @@ export class DashboardComponent implements OnInit {
         bodyFontColor: '#666',
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: 0,
-        position: "nearest"
+        position: 'nearest'
       },
       responsive: true,
       scales: {
@@ -41,13 +77,13 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             suggestedMin: 60,
             suggestedMax: 125,
             padding: 20,
-            fontColor: "#2380f7"
+            fontColor: '#2380f7'
           }
         }],
 
@@ -56,11 +92,11 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             padding: 20,
-            fontColor: "#2380f7"
+            fontColor: '#2380f7'
           }
         }]
       }
@@ -78,9 +114,9 @@ export class DashboardComponent implements OnInit {
         bodyFontColor: '#666',
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: 0,
-        position: "nearest"
+        position: 'nearest'
       },
       responsive: true,
       scales: {
@@ -89,13 +125,13 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             suggestedMin: 60,
             suggestedMax: 125,
             padding: 20,
-            fontColor: "#9a9a9a"
+            fontColor: '#9a9a9a'
           }
         }],
 
@@ -104,11 +140,11 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(225,78,202,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             padding: 20,
-            fontColor: "#9a9a9a"
+            fontColor: '#9a9a9a'
           }
         }]
       }
@@ -126,9 +162,9 @@ export class DashboardComponent implements OnInit {
         bodyFontColor: '#666',
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: 0,
-        position: "nearest"
+        position: 'nearest'
       },
       responsive: true,
       scales: {
@@ -137,13 +173,13 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             suggestedMin: 60,
             suggestedMax: 125,
             padding: 20,
-            fontColor: "#9a9a9a"
+            fontColor: '#9a9a9a'
           }
         }],
 
@@ -152,11 +188,11 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(233,32,16,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             padding: 20,
-            fontColor: "#9a9a9a"
+            fontColor: '#9a9a9a'
           }
         }]
       }
@@ -174,9 +210,9 @@ export class DashboardComponent implements OnInit {
         bodyFontColor: '#666',
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: 0,
-        position: "nearest"
+        position: 'nearest'
       },
       responsive: true,
       scales: {
@@ -185,13 +221,13 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             suggestedMin: 50,
             suggestedMax: 110,
             padding: 20,
-            fontColor: "#ff8a76"
+            fontColor: '#ff8a76'
           }
         }],
 
@@ -200,11 +236,11 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(220,53,69,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             padding: 20,
-            fontColor: "#ff8a76"
+            fontColor: '#ff8a76'
           }
         }]
       }
@@ -222,9 +258,9 @@ export class DashboardComponent implements OnInit {
         bodyFontColor: '#666',
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: 0,
-        position: "nearest"
+        position: 'nearest'
       },
       responsive: true,
       scales: {
@@ -233,13 +269,13 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             suggestedMin: 50,
             suggestedMax: 125,
             padding: 20,
-            fontColor: "#9e9e9e"
+            fontColor: '#9e9e9e'
           }
         }],
 
@@ -248,11 +284,11 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(0,242,195,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             padding: 20,
-            fontColor: "#9e9e9e"
+            fontColor: '#9e9e9e'
           }
         }]
       }
@@ -271,9 +307,9 @@ export class DashboardComponent implements OnInit {
         bodyFontColor: '#666',
         bodySpacing: 4,
         xPadding: 12,
-        mode: "nearest",
+        mode: 'nearest',
         intersect: 0,
-        position: "nearest"
+        position: 'nearest'
       },
       responsive: true,
       scales: {
@@ -282,13 +318,13 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             suggestedMin: 60,
             suggestedMax: 120,
             padding: 20,
-            fontColor: "#9e9e9e"
+            fontColor: '#9e9e9e'
           }
         }],
 
@@ -297,69 +333,185 @@ export class DashboardComponent implements OnInit {
           gridLines: {
             drawBorder: false,
             color: 'rgba(29,140,248,0.1)',
-            zeroLineColor: "transparent",
+            zeroLineColor: 'transparent',
           },
           ticks: {
             padding: 20,
-            fontColor: "#9e9e9e"
+            fontColor: '#9e9e9e'
           }
         }]
       }
     };
 
 
-    this.canvas = document.getElementById("chartLineGreen");
-    this.ctx = this.canvas.getContext("2d");
+    var ip_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    let ip_values = [];
+    this.taskService.findHistoryByStatus('IN_PROGRESS').subscribe((result) => {
+      this.countInProgress = result.length
+      let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      for (let u of result) {
+        if (new Date(u.date).getFullYear() === new Date().getFullYear()) {
+          months[new Date(u.date).getMonth()]++;
+        }
+      }
+      ip_values = months
+
+      this.canvas = document.getElementById('chartLineGreen');
+      this.ctx = this.canvas.getContext('2d');
+
+      var data = {
+        labels: ip_labels,
+        datasets: [{
+          fill: true,
+          backgroundColor: gradientStroke,
+          borderColor: '#00d6b4',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#00d6b4',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#00d6b4',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: ip_values,
+        }]
+      };
+
+      var myChart = new Chart(this.ctx, {
+        type: 'line',
+        data: data,
+        options: gradientChartOptionsConfigurationWithTooltipGreen
+
+      });
+    })
 
 
-    var gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
+     var c_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+     let c_tasks = [];
+     this.taskService.findHistoryByStatus('DONE').subscribe((result) => {
+       this.countDone = result.length
+       let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+       for (let u of result) {
+         if (new Date(u.date).getFullYear() === new Date().getFullYear()) {
+           months[new Date(u.date).getMonth()]++;
+         }
+       }
+       c_tasks = months
 
-    gradientStroke.addColorStop(1, 'rgba(66,134,121,0.15)');
-    gradientStroke.addColorStop(0.4, 'rgba(66,134,121,0.0)'); //green colors
-    gradientStroke.addColorStop(0, 'rgba(66,134,121,0)'); //green colors
+       this.canvas = document.getElementById('chartLineRed');
+       this.ctx = this.canvas.getContext('2d');
 
-    var data = {
-      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV'],
-      datasets: [{
-        label: "My First dataset",
-        fill: true,
-        backgroundColor: gradientStroke,
-        borderColor: '#00d6b4',
-        borderWidth: 2,
-        borderDash: [],
-        borderDashOffset: 0.0,
-        pointBackgroundColor: '#00d6b4',
-        pointBorderColor: 'rgba(255,255,255,0)',
-        pointHoverBackgroundColor: '#00d6b4',
-        pointBorderWidth: 20,
-        pointHoverRadius: 4,
-        pointHoverBorderWidth: 15,
-        pointRadius: 4,
-        data: [90, 27, 60, 12, 80],
-      }]
-    };
+       var data = {
+         labels: c_labels,
+         datasets: [{
+           fill: true,
+           backgroundColor: gradientStroke,
+           borderColor: '#00d6b4',
+           borderWidth: 2,
+           borderDash: [],
+           borderDashOffset: 0.0,
+           pointBackgroundColor: '#00d6b4',
+           pointBorderColor: 'rgba(255,255,255,0)',
+           pointHoverBackgroundColor: '#00d6b4',
+           pointBorderWidth: 20,
+           pointHoverRadius: 4,
+           pointHoverBorderWidth: 15,
+           pointRadius: 4,
+           data: c_tasks,
+         }]
+       };
 
-    var myChart = new Chart(this.ctx, {
-      type: 'line',
-      data: data,
-      options: gradientChartOptionsConfigurationWithTooltipGreen
+       var myChart = new Chart(this.ctx, {
+         type: 'line',
+         data: data,
+         options: gradientChartOptionsConfigurationWithTooltipGreen
 
-    });
+       });
+     })
 
+     var b_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+     let b_values = [];
+     this.taskService.findHistoryByStatus('BLOCKED').subscribe((result) => {
+       this.countBlocked = result.length
+       let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+       for (let u of result) {
+         if (new Date(u.date).getFullYear() === new Date().getFullYear()) {
+           months[new Date(u.date).getMonth()]++;
+         }
+       }
+       b_values = months
 
+       this.canvas = document.getElementById('chartLineYellow');
+       this.ctx = this.canvas.getContext('2d');
+
+       var data = {
+         labels: b_labels,
+         datasets: [{
+           fill: true,
+           backgroundColor: gradientStroke,
+           borderColor: '#00d6b4',
+           borderWidth: 2,
+           borderDash: [],
+           borderDashOffset: 0.0,
+           pointBackgroundColor: '#00d6b4',
+           pointBorderColor: 'rgba(255,255,255,0)',
+           pointHoverBackgroundColor: '#00d6b4',
+           pointBorderWidth: 20,
+           pointHoverRadius: 4,
+           pointHoverBorderWidth: 15,
+           pointRadius: 4,
+           data: b_values,
+         }]
+       };
+
+       var myChart = new Chart(this.ctx, {
+         type: 'line',
+         data: data,
+         options: gradientChartOptionsConfigurationWithTooltipGreen
+
+       });
+     })
 
     var chart_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    this.datasets = [
-      [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100],
-      [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120],
-      [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130]
-    ];
+    this.datasets = [];
+    this.userService.findUsers().subscribe((result) => {
+      let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      for (let u of result) {
+        if (new Date(u.createdDate).getFullYear() === new Date().getFullYear()) {
+          months[new Date(u.createdDate).getMonth()]++;
+        }
+      }
+      this.datasets.push(months);
+    })
+
+    this.ngoService.findAllNGOs().subscribe((result) => {
+      let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      for (let u of result) {
+        if (new Date(u.createdDate).getFullYear() === new Date().getFullYear()) {
+          months[new Date(u.createdDate).getMonth()]++;
+        }
+      }
+      this.datasets.push(months);
+    })
+
+
+    this.projectService.findAllProjects().subscribe((result) => {
+      let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      for (let u of result) {
+        if (new Date(u.startDate).getFullYear() === new Date().getFullYear()) {
+          months[new Date(u.startDate).getMonth()]++;
+        }
+      }
+      this.datasets.push(months);
+    })
+
     this.data = this.datasets[0];
 
 
-
-    this.canvas = document.getElementById("chartBig1");
-    this.ctx = this.canvas.getContext("2d");
+    this.canvas = document.getElementById('chartBig1');
+    this.ctx = this.canvas.getContext('2d');
 
     var gradientStroke = this.ctx.createLinearGradient(0, 230, 0, 50);
 
@@ -372,7 +524,7 @@ export class DashboardComponent implements OnInit {
       data: {
         labels: chart_labels,
         datasets: [{
-          label: "My First dataset",
+          label: 'My First dataset',
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: '#ec250d',
@@ -392,8 +544,18 @@ export class DashboardComponent implements OnInit {
       options: gradientChartOptionsConfigurationWithTooltipRed
     };
     this.myChartData = new Chart(this.ctx, config);
+    console.log(this.myChartData)
   }
+
+  public formatDateLocal(date: Date) {
+    if (date) {
+      let x = formatDate(date, 'yyyy-MM-dd', 'en-US');
+      return x;
+    }
+  }
+
   public updateOptions() {
+    console.log(this.myChartData)
     this.myChartData.data.datasets[0].data = this.data;
     this.myChartData.update();
   }

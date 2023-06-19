@@ -23,12 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 import ro.fii.licenta.api.dao.MemberRequest;
 import ro.fii.licenta.api.dao.Ngo;
 import ro.fii.licenta.api.dao.NgoFunction;
+import ro.fii.licenta.api.dao.Role;
 import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dao.UserRole;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.dto.NgoDTO;
 import ro.fii.licenta.api.dto.NgoFunctionDTO;
+import ro.fii.licenta.api.dto.UserRoleDTO;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
+import ro.fii.licenta.api.repository.RoleRepository;
+import ro.fii.licenta.api.repository.UserRoleRepoistory;
 import ro.fii.licenta.api.service.MemberService;
 import ro.fii.licenta.api.service.NGOService;
 import ro.fii.licenta.api.service.UserService;
@@ -45,6 +50,12 @@ public class NGOController {
 	private UserService userService;
 
 	private MemberService memberService;
+
+	@Autowired
+	private UserRoleRepoistory userRoleRepoistory;
+
+	@Autowired
+	private RoleRepository roleRepository;
 
 	@Autowired
 	public NGOController(NGOService ngoService, ModelMapper modelMapper, UserService userService,
@@ -229,6 +240,32 @@ public class NGOController {
 		modelMapper.getConfiguration().setSkipNullEnabled(false);
 
 		return ResponseEntity.ok(modelMapper.map(ngoService.save(dbFunction), NgoFunctionDTO.class));
+	}
+
+	@GetMapping("/getRoleReport/{ngoId}")
+	public ResponseEntity<UserRoleDTO> getRolesReportForNgo(@PathVariable(value = "ngoId") Long ngoId,
+			HttpServletRequest request) {
+
+		User user = this.userService.getCurrentUser(request);
+		Role role = this.roleRepository.findByName("REPORTS");
+		UserRole userRole = this.userRoleRepoistory.findByUser_IdAndRole_IdAndNgo_Id(user.getId(), role.getId(), ngoId);
+		if(userRole != null) {
+			return ResponseEntity.ok(this.modelMapper.map(userRole, UserRoleDTO.class));
+		}
+		return ResponseEntity.ok().build();
+	}
+	
+	@GetMapping("/getRoleActiveMember/{ngoId}")
+	public ResponseEntity<UserRoleDTO> getRolesActiveMemberForNgo(@PathVariable(value = "ngoId") Long ngoId,
+			HttpServletRequest request) {
+
+		User user = this.userService.getCurrentUser(request);
+		Role role = this.roleRepository.findByName("ACTIVE_MEMBER");
+		UserRole userRole = this.userRoleRepoistory.findByUser_IdAndRole_IdAndNgo_Id(user.getId(), role.getId(), ngoId);
+		if(userRole != null) {
+			return ResponseEntity.ok(this.modelMapper.map(userRole, UserRoleDTO.class));
+		}
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping(value = "/deleteNGOFunction")

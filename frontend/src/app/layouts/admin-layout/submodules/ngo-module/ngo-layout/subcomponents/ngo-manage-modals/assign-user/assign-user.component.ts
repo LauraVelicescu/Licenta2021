@@ -66,11 +66,9 @@ export class AssignUserComponent implements OnInit {
     switch (this.assignType) {
       case AssignType.FUNCTION:
         this.comboDataFunction = []
-        console.log(this.comboDataFunction)
         this.ngoService.findNGOFunctions(this.selectedNGO).subscribe((result) => {
           this.comboDataFunction = result;
           this.comboDataFunction.push({description: '', id: 0, name: NONE})
-          console.log(this.comboDataFunction)
           this.filteredOptions = this.searchTextBoxControl.valueChanges
             .pipe(
               startWith<string>(''),

@@ -23,6 +23,8 @@ public class NgoDTO {
 
 	private String linkedinLink;
 
+	private Date createdDate;
+
 	private byte[] logo;
 
 	@JsonManagedReference
@@ -116,6 +118,14 @@ public class NgoDTO {
 
 	public void setAdminId(Long adminId) {
 		this.adminId = adminId;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
 }

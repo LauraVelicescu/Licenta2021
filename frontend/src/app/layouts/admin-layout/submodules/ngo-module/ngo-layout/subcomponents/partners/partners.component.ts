@@ -23,10 +23,12 @@ export class PartnersComponent implements OnInit {
   selection = new SelectionModel<PartnerDTO>(false, []);
 
   partnerForm: FormGroup;
-  displayedColumns: string[] = ['id', 'name', 'phone', 'mail', 'representative'];
+  displayedColumns: string[] = [ 'name', 'phone', 'mail', 'representative'];
   dataSource = new MatTableDataSource<PartnerDTO>([]);
   private currentPartner: PartnerDTO;
   ngoName: string = '';
+
+  formErrors: string [] = [];
 
 
   constructor(

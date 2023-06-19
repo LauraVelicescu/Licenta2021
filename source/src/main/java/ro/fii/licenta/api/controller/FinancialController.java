@@ -34,7 +34,6 @@ import ro.fii.licenta.api.dao.NgoPartnersType;
 import ro.fii.licenta.api.dao.NgoYear;
 import ro.fii.licenta.api.dao.Partner;
 import ro.fii.licenta.api.dao.Project;
-import ro.fii.licenta.api.dao.ProjectBudgetIncreaseRequest;
 import ro.fii.licenta.api.dao.ProjectExpense;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPartner;
@@ -42,7 +41,6 @@ import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.NgoPartnersTypeDTO;
 import ro.fii.licenta.api.dto.NgoYearDTO;
 import ro.fii.licenta.api.dto.PartnerDTO;
-import ro.fii.licenta.api.dto.ProjectBudgetIncreaseRequestDTO;
 import ro.fii.licenta.api.dto.ProjectExpenseDTO;
 import ro.fii.licenta.api.dto.ProjectMemberDTO;
 import ro.fii.licenta.api.dto.ProjectPartnerDTO;
@@ -155,40 +153,6 @@ public class FinancialController {
 	@DeleteMapping("/ngoYears/{id}")
 	public void deleteNgoYear(@PathVariable("id") Long id) {
 		this.financialService.deleteNgoYear(id);
-	}
-
-	@GetMapping("/projectBudgetIncreaseRequests")
-	public ResponseEntity<List<ProjectBudgetIncreaseRequestDTO>> getAllProjectBudgetIncreaseRequests() {
-		return ResponseEntity.ok(this.financialService.getAllProjectBudgetIncreaseRequests().stream()
-				.map(soure -> modelMapper.map(soure, ProjectBudgetIncreaseRequestDTO.class))
-				.collect(Collectors.toList()));
-	}
-
-	@GetMapping("/projectBudgetIncreaseRequests/{id}")
-	public ResponseEntity<List<ProjectBudgetIncreaseRequestDTO>> getProjectBudgetIncreaseRequestById(
-			@PathVariable("id") Long id) {
-		return ResponseEntity.ok(this.financialService.getProjectBudgetIncreaseRequestById(id).stream()
-				.map(soure -> modelMapper.map(soure, ProjectBudgetIncreaseRequestDTO.class))
-				.collect(Collectors.toList()));
-	}
-
-	@PostMapping("/projectBudgetIncreaseRequests")
-	public void createProjectBudgetIncreaseRequest(
-			@RequestBody ProjectBudgetIncreaseRequestDTO projectBudgetIncreaseRequestDTO) {
-		this.financialService.createProjectBudgetIncreaseRequest(
-				this.modelMapper.map(projectBudgetIncreaseRequestDTO, ProjectBudgetIncreaseRequest.class));
-	}
-
-	@PutMapping("/projectBudgetIncreaseRequests/{id}")
-	public void updateProjectBudgetIncreaseRequest(@PathVariable("id") Long id,
-			@RequestBody ProjectBudgetIncreaseRequestDTO projectBudgetIncreaseRequestDTO) {
-		this.financialService.updateProjectBudgetIncreaseRequest(id,
-				this.modelMapper.map(projectBudgetIncreaseRequestDTO, ProjectBudgetIncreaseRequest.class));
-	}
-
-	@DeleteMapping("/projectBudgetIncreaseRequests/{id}")
-	public void deleteProjectBudgetIncreaseRequest(@PathVariable("id") Long id) {
-		this.financialService.deleteProjectBudgetIncreaseRequest(id);
 	}
 
 	@GetMapping("/projectExpenses")

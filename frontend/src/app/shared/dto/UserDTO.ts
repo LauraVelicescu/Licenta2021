@@ -7,6 +7,7 @@ export class UserDTO {
   public firstName: string;
   public lastName: string;
   public birthday: Date;
+  public createdDate: Date;
   public aboutMe: string;
   public facebookLink: string;
   public twitterLink: string;

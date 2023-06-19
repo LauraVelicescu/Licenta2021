@@ -1,6 +1,7 @@
 package ro.fii.licenta.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -62,6 +63,9 @@ public class NGOServiceImpl implements NGOService {
 		Ngo existingNgo = this.ngoRepository.findByName(ngo.getName());
 		if (existingNgo != null && !existingNgo.getId().equals(ngo.getId())) {
 			throw new EntityConflictException("NGO with name " + ngo.getName() + " already exists");
+		}
+		if (ngo.isNew()) {
+			ngo.setCreatedDate(new Date());
 		}
 		return ngoRepository.save(ngo);
 	}

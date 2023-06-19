@@ -269,7 +269,6 @@ export class ProjectExpensesComponent implements OnInit {
 
   canViewOwn(element: ProjectExpenseDTO) {
 
-    console.log(element?.expenseOwner?.member?.user?.id);
     return (this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN) || this.applicationService.globalPrivileges.includes(Role.ADMIN))
       || element?.expenseOwner?.member?.user?.id === this.securityStorage.getLoggedUser();
   }

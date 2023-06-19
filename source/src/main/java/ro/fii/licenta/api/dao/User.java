@@ -30,6 +30,8 @@ public class User extends PersistableEntity {
 	private String firstName;
 
 	private String lastName;
+	
+	private Date createdDate;
 
 	private Date birthday;
 
@@ -190,5 +192,16 @@ public class User extends PersistableEntity {
 	public void setAdministeredNGOs(List<Ngo> administeredNGOs) {
 		this.administeredNGOs = administeredNGOs;
 	}
+
+	@Column(name = "created_date")
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	
+	
 
 }

@@ -25,7 +25,7 @@ export enum ProjectAction {
   TEAM = 'Team',
   BOARD = 'Board',
   REPORTS = 'Reports',
-  POSITIONS = 'Positions',
+  POSITIONS = 'Team roles',
   PARTNERS = 'Partners',
   EXPENSES = 'Expenses',
   POSITIONS_ADD = 'Add position',
@@ -86,6 +86,8 @@ export class ProjectHubComponent implements OnInit {
   retrievedImage: any;
   selectedFile: File;
   base64Data: any;
+  private canEditReports: boolean;
+  private canViewProjectsFlag: boolean;
 
 
   constructor(private applicationService: ApplicationService,
@@ -214,7 +216,21 @@ export class ProjectHubComponent implements OnInit {
   selectionChange(event) {
     if (event.isUserInput) {
       this.selectedNgo = event.source.value;
-      this.loadNgoYears();
+      this.ngoService.findRoleReport(this.selectedNgo).subscribe((result) => {
+        if(result) {
+          this.canEditReports = true;
+        } else {
+          this.canEditReports = false;
+        }
+        this.ngoService.findRoleActiveMember(this.selectedNgo).subscribe((result2) => {
+          if(result2) {
+            this.canViewProjectsFlag = true;
+          } else {
+            this.canViewProjectsFlag = false;
+          }
+          this.loadNgoYears();
+        })
+      })
     }
   }
 
@@ -358,24 +374,25 @@ export class ProjectHubComponent implements OnInit {
       this.projectService.updateLogo(uploadImageData, this.selectedProject).subscribe((result) => {
         this.base64Data = result.logo;
         this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
-        console.log(this.retrievedImage)
       });
     }
   }
 
   private loadNgoYears() {
-    this.applicationService.emmitLoading(true);
-    this.financialService.getNgoYearsByNgoId(this.selectedNgo).subscribe((result) => {
-      this.applicationService.emmitLoading(false);
-      this.comboDataNgoYear = result;
-      this.filteredOptionsNgoYear = this.searchTextboxControlNgoYear.valueChanges
-        .pipe(
-          startWith<string>(''),
-          map(name => this._filterNgoYear(name))
-        );
-    }, error => {
-      this.applicationService.emmitLoading(false);
-    });
+    if(this.applicationService.globalPrivileges.includes(Role.NGO_ADMIN) || this.applicationService.globalPrivileges.includes(Role.ADMIN) || this.applicationService.globalPrivileges.includes(Role.REPORTS) || this.canViewProjectsFlag || this.canEditReports) {
+      this.applicationService.emmitLoading(true);
+      this.financialService.getNgoYearsByNgoId(this.selectedNgo).subscribe((result) => {
+        this.applicationService.emmitLoading(false);
+        this.comboDataNgoYear = result;
+        this.filteredOptionsNgoYear = this.searchTextboxControlNgoYear.valueChanges
+          .pipe(
+            startWith<string>(''),
+            map(name => this._filterNgoYear(name))
+          );
+      }, error => {
+        this.applicationService.emmitLoading(false);
+      });
+    }
   }
 
   onEmmitPartnerSave() {

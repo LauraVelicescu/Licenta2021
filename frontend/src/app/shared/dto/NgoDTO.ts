@@ -11,5 +11,6 @@ export class NgoDTO {
   public linkedinLink: string;
   public logo: any;
   public adminId: number;
+  public createdDate: Date;
   public componentList: OrganizationalComponentDTO[];
 }

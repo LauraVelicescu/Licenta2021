@@ -37,7 +37,7 @@ export class NgoYearComponent implements OnInit {
   selection = new SelectionModel<NgoYearDTO>(false, []);
 
   ngoYearForm: FormGroup;
-  displayedColumns: string[] = ['id', 'name', 'startDate', 'endDate', 'treasury'];
+  displayedColumns: string[] = ['name', 'startDate', 'endDate', 'treasury'];
   dataSource = new MatTableDataSource<NgoYearDTO>([]);
   selectedOption: NgoDTO;
   private currentNgoYear: NgoYearDTO;

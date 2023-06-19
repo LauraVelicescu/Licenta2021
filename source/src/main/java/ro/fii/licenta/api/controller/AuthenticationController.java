@@ -1,5 +1,6 @@
 package ro.fii.licenta.api.controller;
 
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +78,7 @@ public class AuthenticationController {
 				user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 			}
 			user.setPersonType(PersonType.NORMAL);
+			user.setCreatedDate(new Date());
 			user = this.userRepository.save(user);
 			return this.modelMapper.map(user, UserDTO.class);
 		} else {

@@ -6,6 +6,7 @@ import {plainToClass} from 'class-transformer';
 import {MemberDTO} from '../../dto/MemberDTO';
 import {MemberRequestDTO, MemberRequestStatus} from '../../dto/MemberRequestDTO';
 import {FunctionDTO} from '../../dto/FunctionDTO';
+import {UserRoleDTO} from '../../dto/UserRoleDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,8 @@ export class NGOService {
   private addNGOFunctionURL = '/addNGOFunction/:ngoId';
   private updateNGOFunctionURL = '/updateNGOFunction';
   private setMemberFunctionURL = '/setMemberFunction/:functionId';
+  private roleReportsNGOURL = '/getRoleReport/:ngoId'
+  private roleActiveMemberNGOURL = '/getRoleActiveMember/:ngoId'
 
   constructor(private mainService: MainServiceService) {
   }
@@ -73,7 +76,6 @@ export class NGOService {
     return this.mainService.postFile(this.rootURL + this.uploadImageURL, logo).pipe(map((result: NgoDTO) => {
       return result;
     }), catchError(err => {
-      console.log(err)
       throw new Error(err.error.message);
     }));
   }
@@ -133,6 +135,24 @@ export class NGOService {
   public findNGOsNotMemberOfCount() {
     return this.mainService.get(this.rootURL + this.getNGOsNotMemberOfCountURL).pipe(map((result: number) => {
       return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findRoleReport(ngo: NgoDTO) {
+    return this.mainService.get(this.rootURL + this.roleReportsNGOURL.replace(':ngoId', ngo.id.toString())).pipe(map((result: UserRoleDTO) => {
+      return plainToClass(UserRoleDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
+  public findRoleActiveMember(ngo: NgoDTO) {
+    return this.mainService.get(this.rootURL + this.roleActiveMemberNGOURL.replace(':ngoId', ngo.id.toString())).pipe(map((result: UserRoleDTO) => {
+      return plainToClass(UserRoleDTO, result, {enableCircularCheck: false});
     }), catchError(err => {
       this.mainService.httpError(err);
       throw new Error(err.error.message);

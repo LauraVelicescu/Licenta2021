@@ -7,6 +7,7 @@ import {ProjectTaskDTO} from '../../dto/ProjectTaskDTO';
 import {UserDTO} from '../../dto/UserDTO';
 import {TaskAttachmentDTO} from '../../dto/TaskAttachmentDTO';
 import {TaskHistoryDTO} from '../../dto/TaskHistoryDTO';
+import {TaskStatus} from '../../../layouts/admin-layout/submodules/project-module/subcomponents/project-board/project-board.component';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,7 @@ export class TaskService {
   private findAllUploadsURL = '/upload/:taskId'
   private findAllHistoryURL = '/history/:taskId'
   private createChatHistoryURL = '/history/:taskId'
+  private findHistoryByStatusURL = '/allHistory/:status'
 
   constructor(private mainService: MainServiceService) {
 
@@ -37,6 +39,16 @@ export class TaskService {
       throw new Error(err.error.message);
     }));
   }
+
+  public findHistoryByStatus(status: string) {
+    return this.mainService.get(this.rootURL + this.findHistoryByStatusURL.replace(':status', status)).pipe(map((result: TaskHistoryDTO[]) => {
+      return plainToClass(TaskHistoryDTO, result, {enableCircularCheck: false});
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err.error.message);
+    }));
+  }
+
 
   public createTask(project: ProjectDTO, task: ProjectTaskDTO) {
     return this.mainService.post(this.rootURL + this.createTaskURL.replace(':projectId', project.id.toString()), task).pipe(map((result) => {

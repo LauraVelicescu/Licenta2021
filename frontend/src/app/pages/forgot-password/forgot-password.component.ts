@@ -23,16 +23,12 @@ export class ForgotPasswordComponent implements OnInit {
 
   onSubmit() {
     if (this.forgotPasswordForm.invalid) {
-      console.log('invalid');
       return;
     } else {
-      console.log(this.forgotPasswordForm.controls.emailAddress.value);
       let user: UserDTO = new UserDTO();
       user.emailAddress = this.forgotPasswordForm.controls.emailAddress.value;
       this.forgotPasswordService.forgotPassword(user).subscribe((result) => {
-        console.log(result);
       }, error => {
-        console.log(error);
       })
     }
   }

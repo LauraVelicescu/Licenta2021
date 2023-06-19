@@ -1,5 +1,7 @@
 package ro.fii.licenta.api.config;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -42,6 +44,7 @@ public class Initializer {
 			user.setEmailAddress("mangongoadm@gmail.com");
 			user.setFirstName("Web App");
 			user.setLastName("Admin");
+			user.setCreatedDate(new Date());
 			user.setPassword(passwordEncoder.encode("admin"));
 			user.setAboutMe("Default administrator account.");
 			this.userRepository.save(user);

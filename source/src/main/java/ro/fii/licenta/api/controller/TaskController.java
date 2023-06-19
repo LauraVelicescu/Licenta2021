@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +29,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ro.fii.licenta.api.dao.ProjectTask;
 import ro.fii.licenta.api.dao.TaskAttachment;
+import ro.fii.licenta.api.dao.TaskStatus;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.ProjectDTO;
 import ro.fii.licenta.api.dto.ProjectTaskDTO;
 import ro.fii.licenta.api.dto.TaskAttachmentDTO;
 import ro.fii.licenta.api.dto.TaskHistoryDTO;
 import ro.fii.licenta.api.repository.ProjectTaskRepository;
+import ro.fii.licenta.api.repository.TaskHistoryRepository;
 import ro.fii.licenta.api.service.ProjectService;
 import ro.fii.licenta.api.service.TaskHistoryServiceImpl;
 import ro.fii.licenta.api.service.TaskService;
@@ -58,6 +61,9 @@ public class TaskController {
 
 	@Autowired
 	private TaskHistoryServiceImpl taskHistoryServiceImpl;
+
+	@Autowired
+	private TaskHistoryRepository taskHistoryRepository;
 
 	@Autowired
 	private UserService userService;
@@ -90,10 +96,10 @@ public class TaskController {
 	}
 
 	@PostMapping(value = "/history/{taskId}")
-	public void createChatHistoryForTask(@PathVariable(value = "taskId") Long taskId, @RequestBody Map<String, String> message,
-			HttpServletRequest request) {
-		this.taskHistoryServiceImpl.createChatter(message.get("message"), this.projectTaskRepository.findById(taskId).get(),
-				userService.getCurrentUser(request));
+	public void createChatHistoryForTask(@PathVariable(value = "taskId") Long taskId,
+			@RequestBody Map<String, String> message, HttpServletRequest request) {
+		this.taskHistoryServiceImpl.createChatter(message.get("message"),
+				this.projectTaskRepository.findById(taskId).get(), userService.getCurrentUser(request));
 	}
 
 	@PostMapping(value = "/{projectId}")
@@ -165,6 +171,14 @@ public class TaskController {
 		}
 		return outputStream.toByteArray();
 
+	}
+
+	@GetMapping(value = "/allHistory/{status}")
+	public ResponseEntity<List<TaskHistoryDTO>> findAllHistoryByStatus(
+			@PathVariable(value = "status") TaskStatus status) {
+		List<TaskHistoryDTO> taskHistoryDTOs = this.taskHistoryRepository.findByCurrentStatus(status).stream()
+				.map(e -> this.modelMapper.map(e, TaskHistoryDTO.class)).collect(Collectors.toList());
+		return ResponseEntity.ok(taskHistoryDTOs);
 	}
 
 }

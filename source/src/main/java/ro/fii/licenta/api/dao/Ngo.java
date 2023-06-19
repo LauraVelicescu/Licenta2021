@@ -27,6 +27,8 @@ public class Ngo extends NameDescriptionEntity {
 	private String acronym;
 
 	private Date foundingDate;
+	
+	private Date createdDate;
 
 	private String facebookLink;
 
@@ -58,6 +60,15 @@ public class Ngo extends NameDescriptionEntity {
 
 	public void setFoundingDate(Date foundingDate) {
 		this.foundingDate = foundingDate;
+	}
+	
+	@Column(name = "created_date")
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	@Column(name = "facebook_link")

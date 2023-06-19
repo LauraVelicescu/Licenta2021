@@ -38,7 +38,7 @@ export class NgoManageFunctionsComponent implements OnInit {
   length: number;
 
   functionForm: FormGroup;
-  displayedColumns: string[] = ['id', 'name', 'description'];
+  displayedColumns: string[] = ['name', 'description'];
   dataSource = new MatTableDataSource<FunctionDTO>([]);
   selectedOption: NgoDTO;
   private currentFunction: FunctionDTO;
