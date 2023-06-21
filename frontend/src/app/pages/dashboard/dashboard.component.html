@@ -120,12 +120,12 @@
   </div>
   <div class=" row">
     <div class=" col-lg-6 col-md-12">
-      <div class=" card card-tasks">
+      <div class=" card card-tasks" >
         <div class="card-header">
           <h6 class="title d-inline ">Projects<span>({{lengthProject}})</span></h6>
         </div>
         <div class=" card-body">
-          <div class=" table-full-width table-responsive" s>
+          <div class=" table-full-width table-responsive" style="max-height: 400px">
             <table mat-table class="table" [dataSource]="dataSource">
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef></th>
@@ -146,12 +146,12 @@
       </div>
     </div>
     <div class=" col-lg-6 col-md-12">
-      <div class=" card">
+      <div class=" card" >
         <div class=" card-header">
           <h4 class=" card-title">Members</h4>
         </div>
-        <div class=" card-body">
-          <div class=" table-responsive">
+        <div class=" card-body" >
+          <div class=" table-responsive" style="max-height: 400px">
             <table mat-table class="table" [dataSource]="dataSourceMember">
 
               <ng-container matColumnDef="Nume">

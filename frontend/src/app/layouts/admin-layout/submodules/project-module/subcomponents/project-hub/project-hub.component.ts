@@ -153,8 +153,10 @@ export class ProjectHubComponent implements OnInit {
         this.selectedProject = undefined;
       }
       if (this.selectedProject?.id) {
-        this.base64Data = this.selectedProject.logo;
-        this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+        this.projectService.getProjectImage(this.selectedProject.id).subscribe((result) => {
+          this.base64Data = result.logo;
+          this.retrievedImage = 'data:image/jpeg;base64,' + this.base64Data;
+        })
       }
       this.currentAction = undefined;
     });

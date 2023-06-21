@@ -13,5 +13,8 @@ public interface ProjectMemberRepository extends PersistableEntityRepository<Pro
 
 	List<ProjectMember> findByMember_User_Id(Long userId);
 
+	List<ProjectMember> findByMember_Id(Long memberId);
 	ProjectMember findByProject_IdAndMember_User_Id(Long projectId, Long userId);
+
+    List<ProjectMember> findByProjectPosition_Id(Long projectPositionId);
 }

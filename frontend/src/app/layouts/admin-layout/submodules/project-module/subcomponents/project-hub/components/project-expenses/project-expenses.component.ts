@@ -25,7 +25,7 @@ export class ProjectExpensesComponent implements OnInit {
 
   selectedFile: File;
 
-  displayedColumns: string[] = ['no', 'name', 'expenseOwner', 'project', 'task', 'date', 'amount', 'status', 'actions'];
+  displayedColumns: string[] = ['name', 'expenseOwner', 'project', 'task', 'date', 'amount', 'status', 'actions'];
   dataSource = new MatTableDataSource<ProjectExpenseDTO>([]);
 
 

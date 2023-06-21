@@ -21,6 +21,7 @@ import ro.fii.licenta.api.dao.PasswordResetToken;
 import ro.fii.licenta.api.dao.User;
 import ro.fii.licenta.api.dto.UserDTO;
 import ro.fii.licenta.api.exception.BusinessException;
+import ro.fii.licenta.api.repository.MemberRepository;
 import ro.fii.licenta.api.repository.PasswordTokenRepository;
 import ro.fii.licenta.api.repository.UserRepository;
 import ro.fii.licenta.api.service.UserService;
@@ -32,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private PasswordTokenRepository passwordTokenRepository;
+
+	@Autowired
+	private MemberRepository memberRepository;
 
 	@Autowired
 	private JWTTokenUtil jwtTokenUtil;
@@ -159,6 +163,9 @@ public class UserServiceImpl implements UserService {
 				}
 				if (user.getId().equals(loggedUser.getId())) {
 					throw new BusinessException("user_logged");
+				}
+				if(this.memberRepository.findByUser_Id(user.getId()).size() != 0) {
+					throw new BusinessException("This user is a member of one more more NGOs");
 				}
 				userRepository.delete(user);
 			} catch (BusinessException e) {

@@ -80,8 +80,8 @@ export class DashboardComponent implements OnInit {
             zeroLineColor: 'transparent',
           },
           ticks: {
-            suggestedMin: 60,
-            suggestedMax: 125,
+            suggestedMin: 50,
+            suggestedMax: 50,
             padding: 20,
             fontColor: '#2380f7'
           }
@@ -128,8 +128,8 @@ export class DashboardComponent implements OnInit {
             zeroLineColor: 'transparent',
           },
           ticks: {
-            suggestedMin: 60,
-            suggestedMax: 125,
+            suggestedMin: 50,
+            suggestedMax: 50,
             padding: 20,
             fontColor: '#9a9a9a'
           }
@@ -176,8 +176,8 @@ export class DashboardComponent implements OnInit {
             zeroLineColor: 'transparent',
           },
           ticks: {
-            suggestedMin: 60,
-            suggestedMax: 125,
+            suggestedMin: 50,
+            suggestedMax: 50,
             padding: 20,
             fontColor: '#9a9a9a'
           }
@@ -225,7 +225,7 @@ export class DashboardComponent implements OnInit {
           },
           ticks: {
             suggestedMin: 50,
-            suggestedMax: 110,
+            suggestedMax: 50,
             padding: 20,
             fontColor: '#ff8a76'
           }
@@ -273,7 +273,7 @@ export class DashboardComponent implements OnInit {
           },
           ticks: {
             suggestedMin: 50,
-            suggestedMax: 125,
+            suggestedMax: 50,
             padding: 20,
             fontColor: '#9e9e9e'
           }
@@ -321,8 +321,8 @@ export class DashboardComponent implements OnInit {
             zeroLineColor: 'transparent',
           },
           ticks: {
-            suggestedMin: 60,
-            suggestedMax: 120,
+            suggestedMin: 50,
+            suggestedMax: 50,
             padding: 20,
             fontColor: '#9e9e9e'
           }
@@ -484,28 +484,29 @@ export class DashboardComponent implements OnInit {
         }
       }
       this.datasets.push(months);
-    })
-
-    this.ngoService.findAllNGOs().subscribe((result) => {
-      let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      for (let u of result) {
-        if (new Date(u.createdDate).getFullYear() === new Date().getFullYear()) {
-          months[new Date(u.createdDate).getMonth()]++;
+      this.ngoService.findAllNGOs().subscribe((result2) => {
+        let months2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (let u of result2) {
+          if (new Date(u.createdDate).getFullYear() === new Date().getFullYear()) {
+            months2[new Date(u.createdDate).getMonth()]++;
+          }
         }
-      }
-      this.datasets.push(months);
+        this.datasets.push(months2);
+        this.projectService.findAllProjects().subscribe((result3) => {
+          let months3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          for (let u of result3) {
+            if (new Date(u.startDate).getFullYear() === new Date().getFullYear()) {
+              months3[new Date(u.startDate).getMonth()]++;
+            }
+          }
+          this.datasets.push(months3);
+        })
+      })
     })
 
 
-    this.projectService.findAllProjects().subscribe((result) => {
-      let months = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      for (let u of result) {
-        if (new Date(u.startDate).getFullYear() === new Date().getFullYear()) {
-          months[new Date(u.startDate).getMonth()]++;
-        }
-      }
-      this.datasets.push(months);
-    })
+
+
 
     this.data = this.datasets[0];
 
@@ -544,7 +545,6 @@ export class DashboardComponent implements OnInit {
       options: gradientChartOptionsConfigurationWithTooltipRed
     };
     this.myChartData = new Chart(this.ctx, config);
-    console.log(this.myChartData)
   }
 
   public formatDateLocal(date: Date) {
@@ -555,7 +555,6 @@ export class DashboardComponent implements OnInit {
   }
 
   public updateOptions() {
-    console.log(this.myChartData)
     this.myChartData.data.datasets[0].data = this.data;
     this.myChartData.update();
   }

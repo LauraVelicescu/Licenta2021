@@ -100,6 +100,7 @@ export class ProjectBoardComponent implements OnInit {
               private userService: UserService) {
     if (this.router.getCurrentNavigation().extras?.state?.selectedProject) {
       this.selectedProject = this.router.getCurrentNavigation().extras.state.selectedProject
+
       this.load();
     }
   }
@@ -138,6 +139,11 @@ export class ProjectBoardComponent implements OnInit {
       } else {
         this.applicationService.emmitLoading(true);
         this.projectService.findMyProjects().subscribe((result) => {
+          if(this.selectedProject) {
+            if(!result.map(e => e.id).includes(this.selectedProject.id)) {
+              this.selectedProject = undefined;
+            }
+          }
           this.applicationService.emmitLoading(false);
           this.comboData = result;
           this.filteredOptions = this.searchTextboxControl.valueChanges

@@ -13,6 +13,7 @@ public interface MemberRepository extends PersistableEntityRepository<Member, Lo
 	@Query("SELECT m FROM Member m WHERE m.user.id = ?1 and m.ngo.id = ?2")
 	public Member findByUserAndNgo(Long userId, Long ngoId);
 
+	List<Member> findByUser_Id(Long id);
 	public List<Member> findByNgo_Id(Long ngo);
 	
 	

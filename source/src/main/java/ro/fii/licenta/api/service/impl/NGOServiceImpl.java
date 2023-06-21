@@ -64,7 +64,7 @@ public class NGOServiceImpl implements NGOService {
 		if (existingNgo != null && !existingNgo.getId().equals(ngo.getId())) {
 			throw new EntityConflictException("NGO with name " + ngo.getName() + " already exists");
 		}
-		if (ngo.isNew()) {
+		if (ngo.getCreatedDate() == null) {
 			ngo.setCreatedDate(new Date());
 		}
 		return ngoRepository.save(ngo);

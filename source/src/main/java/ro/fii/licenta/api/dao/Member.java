@@ -1,12 +1,10 @@
 package ro.fii.licenta.api.dao;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import ro.fii.licenta.framework.PersistableEntity;
+
+import java.util.List;
 
 @Entity
 @Table(name = "member")

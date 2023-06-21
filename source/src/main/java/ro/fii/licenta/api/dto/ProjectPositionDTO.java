@@ -1,10 +1,13 @@
 package ro.fii.licenta.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ProjectPositionDTO {
 
     private Long id;
     private String name;
     private String description;
+    @JsonIgnore
     private ProjectDTO project;
 
     public Long getId() {

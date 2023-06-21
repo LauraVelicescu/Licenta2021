@@ -28,7 +28,7 @@ import {ReportService} from '../../../../../../../shared/services/report/report.
 })
 export class NgoManageComponent implements OnInit {
   displayedColumns: string[] = [ 'name', 'acronym'];
-  displayedColumnsForComponents: string[] = [ 'name', 'description', 'lead'];
+  displayedColumnsForComponents: string[] = [ 'name', 'description'];
 
   dataSource = new MatTableDataSource<NgoDTO>([]);
 

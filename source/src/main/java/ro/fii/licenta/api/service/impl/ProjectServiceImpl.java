@@ -7,18 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import ro.fii.licenta.api.dao.NgoYear;
-import ro.fii.licenta.api.dao.Project;
-import ro.fii.licenta.api.dao.ProjectMember;
-import ro.fii.licenta.api.dao.ProjectPosition;
-import ro.fii.licenta.api.dao.User;
+import ro.fii.licenta.api.dao.*;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
 import ro.fii.licenta.api.exception.ValidationException;
-import ro.fii.licenta.api.repository.NgoYearRepository;
-import ro.fii.licenta.api.repository.ProjectMemberRepository;
-import ro.fii.licenta.api.repository.ProjectPositionRepository;
-import ro.fii.licenta.api.repository.ProjectRepository;
+import ro.fii.licenta.api.repository.*;
 import ro.fii.licenta.api.service.ProjectService;
 
 public class ProjectServiceImpl implements ProjectService {
@@ -31,6 +24,15 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Autowired
 	ProjectMemberRepository projectMemberRepository;
+
+	@Autowired
+	ProjectTaskRepository projectTaskRepository;
+
+	@Autowired
+	ProjectExpenseRepository projectExpenseRepository;
+
+	@Autowired
+	TaskHistoryRepository taskHistoryRepository;
 
 	@Autowired
 	NgoYearRepository ngoYearRepository;
@@ -127,6 +129,11 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteProjectPosition(Long projectPositionId) {
 
 		if (this.projectPositionRepository.existsById(projectPositionId)) {
+			List<ProjectMember> projectMemberList = this.projectMemberRepository.findByProjectPosition_Id(projectPositionId);
+			projectMemberList.forEach(pm -> {
+				pm.setProjectPosition(null);
+				this.projectMemberRepository.save(pm);
+			});
 			this.projectPositionRepository.deleteById(projectPositionId);
 		} else {
 			throw new NotFoundException("Project position with id " + projectPositionId + " does not exist");
@@ -156,6 +163,20 @@ public class ProjectServiceImpl implements ProjectService {
 		// TODO Auto-generated method stub
 
 		if (this.projectMemberRepository.existsById(projectMemberId)) {
+			List<ProjectTask> tasks = this.projectTaskRepository.findByProjectMember_Id(projectMemberId);
+			tasks.forEach(e -> {
+				e.setProjectMember(null);
+				e.getTaskHistories().forEach(th -> {
+					th.setProjectMember(null);
+					this.taskHistoryRepository.save(th);
+				});
+				this.projectTaskRepository.save(e);
+			});
+			List<ProjectExpense> expenses = this.projectExpenseRepository.findByExpenseOwner_Id(projectMemberId);
+			expenses.forEach(e -> {
+				e.setExpenseOwner(null);
+				this.projectExpenseRepository.save(e);
+			});
 			this.projectMemberRepository.deleteById(projectMemberId);
 		} else {
 			throw new NotFoundException("Project member with id " + projectMemberId + " does not exist");

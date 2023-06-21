@@ -8,6 +8,8 @@ import {ProjectPositionDTO} from '../../dto/ProjectPositionDTO';
 import {ProjectMemberDTO} from '../../dto/ProjectMemberDTO';
 import {UserDTO} from '../../dto/UserDTO';
 import {NgoYearDTO} from '../../dto/NgoYearDTO';
+import {UserDTOImage} from '../../dto/UserDTOImage';
+import {ProjectImageDTO} from '../../dto/ProjectImageDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +31,7 @@ export class ProjectService {
   private createProjectMembersURL = '/project/:projectId/member'
   private deleteProjectMembersURL = '/project/:projectMemberId/member'
   private uploadImageURL = '/project/:projectId/uploadImage'
+  private getProjectImageURL: string = '/project/image/:projectId';
 
   constructor(private mainService: MainServiceService) {
   }
@@ -116,6 +119,15 @@ export class ProjectService {
     }), catchError(err => {
       this.mainService.httpError(err);
       throw new Error(err.error.message);
+    }));
+  }
+
+  public getProjectImage(projectId: number) {
+    return this.mainService.get(this.rootURL + this.getProjectImageURL.replace(':projectId',projectId.toString() )).pipe(map((result: ProjectImageDTO) => {
+      return result;
+    }), catchError(err => {
+      this.mainService.httpError(err);
+      throw new Error(err);
     }));
   }
 

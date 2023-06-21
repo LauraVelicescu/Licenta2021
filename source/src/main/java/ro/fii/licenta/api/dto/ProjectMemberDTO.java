@@ -1,5 +1,7 @@
 package ro.fii.licenta.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class ProjectMemberDTO {
@@ -8,6 +10,7 @@ public class ProjectMemberDTO {
 
 	private String description;
 
+	@JsonIgnore
 	private ProjectDTO project;
 
 	private MemberDTO member;

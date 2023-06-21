@@ -227,12 +227,6 @@
                     <td mat-cell *matCellDef="let element"> {{element.description}} </td>
                   </ng-container>
 
-
-                  <ng-container matColumnDef="lead">
-                    <th mat-header-cell *matHeaderCellDef> Is lead</th>
-                    <td mat-cell *matCellDef="let element"> {{element.lead}} </td>
-                  </ng-container>
-
                   <tr mat-header-row *matHeaderRowDef="displayedColumnsForComponents" class="text-primary"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumnsForComponents;"
                       (click)="selectionComponents.toggle(row)"

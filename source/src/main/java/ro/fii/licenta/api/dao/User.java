@@ -4,14 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -55,6 +48,10 @@ public class User extends PersistableEntity {
 	
 	@JsonManagedReference
 	private List<Ngo> administeredNGOs;
+
+	private List<MemberRequest> memberRequests;
+
+	private List<Member> member;
 
 	@Column(name = "password")
 	public String getPassword() {
@@ -201,7 +198,21 @@ public class User extends PersistableEntity {
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
-	
-	
 
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+	public List<MemberRequest> getMemberRequests() {
+		return memberRequests;
+	}
+
+	public void setMemberRequests(List<MemberRequest> memberRequests) {
+		this.memberRequests = memberRequests;
+	}
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+	public List<Member> getMember() {
+		return member;
+	}
+
+	public void setMember(List<Member> member) {
+		this.member = member;
+	}
 }

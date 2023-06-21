@@ -9,5 +9,7 @@ public interface ProjectTaskRepository extends PersistableEntityRepository<Proje
 
 	List<ProjectTask> findByProject_Id(Long id);
 
+	List<ProjectTask> findByProjectMember_Id(Long id);
+
 	ProjectTask findByNameAndProject_Id(String name, Long id);
 }

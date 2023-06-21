@@ -82,7 +82,7 @@ export class NgoManageMembersComponent implements OnInit {
           this.applicationService.emmitLoading(false);
         });
       }
-    }, 3000);
+    }, 200);
 
 
     this.functionForm = this.formBuilder.group({

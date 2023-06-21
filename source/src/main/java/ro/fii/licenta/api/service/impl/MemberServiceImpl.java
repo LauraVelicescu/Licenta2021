@@ -5,14 +5,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import ro.fii.licenta.api.dao.Member;
-import ro.fii.licenta.api.dao.MemberRequest;
+import ro.fii.licenta.api.dao.*;
 import ro.fii.licenta.api.dto.MemberRequestDTO;
 import ro.fii.licenta.api.exception.EntityConflictException;
 import ro.fii.licenta.api.exception.NotFoundException;
-import ro.fii.licenta.api.repository.MemberRepository;
-import ro.fii.licenta.api.repository.MemberRequestRepository;
+import ro.fii.licenta.api.repository.*;
 import ro.fii.licenta.api.service.MemberService;
+import ro.fii.licenta.api.service.ProjectService;
 
 public class MemberServiceImpl implements MemberService {
 
@@ -20,7 +19,20 @@ public class MemberServiceImpl implements MemberService {
 	MemberRepository memberRepository;
 
 	@Autowired
+	ProjectMemberRepository projectMemberRepository;
+
+
+	@Autowired
+	ProjectService projectService;
+
+	@Autowired
 	MemberRequestRepository memberRequestRepository;
+
+	@Autowired
+	RoleRepository roleRepository;
+
+	@Autowired
+	UserRoleRepoistory userRoleRepoistory;
 
 	@Override
 	public MemberRequest saveRequest(MemberRequest request) {
@@ -44,6 +56,14 @@ public class MemberServiceImpl implements MemberService {
 			throw new EntityConflictException("The user " + member.getUser().getEmailAddress()
 					+ " is already in the NGO " + member.getNgo().getName());
 		} else {
+			if(member.getId() == null || member.getId() == 0) {
+				UserRole ur = new UserRole();
+				Role r = this.roleRepository.findByName("ACTIVE_MEMBER");
+				ur.setNgo(member.getNgo());
+				ur.setUser(member.getUser());
+				ur.setRole(r);
+				this.userRoleRepoistory.save(ur);
+			}
 			return memberRepository.save(member);
 		}
 	}
@@ -62,6 +82,12 @@ public class MemberServiceImpl implements MemberService {
 					m.setUser(mr.getUser());
 					m.setFunction(null);
 					memberRepository.save(m);
+					UserRole ur = new UserRole();
+					Role r = this.roleRepository.findByName("ACTIVE_MEMBER");
+					ur.setNgo(mr.getNgo());
+					ur.setUser(mr.getUser());
+					ur.setRole(r);
+					this.userRoleRepoistory.save(ur);
 					members.add(m);
 				}
 			}
@@ -78,6 +104,16 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void deleteById(Long id) {
 		if (this.memberRepository.existsById(id)) {
+			Member m = this.memberRepository.findById(id).get();
+			Role r = this.roleRepository.findByName("ACTIVE_MEMBER");
+			UserRole ur = this.userRoleRepoistory.findByUser_IdAndRole_IdAndNgo_Id(m.getUser().getId(), r.getId(), m.getNgo().getId());
+			if(ur != null) {
+				this.userRoleRepoistory.delete(ur);
+			}
+			List<ProjectMember> pm = this.projectMemberRepository.findByMember_Id(m.getId());
+			pm.forEach(p -> {
+				this.projectService.deleteProjectMember(p.getId());
+			});
 			this.memberRepository.deleteById(id);
 		} else {
 			throw new NotFoundException("Member with id " + id + " does not exist");

@@ -24,7 +24,7 @@ import {Role} from '../../../../../../../../shared/util/ApplicationRoutesInfo';
 export class ProjectTeamComponent implements OnInit {
 
 
-  displayedColumns: string[] = ['no', 'name', 'position', 'organizationalUnit', 'since', 'actions'];
+  displayedColumns: string[] = ['name', 'position', 'organizationalUnit', 'since', 'actions'];
   dataSource = new MatTableDataSource<ProjectMemberDTO>([]);
 
 

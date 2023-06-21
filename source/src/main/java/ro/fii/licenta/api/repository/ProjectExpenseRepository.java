@@ -8,4 +8,6 @@ import ro.fii.licenta.framework.PersistableEntityRepository;
 public interface ProjectExpenseRepository extends PersistableEntityRepository<ProjectExpense, Long>{
 
 	List<ProjectExpense> findByProject_Id(Long id);
+
+	List<ProjectExpense> findByExpenseOwner_Id(Long id);
 }

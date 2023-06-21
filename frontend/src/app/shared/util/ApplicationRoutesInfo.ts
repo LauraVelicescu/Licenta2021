@@ -52,7 +52,7 @@ export class ApplicationRoutesInfo {
 
   public static NGO_ROUTE_INFO: RouteInfo = {
     path: 'ngo',
-    title: 'NGOs',
+    title: 'NGO',
     icon: 'public',
     privileges: [Role.ADMIN, Role.NGO_ADMIN],
     subPaths: [{
@@ -63,25 +63,25 @@ export class ApplicationRoutesInfo {
       parentPath: 'ngo'
     }, {
       path: 'functions',
-      title: 'Functions',
+      title: 'Member types',
       icon: 'category',
       privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
     }, {
       path: 'members',
-      title: 'Ngo Members',
+      title: 'Members',
       icon: 'people',
       privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
     }, {
       path: 'ngo-year',
-      title: 'Ngo years',
+      title: 'Timeline',
       icon: 'calendar_today',
       privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
     }, {
       path: 'ngo-partner-type',
-      title: 'Ngo partners type',
+      title: 'Partner types',
       icon: 'attach_money',
       privileges: [Role.ADMIN, Role.NGO_ADMIN],
       parentPath: 'ngo'
@@ -107,7 +107,7 @@ export class ApplicationRoutesInfo {
       parentPath: 'project'
     }, {
       path: 'board',
-      title: 'Projects boards',
+      title: 'Project boards',
       icon: 'dashboard',
       privileges: [Role.ADMIN, Role.NGO_ADMIN, Role.ACTIVE_MEMBER, Role.REPORTS],
       parentPath: 'project'

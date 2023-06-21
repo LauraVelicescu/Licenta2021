@@ -28,10 +28,7 @@ import ro.fii.licenta.api.dao.Project;
 import ro.fii.licenta.api.dao.ProjectMember;
 import ro.fii.licenta.api.dao.ProjectPosition;
 import ro.fii.licenta.api.dao.User;
-import ro.fii.licenta.api.dto.NgoYearDTO;
-import ro.fii.licenta.api.dto.ProjectDTO;
-import ro.fii.licenta.api.dto.ProjectMemberDTO;
-import ro.fii.licenta.api.dto.ProjectPositionDTO;
+import ro.fii.licenta.api.dto.*;
 import ro.fii.licenta.api.repository.NgoYearRepository;
 import ro.fii.licenta.api.repository.ProjectRepository;
 import ro.fii.licenta.api.service.ProjectService;
@@ -66,13 +63,17 @@ public class ProjectController {
 	}
 
 	@PostMapping(value = "/updateProject")
-	public void updateProject(@RequestBody ProjectDTO projectDto) {
+	public void updateProject(@RequestBody ProjectDTO projectDto) throws NotFoundException {
 		Project project = projectService.findById(projectDto.getId());
-
-		if (project != null) {
-			new NotFoundException(String.format("Project with name %s was not found", projectDto.getName()));
+		if (project == null) {
+			throw new NotFoundException(String.format("Project with name %s was not found", projectDto.getName()));
 		}
-		this.projectService.save(this.modelMapper.map(projectDto, Project.class));
+		Project updateProject = this.modelMapper.map(projectDto, Project.class);
+		if(project.getLogo() != null) {
+
+			updateProject.setLogo(project.getLogo());
+		}
+		this.projectService.save(updateProject);
 
 	}
 
@@ -95,7 +96,9 @@ public class ProjectController {
 	public ResponseEntity<List<ProjectDTO>> findAllProjects() {
 		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
 		this.projectRepository.findAll().forEach(p -> {
-			ngoProjectDtos.add(this.modelMapper.map(p, ProjectDTO.class));
+			ProjectDTO projectDTO = modelMapper.map(p, ProjectDTO.class);
+
+			ngoProjectDtos.add(projectDTO);
 		});
 		return ResponseEntity.ok(ngoProjectDtos);
 	}
@@ -107,7 +110,9 @@ public class ProjectController {
 
 		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
 		this.projectRepository.findByNgoYear_Ngo_Admin_Id(user.getId()).forEach(p -> {
-			ngoProjectDtos.add(this.modelMapper.map(p, ProjectDTO.class));
+			ProjectDTO projectDTO = modelMapper.map(p, ProjectDTO.class);
+
+			ngoProjectDtos.add(projectDTO);
 		});
 		return ResponseEntity.ok(ngoProjectDtos);
 	}
@@ -120,7 +125,9 @@ public class ProjectController {
 		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
 		List<Project> ngoProjects = projectService.findAllNgoProjects(page, pageNo, ngoId);
 		for (Project project : ngoProjects) {
-			ngoProjectDtos.add(modelMapper.map(project, ProjectDTO.class));
+			ProjectDTO projectDTO = modelMapper.map(project, ProjectDTO.class);
+
+			ngoProjectDtos.add(projectDTO);
 		}
 
 		return ResponseEntity.ok(ngoProjectDtos);
@@ -139,7 +146,9 @@ public class ProjectController {
 		List<ProjectDTO> ngoProjectDtos = new ArrayList<ProjectDTO>();
 		List<Project> ngoProjects = projectService.findAllProjectsByUser(currentUser);
 		for (Project project : ngoProjects) {
-			ngoProjectDtos.add(modelMapper.map(project, ProjectDTO.class));
+			ProjectDTO projectDTO = modelMapper.map(project, ProjectDTO.class);
+;
+			ngoProjectDtos.add(projectDTO);
 		}
 
 		return ResponseEntity.ok(ngoProjectDtos);
@@ -191,6 +200,18 @@ public class ProjectController {
 		});
 
 		return ResponseEntity.ok(list);
+	}
+
+
+	@GetMapping(value = "/project/image/{projectId}")
+	public ResponseEntity<ProjectImageDTO> getProjectImage(@PathVariable(value = "projectId") Long projectId) throws NotFoundException {
+
+		Project p = this.projectRepository.findById(projectId).get();
+
+		if (p == null) {
+			throw new NotFoundException(String.format("Project ith email %s was not found", ""));
+		}
+		return ResponseEntity.ok(this.modelMapper.map(p, ProjectImageDTO.class));
 	}
 
 	@PostMapping(value = "/project/{projectId}/member")
